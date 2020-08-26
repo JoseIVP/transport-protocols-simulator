@@ -9,7 +9,7 @@ async function runTests(){
     await import("./PacketTest.js");
     await import("./ChannelTest.js");
     await import("./NodeTest.js");
-    // await import("./stopAndWaitTest.js");
+    await import("./stopAndWaitTest.js");
     mocha.run();
 }
 
