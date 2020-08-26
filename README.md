@@ -1,9 +1,3 @@
-<style>
-    p{
-        text-align: justify;
-    }
-</style>
-
 # Transport protocols simulator library
 
 This small library is a project under construction, whose main purpose
