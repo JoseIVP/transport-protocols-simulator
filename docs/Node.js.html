@@ -116,9 +116,11 @@ class Node{
     }
 
     /**
-     * Sends a packet through the specified channel.
+     * Sends a packet through the specified channel, returning the promise
+     * returned by channel.send().
      * @param {Packet} packet - The packet to send. 
      * @param {Channel} channel - The channel through wich the packet is sent.
+     * @returns {Promise} - The promise returned by channel.send().
      */
     send(packet, channel){
         this.onSend(packet, channel);

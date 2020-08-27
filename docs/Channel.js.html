@@ -112,8 +112,12 @@ class Channel{
     }
 
     /**
-     * Sends a packet to its receiver.
+     * Sends a packet to its receiver, returning a promise that resolves if the
+     * packet is successfully delivered and rejects if the packet could not get
+     * delivered because stop() was called. The returned promise resolves or rejects
+     * with the given packet.
      * @param {Packet} packet - The for the channel to send.
+     * @returns {Promise} - The pending promise.
      */
     send(packet){
         return new Promise((resolve, reject) => {

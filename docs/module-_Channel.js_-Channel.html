@@ -498,7 +498,7 @@
       </svg>
     </a>
     <h4 class="name" id="send">
-      <span class="type-signature"></span>send<span class="signature">(packet)</span><span class="type-signature"></span>
+      <span class="type-signature"></span>send<span class="signature">(packet)</span><span class="type-signature"> &rarr; {Promise}</span>
     </h4>
   </span>
 
@@ -507,7 +507,10 @@
 
 
   <div class="description">
-    <p>Sends a packet to its receiver.</p>
+    <p>Sends a packet to its receiver, returning a promise that resolves if the
+packet is successfully delivered and rejects if the packet could not get
+delivered because stop() was called. The returned promise resolves or rejects
+with the given packet.</p>
   </div>
 
 
@@ -605,7 +608,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line26">line 26</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line30">line 30</a>
         </li>
       </ul>
     </dd>
@@ -697,7 +700,7 @@ from arriving at their receiver.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line44">line 44</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line48">line 48</a>
         </li>
       </ul>
     </dd>
