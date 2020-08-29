@@ -11,7 +11,7 @@ class Packet{
      * @param {number} options.seqNum - The sequence number of the packet.
      * @param {Node} options.sender - The sender of the packet.
      * @param {Node} options.receiver - The receiver of the packet.
-     * @param {boolean} [options.isAck=true] - true if the packet is an acknowledgment.
+     * @param {boolean} [options.isAck=false] - true if the packet is an acknowledgment.
      */
     constructor({
         seqNum,
