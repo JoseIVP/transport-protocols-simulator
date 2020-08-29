@@ -2,10 +2,6 @@ import Channel from "../src/Channel.js";
 import {
     SWSender,
     SWReceiver,
-    WAIT_CALL_0,
-    WAIT_ACK_0,
-    WAIT_CALL_1,
-    WAIT_ACK_1
 } from "../src/stopAndWait.js";
 import Node from "../src/Node.js";
 import Packet from "../src/Packet.js";
@@ -26,9 +22,11 @@ describe("SWSender", function(){
         }
         it("should send a packet through its channel to its receiver", function(done){
             should.not.exist(packetReceived);
-            sender.currentState.should.equal(WAIT_CALL_0);
+            sender.should.have.property("currentSeqNum").equal(0);
+            sender.should.have.property("isWaitingAck").equal(false);
             sender.send();
-            sender.currentState.should.equal(WAIT_ACK_0);
+            sender.should.have.property("currentSeqNum").equal(0);
+            sender.should.have.property("isWaitingAck").equal(true);
             setTimeout(()=>{
                 packetReceived.should.have.property("seqNum").equal(0);
                 done();
@@ -61,11 +59,13 @@ describe("SWSender", function(){
         it("should receive an ACK after sending a packet", function(done){
             should.not.exist(ackReceived);
             sender.send();
-            sender.should.have.property("currentState").equal(WAIT_ACK_0);
+            sender.should.have.property("currentSeqNum").equal(0);
+            sender.should.have.property("isWaitingAck").equal(true);
             setTimeout(() => {
                 ackReceived.should.have.property("seqNum").equal(0);
                 ackReceived.should.have.property("isAck").equal(true);
-                sender.should.have.property("currentState").equal(WAIT_CALL_1);
+                sender.should.have.property("currentSeqNum").equal(1);
+                sender.should.have.property("isWaitingAck").equal(false);
                 done();
             }, 2100);
         });

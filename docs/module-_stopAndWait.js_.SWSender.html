@@ -292,15 +292,7 @@
         
 
         <td class="description last">
-          <p>The time to wait for each acknowledgement from the receiver.</p>
-          
-        </td>
-      </tr>
-
-    
-  </tbody>
-</table>
-
+          <p>The time to wait for each acknowledgment from the receiver.</p>
           
         </td>
       </tr>
@@ -308,7 +300,7 @@
     
       <tr>
         
-          <td class="name"><code>optons.sender</code></td>
+          <td class="name"><code>sender</code></td>
         
 
         <td class="type">
@@ -325,11 +317,31 @@
         </td>
 
         
+          <td class="attributes">
+            
 
+            
+
+            
+          </td>
+        
+
+        
+          <td class="default">
+            
+          </td>
         
 
         <td class="description last">
           <p>The channel through wich to send the packets.</p>
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
+
           
         </td>
       </tr>
@@ -373,7 +385,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line32">line 32</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line23">line 23</a>
         </li>
       </ul>
     </dd>
@@ -463,7 +475,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line48">line 48</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line42">line 42</a>
         </li>
       </ul>
     </dd>
@@ -493,7 +505,10 @@
 
 
   <div class="description">
-    <p>The current sent packet.</p>
+    <p>The current sent packet. It should change every time a
+new packet is sent, i.e. when send() sends a packet or a timeout is reached,
+causing a new packet to be sent. Also, should be null when no acknowledgment
+is expected and send() has not been called.</p>
   </div>
 
 
@@ -530,7 +545,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line39">line 39</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line35">line 35</a>
         </li>
       </ul>
     </dd>
@@ -552,15 +567,16 @@
         
             
 
-<h4 class="name" id="currentState">
-  <span class="type-signature"></span>currentState<span class="type-signature"> :number</span>
+<h4 class="name" id="currentSeqNum">
+  <span class="type-signature"></span>currentSeqNum<span class="type-signature"> :number</span>
 </h4>
 
 
 
 
   <div class="description">
-    <p>The current state of the sender.</p>
+    <p>The current sequence number to send or to wait for
+acknowledgment. It can only be 0 or 1, starting with 0.</p>
   </div>
 
 
@@ -597,7 +613,75 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line42">line 42</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line47">line 47</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+          
+        
+            
+
+<h4 class="name" id="isWaitingAck">
+  <span class="type-signature"></span>isWaitingAck<span class="type-signature"> :boolean</span>
+</h4>
+
+
+
+
+  <div class="description">
+    <p>true if the sender is waiting for an acknowledgment. When
+the instance is created this property is false.</p>
+  </div>
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line52">line 52</a>
         </li>
       </ul>
     </dd>
@@ -664,7 +748,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line44">line 44</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line38">line 38</a>
         </li>
       </ul>
     </dd>
@@ -694,7 +778,7 @@
 
 
   <div class="description">
-    <p>The time to wait for each acknowledgement.</p>
+    <p>The time to wait for each acknowledgment.</p>
   </div>
 
 
@@ -731,7 +815,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line46">line 46</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line40">line 40</a>
         </li>
       </ul>
     </dd>
@@ -778,8 +862,8 @@
 
 
   <div class="description">
-    <p>Receives a packet through a channel, taking action only if the current state
-is WAIT_ACK_0 or WAIT_ACK_1 and if the packet is the corresponding ACK for
+    <p>Receives a packet through a channel, taking action only if waiting for
+an acknowledgment and if the packet is the corresponding acknowledgment for
 the packet sent before.</p>
   </div>
 
@@ -907,7 +991,7 @@ the packet sent before.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line91">line 91</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line86">line 86</a>
         </li>
       </ul>
     </dd>
@@ -955,7 +1039,7 @@ the packet sent before.</p>
 
 
   <div class="description">
-    <p>Sends a packet if the current state is WAIT_CALL_0 or WAIT_CALL_1,
+    <p>If the sender is not waiting for an acknowledgment sends a packet,
 setting the corresponding timeout each time a packet is sent.</p>
   </div>
 
@@ -999,7 +1083,7 @@ setting the corresponding timeout each time a packet is sent.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line56">line 56</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line60">line 60</a>
         </li>
       </ul>
     </dd>
