@@ -11,16 +11,22 @@ describe("Packet", function(){
     });
 
     describe("#isCorrupted", function(){
-        it("should initially be false", function(){
+        it("should be false by default", function(){
             packet.should.have.property("isCorrupted").equal(false);
         });
     });
 
     describe("#isAck", function(){
-        it("should initially be false", function(){
+        it("should be false by default", function(){
             packet.should.have.property("isAck").equal(false);
         });
     });
+
+    describe("#ackNum", function(){
+        it("should be null by default", function(){
+            packet.should.have.property("ackNum").equal(null);
+        })
+    })
 
     describe("#getCorrupted()", function(){
         it("should turn isCorrupted true", function(){

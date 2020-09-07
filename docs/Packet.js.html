@@ -104,12 +104,14 @@ class Packet{
      * @param {Node} options.sender - The sender of the packet.
      * @param {Node} options.receiver - The receiver of the packet.
      * @param {boolean} [options.isAck=false] - true if the packet is an acknowledgment.
+     * @param {boolean} [options.ackNum=null] - The sequence number to acknowledge.
      */
     constructor({
         seqNum,
         sender,
         receiver,
         isAck = false,
+        ackNum = null,
     }={}){
         /** @member {number} - The sequence number of the packet. */
         this.seqNum = seqNum;
@@ -119,6 +121,8 @@ class Packet{
         this.receiver = receiver;
         /** @member {boolean} - true if the packet is an acknowledgment, false otherwise. */
         this.isAck = isAck;
+        /** @member {number} - The sequence number to acknowledge. */
+        this.ackNum = ackNum;
         /** @member {booblean} - true if the packet is corrupted, false if not. */
         this.isCorrupted = false;
     }

@@ -5,7 +5,7 @@ import Packet from "./Packet.js";
 
 
 function isAck(packet, seqNum){
-    return packet.isAck && packet.seqNum === seqNum;
+    return packet.isAck && packet.ackNum === seqNum;
 }
 
 /**
@@ -142,7 +142,7 @@ export class SWReceiver extends Node{
         if(packet.isCorrupted || packet.seqNum !== this.expectedSeqNum){
             this.onReceiveNotOk(packet, channel);
             const ack = new Packet({
-                seqNum: (this.expectedSeqNum + 1) % 2,
+                ackNum: (this.expectedSeqNum + 1) % 2,
                 isAck: true,
                 sender: this,
                 receiver: packet.sender
@@ -151,7 +151,7 @@ export class SWReceiver extends Node{
         } else {
             this.onReceiveOk(packet, channel);
             const ack = new Packet({
-                seqNum: this.expectedSeqNum,
+                ackNum: this.expectedSeqNum,
                 isAck: true,
                 sender: this,
                 receiver: packet.sender 

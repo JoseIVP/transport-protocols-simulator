@@ -45,8 +45,8 @@ describe("SWSender", function(){
         });
         receiver.onReceive = packet => {
             const ack = new Packet({
-                seqNum: 0,
                 isAck: true,
+                ackNum: 0,
                 sender: receiver,
                 receiver: sender
             })
@@ -62,7 +62,7 @@ describe("SWSender", function(){
             sender.should.have.property("currentSeqNum").equal(0);
             sender.should.have.property("isWaitingAck").equal(true);
             setTimeout(() => {
-                ackReceived.should.have.property("seqNum").equal(0);
+                ackReceived.should.have.property("ackNum").equal(0);
                 ackReceived.should.have.property("isAck").equal(true);
                 sender.should.have.property("currentSeqNum").equal(1);
                 sender.should.have.property("isWaitingAck").equal(false);
@@ -99,14 +99,14 @@ describe("SWReceiver", function(){
             }, 1100);
             setTimeout(()=> {
                 acksReceived[0].should.have.property("isAck").equal(true);
-                acksReceived[0].should.have.property("seqNum").equal(0);
+                acksReceived[0].should.have.property("ackNum").equal(0);
                 sender.send();
             }, 2100);
             setTimeout(() => {
                 acksReceived.should.have.lengthOf(2);
                 packetsReceived.should.have.lengthOf(2);
                 acksReceived[1].should.have.property("isAck").equal(true);
-                acksReceived[1].should.have.property("seqNum").equal(1);
+                acksReceived[1].should.have.property("ackNum").equal(1);
                 packetsReceived[1].should.have.property("seqNum").equal(1);
                 receiver.should.have.property("expectedSeqNum").equal(0);
                 done();
