@@ -13,7 +13,7 @@ class Channel{
     constructor({
         delay = 1000
     }={}){
-        /** @member {number} - The time that takes the channel to deliver the packet. */
+        /** @member {number} - The time in milliseconds that takes the channel to deliver the packet. */
         this.delay = delay;
         /** @member {Map} - The current travling packets. You should not modify this property in any way. */
         this.travelingPackets = new Map();
@@ -51,6 +51,32 @@ class Channel{
             reject(packet);
         });
         this.travelingPackets.clear();
+    }
+
+    /**
+     * Loses a packet, preventing it from arriving at its receiver, and
+     * causing the corresponding promise from send() to be rejected.
+     * If the packet is not currently traveling in this channel, then
+     * it does nothing.
+     * @param {Packet} packet - The packet to lose.
+     */
+    losePacket(packet){
+        const info = this.travelingPackets.get(packet);
+        if(info !== undefined){
+            this.travelingPackets.delete(packet);
+            clearTimeout(info.timeoutID);
+            info.reject(packet);
+        }
+    }
+
+    /**
+     * Damages a packet. Does nothing if the packet is not currently
+     * traveling in this channel.
+     * @param {Packet} packet - The packet to damage.
+     */
+    damagePacket(packet){
+        if(this.travelingPackets.has(packet))
+            packet.getCorrupted();
     }
 
 }

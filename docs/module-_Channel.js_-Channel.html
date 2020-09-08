@@ -73,7 +73,7 @@
 
     
 
-    <h3>Classes</h3><ul><li id="Channel-nav"><a href="module-_Channel.js_-Channel.html">Channel</a><ul class='methods'><li data-type="method" id="Channel-send-nav"><a href="module-_Channel.js_-Channel.html#send">send</a></li><li data-type="method" id="Channel-stop-nav"><a href="module-_Channel.js_-Channel.html#stop">stop</a></li></ul></li><li id="Node-nav"><a href="module-_Node.js_-Node.html">Node</a><ul class='methods'><li data-type="method" id="Node-onReceive-nav"><a href="module-_Node.js_-Node.html#onReceive">onReceive</a></li><li data-type="method" id="Node-onSend-nav"><a href="module-_Node.js_-Node.html#onSend">onSend</a></li><li data-type="method" id="Node-receive-nav"><a href="module-_Node.js_-Node.html#receive">receive</a></li><li data-type="method" id="Node-send-nav"><a href="module-_Node.js_-Node.html#send">send</a></li></ul></li><li id="Packet-nav"><a href="module-_Packet.js_-Packet.html">Packet</a><ul class='methods'><li data-type="method" id="Packet-getCorrupted-nav"><a href="module-_Packet.js_-Packet.html#getCorrupted">getCorrupted</a></li></ul></li><li id="SWReceiver-nav"><a href="module-_stopAndWait.js_.SWReceiver.html">SWReceiver</a><ul class='methods'><li data-type="method" id="SWReceiver-onReceiveNotOk-nav"><a href="module-_stopAndWait.js_.SWReceiver.html#onReceiveNotOk">onReceiveNotOk</a></li><li data-type="method" id="SWReceiver-onReceiveOk-nav"><a href="module-_stopAndWait.js_.SWReceiver.html#onReceiveOk">onReceiveOk</a></li><li data-type="method" id="SWReceiver-receive-nav"><a href="module-_stopAndWait.js_.SWReceiver.html#receive">receive</a></li></ul></li><li id="SWSender-nav"><a href="module-_stopAndWait.js_.SWSender.html">SWSender</a><ul class='methods'><li data-type="method" id="SWSender-receive-nav"><a href="module-_stopAndWait.js_.SWSender.html#receive">receive</a></li><li data-type="method" id="SWSender-send-nav"><a href="module-_stopAndWait.js_.SWSender.html#send">send</a></li></ul></li></ul><h3>Modules</h3><ul><li id=""Channel.js"-nav"><a href="module-_Channel.js_.html">"Channel.js"</a></li><li id=""Node.js"-nav"><a href="module-_Node.js_.html">"Node.js"</a></li><li id=""Packet.js"-nav"><a href="module-_Packet.js_.html">"Packet.js"</a></li><li id=""stopAndWait.js"-nav"><a href="module-_stopAndWait.js_.html">"stopAndWait.js"</a></li></ul>
+    <h3>Classes</h3><ul><li id="Channel-nav"><a href="module-_Channel.js_-Channel.html">Channel</a><ul class='methods'><li data-type="method" id="Channel-damagePacket-nav"><a href="module-_Channel.js_-Channel.html#damagePacket">damagePacket</a></li><li data-type="method" id="Channel-losePacket-nav"><a href="module-_Channel.js_-Channel.html#losePacket">losePacket</a></li><li data-type="method" id="Channel-send-nav"><a href="module-_Channel.js_-Channel.html#send">send</a></li><li data-type="method" id="Channel-stop-nav"><a href="module-_Channel.js_-Channel.html#stop">stop</a></li></ul></li><li id="Node-nav"><a href="module-_Node.js_-Node.html">Node</a><ul class='methods'><li data-type="method" id="Node-onReceive-nav"><a href="module-_Node.js_-Node.html#onReceive">onReceive</a></li><li data-type="method" id="Node-onSend-nav"><a href="module-_Node.js_-Node.html#onSend">onSend</a></li><li data-type="method" id="Node-receive-nav"><a href="module-_Node.js_-Node.html#receive">receive</a></li><li data-type="method" id="Node-send-nav"><a href="module-_Node.js_-Node.html#send">send</a></li></ul></li><li id="Packet-nav"><a href="module-_Packet.js_-Packet.html">Packet</a><ul class='methods'><li data-type="method" id="Packet-getCorrupted-nav"><a href="module-_Packet.js_-Packet.html#getCorrupted">getCorrupted</a></li></ul></li><li id="SWReceiver-nav"><a href="module-_stopAndWait.js_.SWReceiver.html">SWReceiver</a><ul class='methods'><li data-type="method" id="SWReceiver-onReceiveNotOk-nav"><a href="module-_stopAndWait.js_.SWReceiver.html#onReceiveNotOk">onReceiveNotOk</a></li><li data-type="method" id="SWReceiver-onReceiveOk-nav"><a href="module-_stopAndWait.js_.SWReceiver.html#onReceiveOk">onReceiveOk</a></li><li data-type="method" id="SWReceiver-receive-nav"><a href="module-_stopAndWait.js_.SWReceiver.html#receive">receive</a></li></ul></li><li id="SWSender-nav"><a href="module-_stopAndWait.js_.SWSender.html">SWSender</a><ul class='methods'><li data-type="method" id="SWSender-receive-nav"><a href="module-_stopAndWait.js_.SWSender.html#receive">receive</a></li><li data-type="method" id="SWSender-send-nav"><a href="module-_stopAndWait.js_.SWSender.html#send">send</a></li></ul></li></ul><h3>Modules</h3><ul><li id=""Channel.js"-nav"><a href="module-_Channel.js_.html">"Channel.js"</a></li><li id=""Node.js"-nav"><a href="module-_Node.js_.html">"Node.js"</a></li><li id=""Packet.js"-nav"><a href="module-_Packet.js_.html">"Packet.js"</a></li><li id=""stopAndWait.js"-nav"><a href="module-_stopAndWait.js_.html">"stopAndWait.js"</a></li></ul>
   </nav>
 
   <div id="main">
@@ -356,7 +356,7 @@
 
 
   <div class="description">
-    <p>The time that takes the channel to deliver the packet.</p>
+    <p>The time in milliseconds that takes the channel to deliver the packet.</p>
   </div>
 
 
@@ -484,6 +484,302 @@
 
     
       <h3 class="subsection-title">Methods</h3>
+
+      
+        
+
+
+  
+
+  <span class='name-container'>
+    <a class="link-icon" href="#damagePacket">
+      <svg height="20" width="20" style="fill: black;">
+        <use xlink:href="#linkIcon"></use>
+      </svg>
+    </a>
+    <h4 class="name" id="damagePacket">
+      <span class="type-signature"></span>damagePacket<span class="signature">(packet)</span><span class="type-signature"></span>
+    </h4>
+  </span>
+
+  
+
+
+
+  <div class="description">
+    <p>Damages a packet. Does nothing if the packet is not currently
+traveling in this channel.</p>
+  </div>
+
+
+
+
+
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>packet</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      Packet
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          <p>The packet to damage.</p>
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line77">line 77</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+        
+
+
+  
+
+  <span class='name-container'>
+    <a class="link-icon" href="#losePacket">
+      <svg height="20" width="20" style="fill: black;">
+        <use xlink:href="#linkIcon"></use>
+      </svg>
+    </a>
+    <h4 class="name" id="losePacket">
+      <span class="type-signature"></span>losePacket<span class="signature">(packet)</span><span class="type-signature"></span>
+    </h4>
+  </span>
+
+  
+
+
+
+  <div class="description">
+    <p>Loses a packet, preventing it from arriving at its receiver, and
+causing the corresponding promise from send() to be rejected.
+If the packet is not currently traveling in this channel, then
+it does nothing.</p>
+  </div>
+
+
+
+
+
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>packet</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      Packet
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          <p>The packet to lose.</p>
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line63">line 63</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       
         
