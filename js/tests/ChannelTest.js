@@ -5,18 +5,110 @@ import Node from "../src/Node.js";
 describe("Channel", function(){
     
     describe("#send()", function(){
+        let channel,
+        receiver,
+        packet,
+        packetReceived,
+        resolvePacket,
+        rejectPacket;
+
+        beforeEach(function(){
+            channel = new Channel({delay: 1000});
+            receiver = new Node();
+            receiver.onReceive = packet => {
+                packetReceived = packet;
+            };
+            packet = new Packet({receiver, seqNum: 10});
+            packetReceived = null;
+            resolvePacket = null;
+            rejectPacket = null;
+        });
+
+        it("should send a packet to its receiver with the configured delay", function(done){
+            channel.send(packet);
+            setTimeout(()=>{
+                packetReceived.should.equal(packet);
+                packetReceived.should.have.property("seqNum").equal(10);
+                done()
+            }, 1000);
+        });
+
+        it("should return a promise that resolves to the sent packet when it is delivered", async function(){
+            try{
+                resolvePacket = await channel.send(packet);
+            }catch(pkt){
+                rejectPacket = pkt;
+            }
+            packetReceived.should.equal(packet);
+            resolvePacket.should.equal(packet);
+            resolvePacket.should.have.property("seqNum").equal(10);
+            should.not.exist(rejectPacket);
+        });
+    });
+
+    describe("#losePacket()", function(){
+        let channel,
+        receiver,
+        packet,
+        packetReceived,
+        resolvePacket,
+        rejectPacket;
+
+        beforeEach(function(){
+            channel = new Channel({delay: 1000});
+            receiver = new Node();
+            receiver.onReceive = packet => {
+                packetReceived = packet;
+            }
+            packet = new Packet({receiver});
+            packetReceived = null;
+            resolvePacket = null;
+            rejectPacket = null;
+        });
+
+        it("should lose a traveling packet, preventing it from arriving at its receiver", function(done){
+            channel.send(packet);
+            channel.losePacket(packet);
+            setTimeout(() => {
+                should.not.exist(packetReceived);
+                done();
+            }, 1100);
+        });
+
+        it("should cause the corresponding promise from send(), to be rejected", function(done){
+            channel.send(packet)
+                .then(pkt => {
+                    resolvePacket = pkt;
+                })
+                .catch(pkt => {
+                    rejectPacket = pkt;
+                });
+            channel.losePacket(packet);
+            setTimeout(() => {
+                should.not.exist(resolvePacket);
+                rejectPacket.should.equal(packet);
+                done();
+            }, 1100);
+        });
+    });
+
+    describe("#damagePacket()", function(){
         const channel = new Channel({delay: 1000});
         const receiver = new Node();
-        const packet = new Packet({receiver, seqNum: 10});
         let packetReceived = null;
         receiver.onReceive = packet => {
             packetReceived = packet;
-        };
-        it("should send a packet to its receiver", async function(){
-            should.not.exist(packetReceived);
-            await channel.send(packet);
-            packetReceived.should.equal(packet);
-            packetReceived.should.have.property("seqNum").equal(10);
+        }
+        const packet = new Packet({receiver});
+
+        it("should damage a traveling packet", function(done){
+            channel.send(packet);
+            channel.damagePacket(packet);
+            setTimeout(() => {
+                packetReceived.should.equal(packet);
+                packetReceived.should.have.property("isCorrupted").equal(true);
+                done();
+            }, 1000);
         });
     });
 
