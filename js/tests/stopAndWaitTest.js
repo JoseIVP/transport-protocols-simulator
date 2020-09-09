@@ -19,7 +19,7 @@ describe("SWSender", function(){
         let packetReceived = null;
         receiver.onReceive = packet => {
             packetReceived = packet;
-        }
+        };
         it("should send a packet through its channel to its receiver", function(done){
             should.not.exist(packetReceived);
             sender.should.have.property("currentSeqNum").equal(0);
@@ -51,11 +51,11 @@ describe("SWSender", function(){
                 receiver: sender
             })
             receiver.send(ack, channel);
-        }
+        };
         let ackReceived = null;
         sender.onReceive = packet => {
             ackReceived = packet;
-        }
+        };
         it("should receive an ACK after sending a packet", function(done){
             should.not.exist(ackReceived);
             sender.send();
@@ -80,15 +80,15 @@ describe("SWReceiver", function(){
         const sender = new SWSender({
             receiver,
             channel: new Channel({delay: 1000})
-        })
+        });
         const packetsReceived = [];
         const acksReceived = [];
         receiver.onReceiveOk = packet => {
             packetsReceived.push(packet);
-        }
+        };
         sender.onReceive = packet => {
             acksReceived.push(packet);
-        }
+        };
         it("should receive a packet and send an ACK back", function(done){
             packetsReceived.should.have.lengthOf(0);
             acksReceived.should.have.lengthOf(0);
