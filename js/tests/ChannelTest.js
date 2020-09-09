@@ -44,6 +44,34 @@ describe("Channel", function(){
             resolvePacket.should.have.property("seqNum").equal(10);
             should.not.exist(rejectPacket);
         });
+
+        it("should compute if the packet is going to be lost given a probability", function(done){
+            channel = new Channel({
+                delay: 1000,
+                lossProb: 1 // Every packet will be lost
+            });
+            let sentPacket = null;
+            let packetWillBeLost = false;
+            channel.onSend = (packet, willBeLost) => {
+                sentPacket = packet;
+                packetWillBeLost = willBeLost;
+            };
+            channel.send(packet)
+                .then(pkt => {
+                    resolvePacket = pkt;
+                })
+                .catch(pkt => {
+                    rejectPacket = pkt;
+                });
+            setTimeout(() => {
+                sentPacket.should.equal(packet);
+                packetWillBeLost.should.be.true;
+                should.not.exist(packetReceived);
+                should.not.exist(resolvePacket);
+                rejectPacket.should.equal(packet);
+                done();
+            }, 1100);
+        });
     });
 
     describe("#losePacket()", function(){
