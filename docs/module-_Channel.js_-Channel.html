@@ -302,6 +302,51 @@
       </tr>
 
     
+      <tr>
+        
+          <td class="name"><code>damageProb</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      number
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+          <td class="attributes">
+            
+              &lt;optional><br>
+            
+
+            
+
+            
+          </td>
+        
+
+        
+          <td class="default">
+            
+              0
+            
+          </td>
+        
+
+        <td class="description last">
+          <p>The probability between 0 and 1 of damaging a packet.</p>
+          
+        </td>
+      </tr>
+
+    
   </tbody>
 </table>
 
@@ -348,7 +393,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line14">line 14</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line15">line 15</a>
         </li>
       </ul>
     </dd>
@@ -390,6 +435,73 @@
     
         <h3 class="subsection-title">Members</h3>
 
+        
+            
+
+<h4 class="name" id="damageProb">
+  <span class="type-signature"></span>damageProb<span class="type-signature"> :number</span>
+</h4>
+
+
+
+
+  <div class="description">
+    <p>The probability of damaging a packet.</p>
+  </div>
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line27">line 27</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+          
         
             
 
@@ -438,7 +550,74 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line19">line 19</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line21">line 21</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+          
+        
+            
+
+<h4 class="name" id="lossProb">
+  <span class="type-signature"></span>lossProb<span class="type-signature"> :number</span>
+</h4>
+
+
+
+
+  <div class="description">
+    <p>The probability to lose a packet.</p>
+  </div>
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line25">line 25</a>
         </li>
       </ul>
     </dd>
@@ -505,7 +684,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line21">line 21</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line23">line 23</a>
         </li>
       </ul>
     </dd>
@@ -651,7 +830,7 @@ traveling in this channel.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line102">line 102</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line112">line 112</a>
         </li>
       </ul>
     </dd>
@@ -801,7 +980,7 @@ was stopped, and false if the packet was not traveling.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line86">line 86</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line96">line 96</a>
         </li>
       </ul>
     </dd>
@@ -840,7 +1019,7 @@ was stopped, and false if the packet was not traveling.</p>
       </svg>
     </a>
     <h4 class="name" id="onSend">
-      <span class="type-signature"></span>onSend<span class="signature">(packet, losingPacket)</span><span class="type-signature"></span>
+      <span class="type-signature"></span>onSend<span class="signature">(packet, losingPacket, damagingPacket)</span><span class="type-signature"></span>
     </h4>
   </span>
 
@@ -850,8 +1029,10 @@ was stopped, and false if the packet was not traveling.</p>
 
   <div class="description">
     <p>Override this method to intercept a packet sent through
-the channel and to know whether it is going to be lost or
-not.</p>
+the channel, to know whether it is going to be lost or
+not, and if it is going to be damaged.
+The channel is only going to damage the packet if it
+is not losing it.</p>
   </div>
 
 
@@ -920,7 +1101,7 @@ not.</p>
           
             
     <span class="param-type">
-      number
+      boolean
     </span>
 
     
@@ -935,6 +1116,35 @@ not.</p>
 
         <td class="description last">
           <p>true if the channel is goin to lose the packet, false otherwise.</p>
+          
+        </td>
+      </tr>
+
+    
+      <tr>
+        
+          <td class="name"><code>damagingPacket</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      boolean
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          <p>true if the channel is going to damage the packet, false if not.</p>
           
         </td>
       </tr>
@@ -978,7 +1188,7 @@ not.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line61">line 61</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line71">line 71</a>
         </li>
       </ul>
     </dd>
@@ -1127,7 +1337,7 @@ promise resolves or rejects with the given packet.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line34">line 34</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line38">line 38</a>
         </li>
       </ul>
     </dd>
@@ -1219,7 +1429,7 @@ from arriving at their receiver.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line69">line 69</a>
+          <a href="Channel.js.html">Channel.js</a>, <a href="Channel.js.html#line79">line 79</a>
         </li>
       </ul>
     </dd>

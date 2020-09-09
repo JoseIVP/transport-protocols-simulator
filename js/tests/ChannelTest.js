@@ -72,6 +72,38 @@ describe("Channel", function(){
                 done();
             }, 1100);
         });
+
+        it("should compute whether the packet is going to be damaged given a probability", function(done){
+            channel = new Channel({
+                delay: 1000,
+                damageProb: 1 // Every packet will be damaged
+            });
+            let sentPacket = null;
+            let packetWillBeLost = false;
+            let packetWillBeDamaged = false;
+            channel.onSend = (packet, willBeLost, willBeDamaged) => {
+                sentPacket = packet;
+                packetWillBeLost = willBeLost;
+                packetWillBeDamaged = willBeDamaged;
+            };
+            channel.send(packet)
+                .then(pkt => {
+                    resolvePacket = pkt;
+                })
+                .catch(pkt => {
+                    rejectPacket = pkt;
+                });
+            setTimeout(() => {
+                sentPacket.should.equal(packet);
+                packetWillBeLost.should.be.false;
+                packetWillBeDamaged.should.be.true;
+                packetReceived.should.equal(packet);
+                packetReceived.should.have.property("isCorrupted").equal(true);
+                resolvePacket.should.equal(packet);
+                should.not.exist(rejectPacket);
+                done();
+            }, 1100);
+        })
     });
 
     describe("#losePacket()", function(){
