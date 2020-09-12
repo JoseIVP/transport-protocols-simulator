@@ -1031,8 +1031,8 @@ was stopped, and false if the packet was not traveling.</p>
     <p>Override this method to intercept a packet sent through
 the channel, to know whether it is going to be lost or
 not, and if it is going to be damaged.
-The channel is only going to damage the packet if it
-is not losing it.</p>
+The channel is actually only going to damage the packet if it
+is not losing it, despite damagingPacket being true.</p>
   </div>
 
 

@@ -109,12 +109,12 @@ export class SWSender extends Node{
      * Creates a new SWSender instance.
      * @param {Object} options - The constructor options.
      * @param {SWReceiver} options.receiver - The *stop-and-wait* receiver.
-     * @param {number} [options.timeoutTime=1500] - The time to wait for each acknowledgment from the receiver.
+     * @param {number} [options.timeoutTime=2100] - The time to wait for each acknowledgment from the receiver.
      * @param {Channel} options.sender - The channel through wich to send the packets. 
      */
     constructor({
         receiver,
-        timeoutTime = 1500,
+        timeoutTime = 2100,
         channel
     }){
         super();
@@ -164,7 +164,7 @@ export class SWSender extends Node{
             receiver: this.receiver,
         });
         super.send(this.currentPacket, this.channel);
-        this.currentTimeoutID = setTimeout(() => this._sendAndTimeout, this.timeoutTime);
+        this.currentTimeoutID = setTimeout(() => this._sendAndTimeout(), this.timeoutTime);
     }
 
     /**
