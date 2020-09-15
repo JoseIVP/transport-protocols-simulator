@@ -1,7 +1,7 @@
 /** @module "Channel.js" */
 
 /**
- * A class that represents the channels through wich the packets travel.
+ * A class that represents the channels through which the packets travel.
  */
 class Channel{
 

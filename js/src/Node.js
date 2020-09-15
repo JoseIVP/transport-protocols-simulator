@@ -17,7 +17,7 @@ class Node{
     /**
      * Override this function to intercept each received packet.
      * @param {Packet} packet - The packet received.
-     * @param {Channel} channel - The channel through wich the packet arrived. 
+     * @param {Channel} channel - The channel through which the packet arrived. 
      */
     onReceive(packet, channel){
         return;
@@ -27,7 +27,7 @@ class Node{
      * Sends a packet through the specified channel, returning the promise
      * returned by channel.send().
      * @param {Packet} packet - The packet to send. 
-     * @param {Channel} channel - The channel through wich the packet is sent.
+     * @param {Channel} channel - The channel through which the packet is sent.
      * @returns {Promise} - The promise returned by channel.send().
      */
     send(packet, channel){
@@ -38,7 +38,7 @@ class Node{
     /**
      * Override this function to intercept each sent packet.
      * @param {Packet} packet - The sent packet. 
-     * @param {Channel} channel - The channel through wich the packet was sent.
+     * @param {Channel} channel - The channel through which the packet was sent.
      */
     onSend(packet, channel){
         return;

@@ -17,14 +17,14 @@ export class SWSender extends Node{
      * Creates a new SWSender instance.
      * @param {Object} options - The constructor options.
      * @param {SWReceiver} options.receiver - The *stop-and-wait* receiver.
-     * @param {number} [options.timeoutTime=2100] - The time to wait for each acknowledgment from the receiver.
-     * @param {Channel} options.sender - The channel through wich to send the packets. 
+     * @param {number} [options.timeout=2100] - The time to wait for each acknowledgment from the receiver.
+     * @param {Channel} options.sender - The channel through which to send the packets. 
      */
     constructor({
         receiver,
-        timeoutTime = 2100,
+        timeout = 2100,
         channel
-    }){
+    }={}){
         super();
         /**
          * @member {Packet} - The current sent packet. It should change every time a
@@ -37,8 +37,8 @@ export class SWSender extends Node{
         /** @member {SWReceiver} - The receiver of the packets. */
         this.receiver = receiver;
         /** @member {number} - The time to wait for each acknowledgment. */
-        this.timeoutTime = timeoutTime;
-        /** @member {Channel} - The channel through wich the packets are sent. */
+        this.timeout = timeout;
+        /** @member {Channel} - The channel through which the packets are sent. */
         this.channel = channel;
         /**
          * @member {number} - The current sequence number to send or to wait for
@@ -72,7 +72,7 @@ export class SWSender extends Node{
             receiver: this.receiver,
         });
         super.send(this.currentPacket, this.channel);
-        this.currentTimeoutID = setTimeout(() => this._sendAndTimeout(), this.timeoutTime);
+        this.currentTimeoutID = setTimeout(() => this._sendAndTimeout(), this.timeout);
     }
 
     /**
@@ -81,7 +81,7 @@ export class SWSender extends Node{
      * the packet sent before.
      * @override
      * @param {Packet} packet - The packet received. 
-     * @param {Channel} channel - The channel through wich the packet arrives.
+     * @param {Channel} channel - The channel through which the packet arrives.
      */
     receive(packet, channel){
         super.receive(packet, channel);
@@ -115,7 +115,7 @@ export class SWReceiver extends Node{
     /**
      * Override this function to intercept incorrectly received packets.
      * @param {Packet} packet - The received packet. 
-     * @param {Channel} channel - The channel through wich the packet arrived.
+     * @param {Channel} channel - The channel through which the packet arrived.
      */
     onReceiveNotOk(packet, channel){
         return;
@@ -124,7 +124,7 @@ export class SWReceiver extends Node{
     /**
      * Override this function to intercept correctly received packets.
      * @param {Packet} packet - The received packet. 
-     * @param {Channel} channel - The channel through wich the packet arrived.
+     * @param {Channel} channel - The channel through which the packet arrived.
      */
     onReceiveOk(packet, channel){
         return;

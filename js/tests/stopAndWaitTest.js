@@ -26,7 +26,7 @@ describe("stopAndWait.js", function(){
                 sender = new SWSender({
                     receiver,
                     channel,
-                    timeoutTime: 2100 // A bit more than the round trip time
+                    timeout: 2100 // A bit more than the round trip time
                 });
                 sender.onSend = packet => {
                     sentPackets.push(packet);
@@ -249,7 +249,7 @@ describe("stopAndWait.js", function(){
         const sender = new SWSender({
             receiver,
             channel,
-            timeoutTime: 2100 // A bit more than twice the round trip time
+            timeout: 2100 // A bit more than twice the round trip time
         });
         const sentPackets = [];
         const sentAcks = [];
