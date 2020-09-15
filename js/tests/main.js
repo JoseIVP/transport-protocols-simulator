@@ -10,6 +10,7 @@ async function runTests(){
     await import("./ChannelTest.js");
     await import("./NodeTest.js");
     await import("./stopAndWaitTest.js");
+    await import("./goBackNTest.js");
     mocha.run();
 }
 
