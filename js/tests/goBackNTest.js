@@ -135,15 +135,122 @@ describe("goBackN.js", function(){
     describe("GBNReceiver", function(){
 
         describe("#receive()", function(){
+            let channel,
+            sender,
+            receiver,
+            receivedAcks,
+            receivedPackets;
 
-            it("should receive packets and send back acknowledgments");
+            beforeEach(function(){
+                channel = new Channel({delay: 1000});
+                sender = new Node();
+                receiver = new GBNReceiver();
+                sender.onReceive = packet => {
+                    receivedAcks.push(packet);
+                };
+                receiver.onReceive = packet => {
+                    receivedPackets.push(packet);
+                };
+                receivedAcks = [];
+                receivedPackets = [];
+            });
 
-            it("should drop packets that arrive out of order and send the previous acknowledgment");
+            it("should receive packets and send back acknowledgments", function(done){
+                this.timeout(1500);
+                receiver.should.have.property("expectedSeqNum").equal(0);
+                receiver.receive(new Packet({
+                    sender,
+                    receiver,
+                    seqNum: 0
+                }), channel);
+                setTimeout(() => {
+                    receivedPackets.should.have.lengthOf(1);
+                    receivedAcks.should.have.lengthOf(1);
+                    receivedAcks[0].should.have.property("isAck").equal(true);
+                    receivedAcks[0].should.have.property("ackNum").equal(0);
+                    done();
+                }, 1100);
+            });
+
+            it("should drop packets that arrive out of order and send the previous acknowledgment", function(done){
+                this.timeout(1500);
+                // We send sequence 1 and the receiver should respond
+                // with sequence -1.
+                receiver.receive(new Packet({
+                    sender,
+                    receiver,
+                    ackNum: 1
+                }), channel);
+                setTimeout(() => {
+                    receivedPackets.should.have.lengthOf(1);
+                    receivedAcks.should.have.lengthOf(1);
+                    receivedAcks[0].should.have.property("isAck").equal(true);
+                    receivedAcks[0].should.have.property("ackNum").equal(-1);
+                    done();
+                }, 1100);
+            });
         });
     });
 
     context("Use GBNSender and GBNReceiver together", function(){
+        const channel = new Channel({delay: 1000});
+        const receiver = new GBNReceiver();
+        const sender = new GBNSender({
+            receiver,
+            channel,
+            timeout: 2100,
+            windowSize: 4
+        })
+        const receivedPackets = [];
+        const receivedAcks = [];
+        let lastSentPacket = null;
+        receiver.onReceive = packet => {
+            receivedPackets.push(packet);
+        };
+        let damage = true;
+        receiver.onSend = packet => {
+            // We will only damage the first acknowledgement
+            // for sequence number 1
+            if(packet.ackNum == 1 && damage){
+                packet.getCorrupted();
+                damage = false;
+            }
+        };
+        sender.onReceive = packet => {
+            receivedAcks.push(packet);
+        };
+        sender.onSend = packet => {
+            lastSentPacket = packet;
+        };
 
-        specify("they should be able to interchange packets through an unreliable channel");
+        specify("they should be able to interchange packets through an unreliable channel", function(done){
+            this.timeout(6500);
+            // We will send 4 packets, of which the third will be lost, and their
+            // sequence numbers should be 0, 1, 2 (lost) and 3. Then the receiver
+            // will respond with 3 acknowledgments, of which the second will be damaged,
+            // sending sequences 0, 1 (corrupted) and 1 (response to 3, wich was out of order).
+            // Finally, the sender timeout should occur, resending sequences 2 and 3, and
+            // the receiver should respond with acknowledgments 2 and 3.
+            sender.send();
+            sender.send();
+            sender.send();
+            channel.losePacket(lastSentPacket);
+            sender.send();
+            setTimeout(() => {
+                receivedPackets.should.have.lengthOf(5);
+                receivedAcks.should.have.lengthOf(5);
+                const expectedPackets = [0, 1, 3, 2, 3];
+                const expectedAcks = [0, 1, 1, 2, 3];
+                for(let i=0; i<5; i++){
+                    receivedPackets[i].should.have.property("seqNum").equal(expectedPackets[i]);
+                    receivedAcks[i].should.have.property("ackNum").equal(expectedAcks[i]);
+                    if(i == 1)
+                        receivedAcks[i].should.have.property("isCorrupted").equal(true);
+                    else
+                        receivedAcks[i].should.have.property("isCorrupted").equal(false);
+                }
+                done();
+            }, 6200);
+        });
     });
 });

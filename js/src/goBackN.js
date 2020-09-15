@@ -10,7 +10,7 @@ import Packet from "./Packet.js";
 export class GBNSender extends Node{
 
     /**
-     * Creates a new SWSender instance.
+     * Creates a new GBNSender instance.
      * @param {Object} options - The constructor options.
      * @param {GBNReceiver} options.receiver - The *go-back-n* receiver.
      * @param {number} [options.timeout=2100] - The time to wait for an acknowledgment from the receiver.
@@ -106,4 +106,39 @@ export class GBNSender extends Node{
  */
 export class GBNReceiver extends Node{
 
+    /**
+     * Creates a new GBNReceiver instance.
+     */
+    constructor(){
+        super();
+        /** @member {number} - The next sequence number expected from the sender. */
+        this.expectedSeqNum = 0;
+    }
+
+    /**
+     * Receives a packet and sends back an acknowledgment, corresponding to the
+     * received packet sequence number if it is the expected one, or sending the
+     * previous sequence number if it is not.
+     * @param {Packet} packet - The packet to receive.
+     * @param {Channel} channel - The channel through which the packet is received.
+     */
+    receive(packet, channel){
+        super.receive(packet, channel);
+        if(!packet.isCorrupted && packet.seqNum == this.expectedSeqNum){
+            this.send(new Packet({
+                sender: this,
+                receiver: packet.sender,
+                isAck: true,
+                ackNum: this.expectedSeqNum
+            }), channel);
+            this.expectedSeqNum++;
+        }else{
+            this.send(new Packet({
+                sender: this,
+                receiver: packet.sender,
+                isAck: true,
+                ackNum: this.expectedSeqNum - 1
+            }), channel);
+        }
+    }
 }
