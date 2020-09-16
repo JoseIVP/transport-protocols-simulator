@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      SWSender - Documentation
+      GBNSender - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -79,7 +79,7 @@
   <div id="main">
     
       <h1 class="page-title">
-        SWSender
+        GBNSender
       </h1>
     
 
@@ -90,15 +90,15 @@
     
       <h2>
         
-          <span class="ancestors"><a href="module-_stopAndWait.js_.html">"stopAndWait.js"</a>.</span>
+          <span class="ancestors"><a href="module-_goBackN.js_.html">"goBackN.js"</a>.</span>
         
-        SWSender
+        GBNSender
         
       </h2>
 
       
         <div class="class-description">
-          <p>A class that represents a <em>stop-and-wait</em> sender.</p>
+          <p>A class that represents a <em>go-back-n</em> sender.</p>
         </div>
       
     
@@ -115,13 +115,13 @@
   
 
   <span class='name-container'>
-    <a class="link-icon" href="#SWSender">
+    <a class="link-icon" href="#GBNSender">
       <svg height="20" width="20" style="fill: black;">
         <use xlink:href="#linkIcon"></use>
       </svg>
     </a>
-    <h4 class="name" id="SWSender">
-      <span class="type-signature"></span>new SWSender<span class="signature">(options)</span><span class="type-signature"></span>
+    <h4 class="name" id="GBNSender">
+      <span class="type-signature"></span>new GBNSender<span class="signature">(options)</span><span class="type-signature"></span>
     </h4>
   </span>
 
@@ -130,7 +130,7 @@
 
 
   <div class="description">
-    <p>Creates a new SWSender instance.</p>
+    <p>Creates a new GBNSender instance.</p>
   </div>
 
 
@@ -221,7 +221,7 @@
           
             
     <span class="param-type">
-      SWReceiver
+      GBNReceiver
     </span>
 
     
@@ -247,7 +247,7 @@
         
 
         <td class="description last">
-          <p>The <em>stop-and-wait</em> receiver.</p>
+          <p>The <em>go-back-n</em> receiver.</p>
           
         </td>
       </tr>
@@ -292,7 +292,7 @@
         
 
         <td class="description last">
-          <p>The time to wait for each acknowledgment from the receiver.</p>
+          <p>The time to wait for an acknowledgment from the receiver.</p>
           
         </td>
       </tr>
@@ -334,6 +334,51 @@
 
         <td class="description last">
           <p>The channel through which to send the packets.</p>
+          
+        </td>
+      </tr>
+
+    
+      <tr>
+        
+          <td class="name"><code>windowSize</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      number
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+          <td class="attributes">
+            
+              &lt;optional><br>
+            
+
+            
+
+            
+          </td>
+        
+
+        
+          <td class="default">
+            
+              1
+            
+          </td>
+        
+
+        <td class="description last">
+          <p>The size of the window.</p>
           
         </td>
       </tr>
@@ -385,7 +430,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line23">line 23</a>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line20">line 20</a>
         </li>
       </ul>
     </dd>
@@ -427,6 +472,73 @@
     
         <h3 class="subsection-title">Members</h3>
 
+        
+            
+
+<h4 class="name" id="base">
+  <span class="type-signature"></span>base<span class="type-signature"> :number</span>
+</h4>
+
+
+
+
+  <div class="description">
+    <p>The base sequence number, from wich the timer is set when sent.</p>
+  </div>
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line37">line 37</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+          
         
             
 
@@ -475,7 +587,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line42">line 42</a>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line33">line 33</a>
         </li>
       </ul>
     </dd>
@@ -497,18 +609,15 @@
         
             
 
-<h4 class="name" id="currentPacket">
-  <span class="type-signature"></span>currentPacket<span class="type-signature"> :Packet</span>
+<h4 class="name" id="nextSeqNum">
+  <span class="type-signature"></span>nextSeqNum<span class="type-signature"> :number</span>
 </h4>
 
 
 
 
   <div class="description">
-    <p>The current sent packet. It should change every time a
-new packet is sent, i.e. when send() sends a packet or a timeout is reached,
-causing a new packet to be sent. Also, should be null when no acknowledgment
-is expected and send() has not been called.</p>
+    <p>The next sequence number with wich to send a packet</p>
   </div>
 
 
@@ -545,143 +654,7 @@ is expected and send() has not been called.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line35">line 35</a>
-        </li>
-      </ul>
-    </dd>
-  
-
-  
-
-  
-
-  
-</dl>
-
-
-
-
-
-
-          
-        
-            
-
-<h4 class="name" id="currentSeqNum">
-  <span class="type-signature"></span>currentSeqNum<span class="type-signature"> :number</span>
-</h4>
-
-
-
-
-  <div class="description">
-    <p>The current sequence number to send or to wait for
-acknowledgment. It can only be 0 or 1, starting with 0.</p>
-  </div>
-
-
-
-
-<dl class="details">
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source">
-      <ul class="dummy">
-        <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line47">line 47</a>
-        </li>
-      </ul>
-    </dd>
-  
-
-  
-
-  
-
-  
-</dl>
-
-
-
-
-
-
-          
-        
-            
-
-<h4 class="name" id="isWaitingAck">
-  <span class="type-signature"></span>isWaitingAck<span class="type-signature"> :boolean</span>
-</h4>
-
-
-
-
-  <div class="description">
-    <p>true if the sender is waiting for an acknowledgment. When
-the instance is created this property is false.</p>
-  </div>
-
-
-
-
-<dl class="details">
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source">
-      <ul class="dummy">
-        <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line52">line 52</a>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line39">line 39</a>
         </li>
       </ul>
     </dd>
@@ -748,7 +721,7 @@ the instance is created this property is false.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line38">line 38</a>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line29">line 29</a>
         </li>
       </ul>
     </dd>
@@ -778,7 +751,7 @@ the instance is created this property is false.</p>
 
 
   <div class="description">
-    <p>The time to wait for each acknowledgment.</p>
+    <p>The time to wait for the base sequence acknowledgment.</p>
   </div>
 
 
@@ -815,7 +788,74 @@ the instance is created this property is false.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line40">line 40</a>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line31">line 31</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+          
+        
+            
+
+<h4 class="name" id="windowSize">
+  <span class="type-signature"></span>windowSize<span class="type-signature"> :number</span>
+</h4>
+
+
+
+
+  <div class="description">
+    <p>The size of the window.</p>
+  </div>
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line35">line 35</a>
         </li>
       </ul>
     </dd>
@@ -862,9 +902,9 @@ the instance is created this property is false.</p>
 
 
   <div class="description">
-    <p>Receives a packet through a channel, taking action only if waiting for
-an acknowledgment and if the packet is the corresponding acknowledgment for
-the packet sent before.</p>
+    <p>Receives a packet, clearing the timeout if it is a packet that acknowledges
+all the current unacknowledged packets, and reseting the timeout if it
+acknowledges the base sequence but not all.</p>
   </div>
 
 
@@ -918,7 +958,7 @@ the packet sent before.</p>
         
 
         <td class="description last">
-          <p>The packet received.</p>
+          <p>The packet to receive.</p>
           
         </td>
       </tr>
@@ -947,7 +987,7 @@ the packet sent before.</p>
         
 
         <td class="description last">
-          <p>The channel through which the packet arrives.</p>
+          <p>The channel through which the packet is received.</p>
           
         </td>
       </tr>
@@ -991,7 +1031,7 @@ the packet sent before.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line86">line 86</a>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line91">line 91</a>
         </li>
       </ul>
     </dd>
@@ -1039,8 +1079,9 @@ the packet sent before.</p>
 
 
   <div class="description">
-    <p>If the sender is not waiting for an acknowledgment sends a packet,
-setting the corresponding timeout each time a packet is sent.</p>
+    <p>Sends a packet if the window is not full of unacknowledged packets.
+If the sent packet corresponds to the base sequence, then it sets
+a timer.</p>
   </div>
 
 
@@ -1083,7 +1124,7 @@ setting the corresponding timeout each time a packet is sent.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line60">line 60</a>
+          <a href="goBackN.js.html">goBackN.js</a>, <a href="goBackN.js.html#line47">line 47</a>
         </li>
       </ul>
     </dd>
