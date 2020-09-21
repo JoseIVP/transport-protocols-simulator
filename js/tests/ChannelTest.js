@@ -8,9 +8,7 @@ describe("Channel", function(){
         let channel,
         receiver,
         packet,
-        packetReceived,
-        resolvePacket,
-        rejectPacket;
+        packetReceived;
 
         beforeEach(function(){
             channel = new Channel({delay: 1000});
@@ -20,29 +18,17 @@ describe("Channel", function(){
             };
             packet = new Packet({receiver, seqNum: 10});
             packetReceived = null;
-            resolvePacket = null;
-            rejectPacket = null;
         });
 
         it("should send a packet to its receiver with the configured delay", function(done){
-            channel.send(packet);
+            const didPacketEnter = channel.send(packet);
+            didPacketEnter.should.be.a("boolean");
+            didPacketEnter.should.be.true;
             setTimeout(()=>{
                 packetReceived.should.equal(packet);
                 packetReceived.should.have.property("seqNum").equal(10);
                 done()
             }, 1000);
-        });
-
-        it("should return a promise that resolves to the sent packet when it is delivered", async function(){
-            try{
-                resolvePacket = await channel.send(packet);
-            }catch(pkt){
-                rejectPacket = pkt;
-            }
-            packetReceived.should.equal(packet);
-            resolvePacket.should.equal(packet);
-            resolvePacket.should.have.property("seqNum").equal(10);
-            should.not.exist(rejectPacket);
         });
 
         it("should compute if the packet is going to be lost given a probability", function(done){
@@ -56,19 +42,11 @@ describe("Channel", function(){
                 sentPacket = packet;
                 packetWillBeLost = willBeLost;
             };
-            channel.send(packet)
-                .then(pkt => {
-                    resolvePacket = pkt;
-                })
-                .catch(pkt => {
-                    rejectPacket = pkt;
-                });
+            channel.send(packet);
             setTimeout(() => {
                 sentPacket.should.equal(packet);
                 packetWillBeLost.should.be.true;
                 should.not.exist(packetReceived);
-                should.not.exist(resolvePacket);
-                rejectPacket.should.equal(packet);
                 done();
             }, 1100);
         });
@@ -86,33 +64,23 @@ describe("Channel", function(){
                 packetWillBeLost = willBeLost;
                 packetWillBeDamaged = willBeDamaged;
             };
-            channel.send(packet)
-                .then(pkt => {
-                    resolvePacket = pkt;
-                })
-                .catch(pkt => {
-                    rejectPacket = pkt;
-                });
+            channel.send(packet);
             setTimeout(() => {
                 sentPacket.should.equal(packet);
                 packetWillBeLost.should.be.false;
                 packetWillBeDamaged.should.be.true;
                 packetReceived.should.equal(packet);
                 packetReceived.should.have.property("isCorrupted").equal(true);
-                resolvePacket.should.equal(packet);
-                should.not.exist(rejectPacket);
                 done();
             }, 1100);
-        })
+        });
     });
 
     describe("#losePacket()", function(){
         let channel,
         receiver,
         packet,
-        packetReceived,
-        resolvePacket,
-        rejectPacket;
+        packetReceived;
 
         beforeEach(function(){
             channel = new Channel({delay: 1000});
@@ -122,8 +90,6 @@ describe("Channel", function(){
             }
             packet = new Packet({receiver});
             packetReceived = null;
-            resolvePacket = null;
-            rejectPacket = null;
         });
 
         it("should lose a traveling packet, preventing it from arriving at its receiver", function(done){
@@ -135,18 +101,16 @@ describe("Channel", function(){
             }, 1100);
         });
 
-        it("should cause the corresponding promise from send(), to be rejected", function(done){
-            channel.send(packet)
-                .then(pkt => {
-                    resolvePacket = pkt;
-                })
-                .catch(pkt => {
-                    rejectPacket = pkt;
-                });
+        it("should fire onPacketLost()", function(done){
+            let lostPacket = null;
+            channel.onPacketLost = packet => {
+                lostPacket = packet;
+            };
+            channel.send(packet);
             channel.losePacket(packet);
             setTimeout(() => {
-                should.not.exist(resolvePacket);
-                rejectPacket.should.equal(packet);
+                should.not.exist(packetReceived);
+                lostPacket.should.equal(packet);
                 done();
             }, 1100);
         });
@@ -176,10 +140,11 @@ describe("Channel", function(){
         this.timeout(4500);
         const channel = new Channel({delay: 1500});
         const receiver = new Node();
+        // Time between packets entering the channel
         const timeBetweenPackets = 1000;
-        const packets = [];
+        const packetsToSend = [];
         for (let i = 0; i < 3; i++){
-            packets.push(new Packet({
+            packetsToSend.push(new Packet({
                 seqNum: i,
                 receiver
             }));
@@ -187,16 +152,17 @@ describe("Channel", function(){
         const receivedPackets = [];
         let undeliveredPacket = null;
         receiver.onReceive = packet => receivedPackets.push(packet);
+        channel.onPacketStopped = packet => {
+            undeliveredPacket = packet;
+        };
         it("should stop sending the current packets", function(done){
+            // We will send 3 packets and stop before the third arrives.
             receivedPackets.should.have.lengthOf(0);
             should.not.exist(undeliveredPacket);
             // Start sending packets
             for(let i = 0; i < 3; i++){
                 setTimeout(() => {
-                    channel.send(packets[i])
-                        .catch(packet => {
-                            undeliveredPacket = packet;
-                        });
+                    channel.send(packetsToSend[i]);
                 }, timeBetweenPackets * i);
             }
             // Stop sending packets before the third arrives
@@ -209,9 +175,9 @@ describe("Channel", function(){
                 receivedPackets.should.have.lengthOf(2);
                 receivedPackets[0].should.have.property("seqNum").equal(0);
                 receivedPackets[1].should.have.property("seqNum").equal(1);
-                undeliveredPacket.should.equal(packets[2]);
+                undeliveredPacket.should.equal(packetsToSend[2]);
                 done()
             }, 4000);
         });
     });
-})
+});
