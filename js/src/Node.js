@@ -24,11 +24,11 @@ class Node{
     }
 
     /**
-     * Sends a packet through the specified channel, returning the promise
-     * returned by channel.send().
+     * Sends a packet through the specified channel, returning a boolean that
+     * is true if the packet could enter the channel an false if not.
      * @param {Packet} packet - The packet to send. 
      * @param {Channel} channel - The channel through which the packet is sent.
-     * @returns {Promise} - The promise returned by channel.send().
+     * @returns {boolean} - true if the packet entered the channel.
      */
     send(packet, channel){
         this.onSend(packet, channel);

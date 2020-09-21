@@ -751,7 +751,7 @@
       </svg>
     </a>
     <h4 class="name" id="send">
-      <span class="type-signature"></span>send<span class="signature">(packet, channel)</span><span class="type-signature"> &rarr; {Promise}</span>
+      <span class="type-signature"></span>send<span class="signature">(packet, channel)</span><span class="type-signature"> &rarr; {boolean}</span>
     </h4>
   </span>
 
@@ -760,8 +760,8 @@
 
 
   <div class="description">
-    <p>Sends a packet through the specified channel, returning the promise
-returned by channel.send().</p>
+    <p>Sends a packet through the specified channel, returning a boolean that
+is true if the packet could enter the channel an false if not.</p>
   </div>
 
 
