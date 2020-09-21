@@ -74,6 +74,25 @@ describe("stopAndWait.js", function(){
                     done();
                 }, 3200);
             });
+
+            it("should return a boolean that is true if a packet could be sent and false if not", function(done){
+                // We will try to send two packets, one immediately after the other,
+                // and therefore the first should be sent and the second should not, because
+                // the sender will be waiting for the acknowledgment of the first.
+                const firstWasSent = sender.send();
+                const secondWasSent = sender.send();
+                firstWasSent.should.be.true;
+                secondWasSent.should.be.false;
+                sender.should.have.property("isWaitingAck").equal(true);
+                // Prevent resending timeouts from happening:
+                clearTimeout(sender.currentTimeoutID);
+                setTimeout(() => {
+                    sentPackets.should.have.lengthOf(1);
+                    receivedPacket.should.equal(sentPackets[0]);
+                    receivedPacket.should.have.property("seqNum").equal(0);
+                    done();
+                }, 1100);
+            });
     
         });
     

@@ -991,7 +991,7 @@ the packet sent before.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line86">line 86</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line90">line 90</a>
         </li>
       </ul>
     </dd>
@@ -1030,7 +1030,7 @@ the packet sent before.</p>
       </svg>
     </a>
     <h4 class="name" id="send">
-      <span class="type-signature"></span>send<span class="signature">()</span><span class="type-signature"></span>
+      <span class="type-signature"></span>send<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span>
     </h4>
   </span>
 
@@ -1040,7 +1040,9 @@ the packet sent before.</p>
 
   <div class="description">
     <p>If the sender is not waiting for an acknowledgment sends a packet,
-setting the corresponding timeout each time a packet is sent.</p>
+returning true and setting the corresponding timeout each time a
+packet is sent. If the sender is waiting for an acknowledgment,
+then it can not send a packet and the method returns false.</p>
   </div>
 
 
@@ -1083,7 +1085,7 @@ setting the corresponding timeout each time a packet is sent.</p>
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line60">line 60</a>
+          <a href="stopAndWait.js.html">stopAndWait.js</a>, <a href="stopAndWait.js.html#line63">line 63</a>
         </li>
       </ul>
     </dd>

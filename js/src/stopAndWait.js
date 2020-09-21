@@ -54,14 +54,18 @@ export class SWSender extends Node{
 
     /**
      * If the sender is not waiting for an acknowledgment sends a packet,
-     * setting the corresponding timeout each time a packet is sent.
+     * returning true and setting the corresponding timeout each time a
+     * packet is sent. If the sender is waiting for an acknowledgment,
+     * then it can not send a packet and the method returns false.
      * @override
+     * @returns {boolean} - true if sending a packet, false otherwise.
      */
     send(){
-        if (!this.isWaitingAck){
-            this._sendAndTimeout();
-            this.isWaitingAck = true; 
-        }
+        if (this.isWaitingAck)
+            return false;
+        this._sendAndTimeout();
+        this.isWaitingAck = true; 
+        return true;
     }
 
     _sendAndTimeout(){
