@@ -97,6 +97,37 @@ describe("goBackN.js", function(){
                     done();
                 }, 6200);
             });
+
+            it("should return true if it sent a packet and false if not (because the window is full)", function(done){
+                this.timeout(4300);
+                acklist = [];
+                for(let i=0; i<5; i++)
+                    acklist.push(new Packet({
+                        receiver: sender,
+                        isAck: true,
+                        ackNum: i
+                    }));
+                // We will try to send 5 packets, one immediately after the
+                // the other. And because the window has size 4, the sender
+                // should not send the fifth one.
+                const expectedPattern = [true, true, true, true, false];
+                for(let i=0; i<5; i++){
+                    sender.send().should.equal(expectedPattern[i]);
+                }
+                setTimeout(() => {
+                    // Only 4 packets should have been sent
+                    receivedPackets.should.have.lengthOf(4);
+                    receivedAcks.should.have.lengthOf(4);
+                    // We should now be able to send a new packet
+                    sender.send().should.equal(true);
+                }, 2100);
+                setTimeout(() => {
+                    // Now the fifth packet should have arrived
+                    receivedPackets.should.have.lengthOf(5);
+                    receivedAcks.should.have.lengthOf(5);
+                    done();
+                }, 4200);
+            });
         });
 
         describe("#receive()", function(){

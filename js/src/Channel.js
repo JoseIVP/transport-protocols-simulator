@@ -19,8 +19,11 @@ class Channel{
     }={}){
         /** @member {number} - The time in milliseconds that takes the channel to deliver the packet. */
         this.delay = delay;
-        /** @member {Map} - The current travling packets. You should not modify this property in any way. */
-        this.travelingPackets = new Map();
+        /**
+         * @member {Map} - The current travling packets.
+         * @private
+         */
+        this._travelingPackets = new Map();
         /** @member {number} - The probability to lose a packet. */
         this.lossProb = lossProb;
         /** @member {number} - The probability of damaging a packet. */
@@ -28,34 +31,39 @@ class Channel{
     }
 
     /**
-     * Sends a packet to its receiver, returning a promise that resolves if the
-     * packet is successfully delivered and rejects if the packet could not get
-     * delivered because stop() was called or the packet was lost. The returned
-     * promise resolves or rejects with the given packet.
-     * @param {Packet} packet - The for the channel to send.
-     * @returns {Promise} - The pending promise.
+     * Returns an iterator for the current traveling packets.
+     * @returns {Iterator} - The returned iterator.
+     */
+    getTravelingPackets(){
+        return this._travelingPackets.keys();
+    }
+
+    /**
+     * Sends a packet to its receiver, returning a boolean that is true
+     * if the packet entered the channel and false if not. For now, the
+     * implementation makes all the packets enter the channel.
+     * @param {Packet} packet - The packet for the channel to send.
+     * @returns {boolean} - true if the packet entered the channel.
      */
     send(packet){
         const isLosingPacket = Math.random() < this.lossProb;
         const isDamagingPacket = Math.random() < this.damageProb;
         this.onSend(packet, isLosingPacket, isDamagingPacket);
-        return new Promise((resolve, reject) => {
-            if(isLosingPacket){
-                reject(packet);
-                return;
-            }
+        let timeoutID = null;
+        if(isLosingPacket){
+            timeoutID = setTimeout(() => {
+                this.losePacket(packet);
+            }, this.delay / 2);
+        }else{
             if(isDamagingPacket)
                 packet.getCorrupted();
-            const timeoutID = setTimeout(() =>{
-                this.travelingPackets.delete(packet);
+            timeoutID = setTimeout(() => {
+                this._travelingPackets.delete(packet);
                 packet.receiver.receive(packet, this);
-                resolve(packet);
             }, this.delay);
-            this.travelingPackets.set(packet, {
-                timeoutID,
-                reject
-            });
-        });
+        }
+        this._travelingPackets.set(packet, {timeoutID});
+        return true;
     }
 
     /**
@@ -74,19 +82,28 @@ class Channel{
 
     /**
      * Stops sending the current traveling packets, preventing them
-     * from arriving at their receiver.
+     * from arriving at their receiver. It executes onPacketStopped()
+     * for each of the stopped packets.
      */
     stop(){
-        this.travelingPackets.forEach(({timeoutID, reject}, packet) =>{
+        this._travelingPackets.forEach(({timeoutID}, packet) =>{
             clearTimeout(timeoutID);
-            reject(packet);
+            this.onPacketStopped(packet);
         });
-        this.travelingPackets.clear();
+        this._travelingPackets.clear();
+    }
+
+    /**
+     * Override this method to intercept a stopped packet.
+     * @param {Packet} packet - The stopped packet.
+     */
+    onPacketStopped(packet){
+        return
     }
 
     /**
      * Loses a packet, preventing it from arriving at its receiver, and
-     * causing the corresponding promise from send() to be rejected.
+     * firing onPacketLost() with the packet as parameter.
      * If the packet is not currently traveling in this channel, then
      * it does nothing. Returns true if the packet was traveling and
      * was stopped, and false if the packet was not traveling.
@@ -94,14 +111,22 @@ class Channel{
      * @returns {boolean} - true if the packet was traveling, false if not.
      */
     losePacket(packet){
-        const info = this.travelingPackets.get(packet);
+        const info = this._travelingPackets.get(packet);
         if(info !== undefined){
-            this.travelingPackets.delete(packet);
+            this._travelingPackets.delete(packet);
             clearTimeout(info.timeoutID);
-            info.reject(packet);
+            this.onPacketLost(packet);
             return true;
         }
         return false;
+    }
+
+    /**
+     * Override this method to intercept lost packets.
+     * @param {Packet} packet - The lost packet. 
+     */
+    onPacketLost(packet){
+        return
     }
 
     /**
@@ -110,7 +135,7 @@ class Channel{
      * @param {Packet} packet - The packet to damage.
      */
     damagePacket(packet){
-        if(this.travelingPackets.has(packet))
+        if(this._travelingPackets.has(packet))
             packet.getCorrupted();
     }
 

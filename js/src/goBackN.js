@@ -42,7 +42,9 @@ export class GBNSender extends Node{
     /**
      * Sends a packet if the window is not full of unacknowledged packets.
      * If the sent packet corresponds to the base sequence, then it sets
-     * a timer.
+     * a timer. It returns false if it is not sending a packet because
+     * the window is full, and returns true otherwise.
+     * @returns {boolean} - true if a packet was sent, false if not.
      */
     send(){
         // For simplicity we use integers from 0 to the maximum integer
@@ -56,7 +58,9 @@ export class GBNSender extends Node{
             if(this.base == this.nextSeqNum)
                 this._setTimeout();
             this.nextSeqNum++;
+            return true;
         }
+        return false;
     }
 
     /**

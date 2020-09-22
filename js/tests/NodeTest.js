@@ -43,19 +43,24 @@ describe("Node", function(){
             packetReceived = packet;
             deliveringChannel = channel;
         };
-        const channel = new Channel();
-        it("should send a packet through a channel and fire onSend", async function(){
+        const channel = new Channel({delay: 1000});
+        it("should send a packet through a channel and fire onSend", function(done){
             should.not.exist(packetSended);
             should.not.exist(packetReceived);
             should.not.exist(sendingChannel);
             should.not.exist(deliveringChannel);
-            await sender.send(packet, channel);
+            const wasPacketSent = sender.send(packet, channel);
+            wasPacketSent.should.be.a("boolean");
+            wasPacketSent.should.be.true;
             packetSended.should.equal(packet);
-            packetReceived.should.equal(packet);
             packetSended.should.have.property("seqNum").equal(12);
-            packetReceived.should.have.property("seqNum").equal(12);
             sendingChannel.should.equal(channel);
-            deliveringChannel.should.equal(channel);
+            setTimeout(() => {
+                packetReceived.should.equal(packet);
+                packetReceived.should.have.property("seqNum").equal(12);
+                deliveringChannel.should.equal(channel);
+                done();
+            }, 1100);
         });
     });
 
