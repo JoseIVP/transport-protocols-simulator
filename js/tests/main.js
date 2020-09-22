@@ -11,6 +11,7 @@ async function runTests(){
     await import("./NodeTest.js");
     await import("./stopAndWaitTest.js");
     await import("./goBackNTest.js");
+    await import("./selectiveRepeatTest.js");
     mocha.run();
 }
 
