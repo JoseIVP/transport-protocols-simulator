@@ -195,6 +195,7 @@ describe("selectiveRepeat.js", function(){
                 setTimeout(() => {
                     // At 2200 ms the timeouts for 0 and 2 should have occurred
                     // (not for 1), and the packets should have been resent
+                    try{
                     sentPackets.should.have.lengthOf(5);
                     const expectedSeqNums = [0, 1, 2, 0, 2];
                     expectedSeqNums.forEach((seqNum, i) => {
@@ -205,10 +206,12 @@ describe("selectiveRepeat.js", function(){
                     receivedNotOkAcks.should.have.lengthOf(2);
                     receivedNotOkAcks[0].should.equal(acksToSend[0]);
                     receivedNotOkAcks[1].should.equal(acksToSend[2]);
+                    }finally{
                     // Stop traveling packets
                     channel.stop();
                     // Stop future timeouts
                     sender.stop();
+                    }
                     done();
                 }, 2200);
             })
@@ -235,16 +238,22 @@ describe("selectiveRepeat.js", function(){
                 // Trying to send the fourth packet and failing:
                 sender.send().should.be.false;
                 setTimeout(() => {
-                    sentPackets.should.have.lengthOf(3);
+                    // At 2200 ms the sender should have sent the
+                    // first 3 packets and resent the second.
+                    try{
+                        sentPackets.should.have.lengthOf(4);
                     receivedOkAcks.should.have.lengthOf(2);
                     receivedNotOkAcks.should.have.lengthOf(1);
                     sender.should.have.property("base").equal(1);
+                        // Now we can send the fourth
                     sender.send().should.be.true;
-                    sentPackets.should.have.lengthOf(4);
+                        sentPackets.should.have.lengthOf(5);
+                    }finally{
                     // Stop traveling packets
                     channel.stop();
                     // Prevent timeouts
                     sender.stop();
+                    }
                     done();
                 }, 2200);
             });

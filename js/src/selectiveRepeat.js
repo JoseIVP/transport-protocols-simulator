@@ -61,6 +61,7 @@ export class SRSender extends Node{
     }
 
     _senAndTimeout(seqNum){
+        // Send a new packet, and set and store the timeout ID
         super.send(new Packet({
             seqNum,
             sender: this,
@@ -80,6 +81,47 @@ export class SRSender extends Node{
             clearTimeout(timeoutID);
         });
         this._windowTimeouts.clear();
+    }
+
+    /**
+     * Receives a packet. If the packet is corrupted or does not correspond
+     * to one of the unacknowledged packets in the window, then it is
+     * ignored. If the packet correctly acknowledges the base sequence
+     * of the window, then the window is moved to the smallest unacknowledged
+     * sequence. If the packet correctly acknowledges one of the sequences in
+     * the window, then its timeout is unset.
+     * @param {Packet} packet - The packet to receive.
+     * @param {Channel} channel - The channel through which the packet is received. 
+     */
+    receive(packet, channel){
+        if(!packet.isCorrupted && packet.isAck && this._windowTimeouts.has(packet.ackNum)){
+            const timeoutID = this._windowTimeouts.get(packet.ackNum);
+            clearTimeout(timeoutID);
+            this._windowTimeouts.delete(packet.ackNum);
+            if(packet.ackNum == this.base){
+                // The smallest unacknowledged sequence is at most nextSeqNum
+                // and if it's smaller than that then it has a timeout, because
+                // we remove the timeouts of acknowledged sequences.
+                while(this.base < this.nextSeqNum && !this._windowTimeouts.has(this.base)){
+                    this.base++;
+                }
+            }
+            this.onReceive(packet, channel, true);
+        }else{
+            this.onReceive(packet, channel, false);
+        }
+    }
+
+    /**
+     * Override this method to intercept received packets. A packet is ok if it
+     * is an acknowledgment for one of the unacknowledged sent sequences of the
+     * current window and is not corrupted.
+     * @param {Packet} packet - The received packet.
+     * @param {Channel} channel - The channel through which the packet was received.
+     * @param {boolean} isOk - true if the packet is ok, false if not.
+     */
+    onReceive(packet, channel, isOk){
+        return;
     }
 }
 
