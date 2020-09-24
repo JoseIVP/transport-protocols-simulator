@@ -25,6 +25,7 @@ describe("selectiveRepeat.js", function(){
             };
 
             it("should prevent/stop all current timeouts", function(done){
+                this.timeout(2500);
                 // We will send two packets and then stop the sender,
                 // this should cause only two packets to be sent
                 sender.send();
@@ -102,6 +103,7 @@ describe("selectiveRepeat.js", function(){
             });
 
             it("should set individual timeouts for each packet", function(done){
+                this.timeout(3500);
                 // We will send 2 packets at different times, and their
                 // timeouts should therefore be triggered at different times.
                 sender.send();
