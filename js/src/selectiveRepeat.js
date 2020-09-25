@@ -13,7 +13,7 @@ export class SRSender extends Node{
      * @param {Object} options - The constructor options.
      * @param {GBNReceiver} options.receiver - The *selective-repeat* receiver.
      * @param {number} [options.timeout=2100] - The time to wait for an acknowledgment from the receiver.
-     * @param {Channel} options.sender - The channel through which to send the packets.
+     * @param {Channel} options.channel - The channel through which to send the packets.
      * @param {number} [options.windowSize=1] - The size of the window.
      */
     constructor({
@@ -130,5 +130,71 @@ export class SRSender extends Node{
  * A class that implements the receiver of *selective-repeat*.
  */
 export class SRReceiver extends Node{
+
+    /**
+     * Creates a new SRReceiver instance.
+     * @param {Object} [options] - The constructor options.
+     * @param {number} [options.windowSize=1] - The size of the window.
+     */
+    constructor({
+        windowSize = 1
+    }={}){
+        super();
+        /** @member {number} - The size of the window. */
+        this.windowSize = windowSize;
+        /** @member {number} - The current base sequence number of the window. */
+        this.base = 0;
+        /**
+         * @member {Set} - Contains the sequence numbers of the current window
+         * that have been acknowledged.
+         * @private
+         */
+        this._buffer = new Set();
+    }
+
+    /**
+     * Receives a packet. If the packet sequence number is in the current
+     * window or is older, an acknowledgment is sent back to the sender.
+     * If the packet sequence number corresponds to the base sequence number
+     * of the window, then the window is moved. If the packet is corrupted or
+     * is newer than the current window it is ignored.
+     * @param {Packet} packet - The packet to receive.
+     * @param {Channel} channel - The channel through which the packet is received.
+     */
+    receive(packet, channel){
+        if(!packet.isCorrupted && packet.seqNum < this.base + this.windowSize){
+            const isDuplicate = this._buffer.has(packet.seqNum) || packet.seqNum < this.base;
+            // A duplicate packet is not ok
+            this.onReceive(packet, channel, !isDuplicate);
+            super.send(new Packet({
+                sender: this,
+                receiver: packet.sender,
+                isAck: true,
+                ackNum: packet.seqNum
+            }), channel);
+            this._buffer.add(packet.seqNum);
+            if(packet.seqNum == this.base){
+                // Move the window
+                while(this._buffer.has(this.base)){
+                    this._buffer.delete(this.base);
+                    this.base++;
+                }
+            }
+        }else{
+            this.onReceive(packet, channel, false);
+        }
+    }
+
+    /**
+     * Override this method to intercept each received packet. If the packet
+     * is corrupted, is a duplicate or is newer than the current window, then
+     * isOk will be false.
+     * @param {Packet} packet - The received packet.
+     * @param {Channel} channel - The channel through which the packet was received.
+     * @param {boolean} isOk - true if the received packet is ok, false if not.
+     */
+    onReceive(packet, channel, isOk){
+        return;
+    }
 
 } 

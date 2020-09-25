@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      Channel.js - Documentation
+      selectiveRepeat.js - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -81,7 +81,7 @@
   <div id="main">
     
       <h1 class="page-title">
-        Channel.js
+        selectiveRepeat.js
       </h1>
     
 
@@ -90,151 +90,206 @@
 
 <section>
   <article>
-    <pre class="prettyprint source linenums"><code>/** @module "Channel.js" */
+    <pre class="prettyprint source linenums"><code>/** @module "stopAndWait.js"  */
+
+import Node from "./Node.js";
+import Packet from "./Packet.js";
 
 /**
- * A class that represents the channels through which the packets travel.
+ * A class that implements the sender of *selective-repeat*.
  */
-class Channel{
+export class SRSender extends Node{
 
     /**
-     * Creates a new channel.
-     * @param {Object} options - Options for the constructor.
-     * @param {number} [options.delay=1000] - The time that takes the channel to deliver the packet.
-     * @param {number} [options.lossProb=0] - The probability between 0 and 1 to lose a packet.
-     * @param {number} [options.damageProb=0] - The probability between 0 and 1 of damaging a packet.
+     * Creates a new SRSender instance.
+     * @param {Object} options - The constructor options.
+     * @param {GBNReceiver} options.receiver - The *selective-repeat* receiver.
+     * @param {number} [options.timeout=2100] - The time to wait for an acknowledgment from the receiver.
+     * @param {Channel} options.channel - The channel through which to send the packets.
+     * @param {number} [options.windowSize=1] - The size of the window.
      */
     constructor({
-        delay = 1000,
-        lossProb = 0,
-        damageProb = 0
-    }={}){
-        /** @member {number} - The time in milliseconds that takes the channel to deliver the packet. */
-        this.delay = delay;
+        receiver,
+        timeout = 2100,
+        channel,
+        windowSize = 1
+    }){
+        super();
+        /** @member {SWReceiver} - The receiver of the packets. */
+        this.receiver = receiver;
+        /** @member {number} - The time to wait for each packet acknowledgment. */
+        this.timeout = timeout;
+        /** @member {Channel} - The channel through which the packets are sent. */
+        this.channel = channel;
+        /** @member {number} - The size of the window. */
+        this.windowSize = windowSize
+        /** @member {number} - The base sequence number of the current window. */
+        this.base = 0;
+        /** @member {number} - The next sequence number with wich to send a packet. */
+        this.nextSeqNum = 0;
         /**
-         * @member {Map} - The current travling packets.
+         * @member {Map} - A map with sequence numbers as keys and timeout IDs as
+         * values, representing the unacknowledged sent sequences of the window.
          * @private
          */
-        this._travelingPackets = new Map();
-        /** @member {number} - The probability to lose a packet. */
-        this.lossProb = lossProb;
-        /** @member {number} - The probability of damaging a packet. */
-        this.damageProb = damageProb;
+        this._windowTimeouts = new Map();
     }
 
     /**
-     * Returns an iterator for the current traveling packets.
-     * @returns {Iterator} - The returned iterator.
+     * Sends a packet if the current window is not full, returning true, else
+     * no packet is sent and returns false. When a packet is sent it sets a timer
+     * and increments nextSeqNum by one.
+     * @returns {boolean} - true if a packet is sent, false if not.
      */
-    getTravelingPackets(){
-        return this._travelingPackets.keys();
-    }
-
-    /**
-     * Sends a packet to its receiver, returning a boolean that is true
-     * if the packet entered the channel and false if not. For now, the
-     * implementation makes all the packets enter the channel.
-     * @param {Packet} packet - The packet for the channel to send.
-     * @returns {boolean} - true if the packet entered the channel.
-     */
-    send(packet){
-        const isLosingPacket = Math.random() &lt; this.lossProb;
-        const isDamagingPacket = Math.random() &lt; this.damageProb;
-        this.onSend(packet, isLosingPacket, isDamagingPacket);
-        let timeoutID = null;
-        if(isLosingPacket){
-            timeoutID = setTimeout(() => {
-                this.losePacket(packet);
-            }, this.delay / 2);
-        }else{
-            if(isDamagingPacket)
-                packet.getCorrupted();
-            timeoutID = setTimeout(() => {
-                this._travelingPackets.delete(packet);
-                packet.receiver.receive(packet, this);
-            }, this.delay);
-        }
-        this._travelingPackets.set(packet, {timeoutID});
-        return true;
-    }
-
-    /**
-     * Override this method to intercept a packet sent through
-     * the channel, to know whether it is going to be lost or
-     * not, and if it is going to be damaged.
-     * The channel is actually only going to damage the packet if it
-     * is not losing it, despite damagingPacket being true.
-     * @param {Packet} packet - The packet that is sent.
-     * @param {boolean} losingPacket - true if the channel is goin to lose the packet, false otherwise.
-     * @param {boolean} damagingPacket - true if the channel is going to damage the packet, false if not.
-     */
-    onSend(packet, losingPacket, damagingPacket){
-        return
-    }
-
-    /**
-     * Stops sending the current traveling packets, preventing them
-     * from arriving at their receiver. It executes onPacketStopped()
-     * for each of the stopped packets.
-     */
-    stop(){
-        this._travelingPackets.forEach(({timeoutID}, packet) =>{
-            clearTimeout(timeoutID);
-            this.onPacketStopped(packet);
-        });
-        this._travelingPackets.clear();
-    }
-
-    /**
-     * Override this method to intercept a stopped packet.
-     * @param {Packet} packet - The stopped packet.
-     */
-    onPacketStopped(packet){
-        return
-    }
-
-    /**
-     * Loses a packet, preventing it from arriving at its receiver, and
-     * firing onPacketLost() with the packet as parameter.
-     * If the packet is not currently traveling in this channel, then
-     * it does nothing. Returns true if the packet was traveling and
-     * was stopped, and false if the packet was not traveling.
-     * @param {Packet} packet - The packet to lose.
-     * @returns {boolean} - true if the packet was traveling, false if not.
-     */
-    losePacket(packet){
-        const info = this._travelingPackets.get(packet);
-        if(info !== undefined){
-            this._travelingPackets.delete(packet);
-            clearTimeout(info.timeoutID);
-            this.onPacketLost(packet);
+    send(){
+        // For simplicity we use integers from 0
+        // as the sequence numbers for the packets.
+        if(this.nextSeqNum &lt; this.base + this.windowSize){
+            this._senAndTimeout(this.nextSeqNum);
+            this.nextSeqNum++;
             return true;
         }
         return false;
     }
 
-    /**
-     * Override this method to intercept lost packets.
-     * @param {Packet} packet - The lost packet. 
-     */
-    onPacketLost(packet){
-        return
+    _senAndTimeout(seqNum){
+        // Send a new packet, and set and store the timeout ID
+        super.send(new Packet({
+            seqNum,
+            sender: this,
+            receiver: this.receiver
+        }), this.channel);
+        const timeoutID = setTimeout(() => {
+            this._senAndTimeout(seqNum);
+        }, this.timeout);
+        this._windowTimeouts.set(seqNum, timeoutID);
     }
 
     /**
-     * Damages a packet. Does nothing if the packet is not currently
-     * traveling in this channel.
-     * @param {Packet} packet - The packet to damage.
+     * Stops all the current timeouts.
      */
-    damagePacket(packet){
-        if(this._travelingPackets.has(packet))
-            packet.getCorrupted();
+    stop(){
+        this._windowTimeouts.forEach(timeoutID =>{
+            clearTimeout(timeoutID);
+        });
+        this._windowTimeouts.clear();
     }
 
+    /**
+     * Receives a packet. If the packet is corrupted or does not correspond
+     * to one of the unacknowledged packets in the window, then it is
+     * ignored. If the packet correctly acknowledges the base sequence
+     * of the window, then the window is moved to the smallest unacknowledged
+     * sequence. If the packet correctly acknowledges one of the sequences in
+     * the window, then its timeout is unset.
+     * @param {Packet} packet - The packet to receive.
+     * @param {Channel} channel - The channel through which the packet is received. 
+     */
+    receive(packet, channel){
+        if(!packet.isCorrupted &amp;&amp; packet.isAck &amp;&amp; this._windowTimeouts.has(packet.ackNum)){
+            const timeoutID = this._windowTimeouts.get(packet.ackNum);
+            clearTimeout(timeoutID);
+            this._windowTimeouts.delete(packet.ackNum);
+            if(packet.ackNum == this.base){
+                // The smallest unacknowledged sequence is at most nextSeqNum
+                // and if it's smaller than that then it has a timeout, because
+                // we remove the timeouts of acknowledged sequences.
+                while(this.base &lt; this.nextSeqNum &amp;&amp; !this._windowTimeouts.has(this.base)){
+                    this.base++;
+                }
+            }
+            this.onReceive(packet, channel, true);
+        }else{
+            this.onReceive(packet, channel, false);
+        }
+    }
+
+    /**
+     * Override this method to intercept received packets. A packet is ok if it
+     * is an acknowledgment for one of the unacknowledged sent sequences of the
+     * current window and is not corrupted.
+     * @param {Packet} packet - The received packet.
+     * @param {Channel} channel - The channel through which the packet was received.
+     * @param {boolean} isOk - true if the packet is ok, false if not.
+     */
+    onReceive(packet, channel, isOk){
+        return;
+    }
 }
 
-export default Channel;
-</code></pre>
+
+/**
+ * A class that implements the receiver of *selective-repeat*.
+ */
+export class SRReceiver extends Node{
+
+    /**
+     * Creates a new SRReceiver instance.
+     * @param {Object} [options] - The constructor options.
+     * @param {number} [options.windowSize=1] - The size of the window.
+     */
+    constructor({
+        windowSize = 1
+    }={}){
+        super();
+        /** @member {number} - The size of the window. */
+        this.windowSize = windowSize;
+        /** @member {number} - The current base sequence number of the window. */
+        this.base = 0;
+        /**
+         * @member {Set} - Contains the sequence numbers of the current window
+         * that have been acknowledged.
+         * @private
+         */
+        this._buffer = new Set();
+    }
+
+    /**
+     * Receives a packet. If the packet sequence number is in the current
+     * window or is older, an acknowledgment is sent back to the sender.
+     * If the packet sequence number corresponds to the base sequence number
+     * of the window, then the window is moved. If the packet is corrupted or
+     * is newer than the current window it is ignored.
+     * @param {Packet} packet - The packet to receive.
+     * @param {Channel} channel - The channel through which the packet is received.
+     */
+    receive(packet, channel){
+        if(!packet.isCorrupted &amp;&amp; packet.seqNum &lt; this.base + this.windowSize){
+            const isDuplicate = this._buffer.has(packet.seqNum) || packet.seqNum &lt; this.base;
+            // A duplicate packet is not ok
+            this.onReceive(packet, channel, !isDuplicate);
+            super.send(new Packet({
+                sender: this,
+                receiver: packet.sender,
+                isAck: true,
+                ackNum: packet.seqNum
+            }), channel);
+            this._buffer.add(packet.seqNum);
+            if(packet.seqNum == this.base){
+                // Move the window
+                while(this._buffer.has(this.base)){
+                    this._buffer.delete(this.base);
+                    this.base++;
+                }
+            }
+        }else{
+            this.onReceive(packet, channel, false);
+        }
+    }
+
+    /**
+     * Override this method to intercept each received packet. If the packet
+     * is corrupted, is a duplicate or is newer than the current window, then
+     * isOk will be false.
+     * @param {Packet} packet - The received packet.
+     * @param {Channel} channel - The channel through which the packet was received.
+     * @param {boolean} isOk - true if the received packet is ok, false if not.
+     */
+    onReceive(packet, channel, isOk){
+        return;
+    }
+
+} </code></pre>
   </article>
 </section>
 
