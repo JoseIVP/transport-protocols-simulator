@@ -417,7 +417,7 @@ describe("selectiveRepeat.js", function(){
             else receivedNotOkPackets.push(packet);
         };
 
-        specify.only("they should be a able to interchange packets through an unreliable channel", function(done){
+        specify("they should be a able to interchange packets through an unreliable channel", function(done){
             this.timeout(4500);
             // We will try to send the 3 packets of the window, losing the first,
             // damaging the second and losing the acknowledgment of the third.
