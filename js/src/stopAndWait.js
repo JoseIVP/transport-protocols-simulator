@@ -82,20 +82,23 @@ export class SWSender extends Node{
     /**
      * Receives a packet through a channel, taking action only if waiting for
      * an acknowledgment and if the packet is the corresponding acknowledgment for
-     * the packet sent before.
+     * the packet sent before. If action is taken, then the third argument for
+     * the onReceive() callback will be true, else it will be false.
      * @override
      * @param {Packet} packet - The packet received. 
      * @param {Channel} channel - The channel through which the packet arrives.
      */
     receive(packet, channel){
-        super.receive(packet, channel);
         if (this.isWaitingAck && !packet.isCorrupted && isAck(packet, this.currentSeqNum)){
+            this.onReceive(packet, channel, true);
             clearTimeout(this.currentTimeoutID);
             this.currentPacket = null;
             this.currentTimeoutID = null;
             // Change the state to enable sending the next sequence number
             this.isWaitingAck = false;
             this.currentSeqNum = (this.currentSeqNum + 1) % 2;
+        }else{
+            this.onReceive(packet, channel, false);
         }
     }
 
@@ -117,34 +120,17 @@ export class SWReceiver extends Node{
     }
 
     /**
-     * Override this function to intercept incorrectly received packets.
-     * @param {Packet} packet - The received packet. 
-     * @param {Channel} channel - The channel through which the packet arrived.
-     */
-    onReceiveNotOk(packet, channel){
-        return;
-    }
-
-    /**
-     * Override this function to intercept correctly received packets.
-     * @param {Packet} packet - The received packet. 
-     * @param {Channel} channel - The channel through which the packet arrived.
-     */
-    onReceiveOk(packet, channel){
-        return;
-    }
-
-    /**
      * Receives a packet, sending and ACK for the previous received packet if the
      * current packet is corrupted or does not have the expected sequence number,
-     * and sending an ACK for the received packet if it is the expected one. 
+     * and sending an ACK for the received packet if it is the expected one.
+     * If the packet is the expected one, then the thid argument for the onReceive()
+     * callback will be true, else it will be false.
      * @param {Packet} packet - The received packet.
      * @param {Channel} channel - The channel through which the packet arrived.
      */
     receive(packet, channel){
-        super.receive(packet, channel);
         if(packet.isCorrupted || packet.seqNum !== this.expectedSeqNum){
-            this.onReceiveNotOk(packet, channel);
+            this.onReceive(packet, channel, false);
             const ack = new Packet({
                 ackNum: (this.expectedSeqNum + 1) % 2,
                 isAck: true,
@@ -153,7 +139,7 @@ export class SWReceiver extends Node{
             })
             this.send(ack, channel);
         } else {
-            this.onReceiveOk(packet, channel);
+            this.onReceive(packet, channel, true);
             const ack = new Packet({
                 ackNum: this.expectedSeqNum,
                 isAck: true,

@@ -275,11 +275,9 @@ describe("stopAndWait.js", function(){
         const okPackets = [];
         const notOkPackets = [];
         const receivedAcks = [];
-        receiver.onReceiveOk = packet => {
-            okPackets.push(packet);
-        };
-        receiver.onReceiveNotOk = packet => {
-            notOkPackets.push(packet);
+        receiver.onReceive = (packet, channel, isOk) => {
+            if (isOk) okPackets.push(packet);
+            else notOkPackets.push(packet);
         };
         receiver.onSend = packet => {
             sentAcks.push(packet);

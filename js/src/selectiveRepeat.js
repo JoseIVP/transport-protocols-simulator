@@ -89,12 +89,14 @@ export class SRSender extends Node{
      * ignored. If the packet correctly acknowledges the base sequence
      * of the window, then the window is moved to the smallest unacknowledged
      * sequence. If the packet correctly acknowledges one of the sequences in
-     * the window, then its timeout is unset.
+     * the window, then its timeout is unset and the third argument of the
+     * onReceive() callback will be true, otherwise it will be false.
      * @param {Packet} packet - The packet to receive.
      * @param {Channel} channel - The channel through which the packet is received. 
      */
     receive(packet, channel){
         if(!packet.isCorrupted && packet.isAck && this._windowTimeouts.has(packet.ackNum)){
+            this.onReceive(packet, channel, true);
             const timeoutID = this._windowTimeouts.get(packet.ackNum);
             clearTimeout(timeoutID);
             this._windowTimeouts.delete(packet.ackNum);
@@ -106,22 +108,9 @@ export class SRSender extends Node{
                     this.base++;
                 }
             }
-            this.onReceive(packet, channel, true);
         }else{
             this.onReceive(packet, channel, false);
         }
-    }
-
-    /**
-     * Override this method to intercept received packets. A packet is ok if it
-     * is an acknowledgment for one of the unacknowledged sent sequences of the
-     * current window and is not corrupted.
-     * @param {Packet} packet - The received packet.
-     * @param {Channel} channel - The channel through which the packet was received.
-     * @param {boolean} isOk - true if the packet is ok, false if not.
-     */
-    onReceive(packet, channel, isOk){
-        return;
     }
 }
 
@@ -158,6 +147,8 @@ export class SRReceiver extends Node{
      * If the packet sequence number corresponds to the base sequence number
      * of the window, then the window is moved. If the packet is corrupted or
      * is newer than the current window it is ignored.
+     * If the packet is corrupted, is a duplicate or is newer than the current
+     * window, then the third argument of the onReceive() callback will be false.
      * @param {Packet} packet - The packet to receive.
      * @param {Channel} channel - The channel through which the packet is received.
      */
@@ -184,17 +175,4 @@ export class SRReceiver extends Node{
             this.onReceive(packet, channel, false);
         }
     }
-
-    /**
-     * Override this method to intercept each received packet. If the packet
-     * is corrupted, is a duplicate or is newer than the current window, then
-     * isOk will be false.
-     * @param {Packet} packet - The received packet.
-     * @param {Channel} channel - The channel through which the packet was received.
-     * @param {boolean} isOk - true if the received packet is ok, false if not.
-     */
-    onReceive(packet, channel, isOk){
-        return;
-    }
-
 } 
