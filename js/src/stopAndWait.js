@@ -26,13 +26,6 @@ export class SWSender extends Node{
         channel
     }={}){
         super();
-        /**
-         * @member {Packet} - The current sent packet. It should change every time a
-         * new packet is sent, i.e. when send() sends a packet or a timeout is reached,
-         * causing a new packet to be sent. Also, should be null when no acknowledgment
-         * is expected and send() has not been called.
-         */
-        this.currentPacket = null;
         this.currentTimeoutID = null;
         /** @member {SWReceiver} - The receiver of the packets. */
         this.receiver = receiver;
@@ -70,12 +63,11 @@ export class SWSender extends Node{
 
     _sendAndTimeout(){
         // Send a new packet and set the timer
-        this.currentPacket = new Packet({
+        super.send(new Packet({
             seqNum: this.currentSeqNum,
             sender: this,
             receiver: this.receiver,
-        });
-        super.send(this.currentPacket, this.channel);
+        }), this.channel);
         this.currentTimeoutID = setTimeout(() => this._sendAndTimeout(), this.timeout);
     }
 
@@ -92,7 +84,6 @@ export class SWSender extends Node{
         if (this.isWaitingAck && !packet.isCorrupted && isAck(packet, this.currentSeqNum)){
             this.onReceive(packet, channel, true);
             clearTimeout(this.currentTimeoutID);
-            this.currentPacket = null;
             this.currentTimeoutID = null;
             // Change the state to enable sending the next sequence number
             this.isWaitingAck = false;

@@ -36,16 +36,18 @@ class Node{
      * @returns {boolean} - true if the packet entered the channel.
      */
     send(packet, channel){
-        this.onSend(packet, channel);
-        return channel.send(packet);
+        const isOk = channel.send(packet);
+        this.onSend(packet, channel, isOk);
+        return isOk;
     }
 
     /**
      * Override this function to intercept each sent packet.
      * @param {Packet} packet - The sent packet. 
      * @param {Channel} channel - The channel through which the packet was sent.
+     * @param {boolean} isOk - true if the packet entered the channel, false if not.
      */
-    onSend(packet, channel){
+    onSend(packet, channel, isOk){
         return;
     }
 
