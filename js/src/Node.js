@@ -11,15 +11,20 @@ class Node{
      * @param {Channel} channel - The channel that delivers the packet.
      */
     receive(packet, channel){
-        this.onReceive(packet, channel);
+        this.onReceive(packet, channel, true);
     }
 
     /**
      * Override this function to intercept each received packet.
-     * @param {Packet} packet - The packet received.
-     * @param {Channel} channel - The channel through which the packet arrived. 
+     * When extending Node, this should be the first function to
+     * be called after determining whether the packet was correctly
+     * received or not. Because of the latter, you should not
+     * modify the given packet.
+     * @param {Packet} packet - The received Packet.
+     * @param {Channel} channel - The channel through which the packet arrived.
+     * @param {boolean} isOk - true if the packet was correctly received.
      */
-    onReceive(packet, channel){
+    onReceive(packet, channel, isOk){
         return;
     }
 

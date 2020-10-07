@@ -89,17 +89,23 @@ export class GBNSender extends Node{
      * Receives a packet, clearing the timeout if it is a packet that acknowledges
      * all the current unacknowledged packets, and reseting the timeout if it
      * acknowledges the base sequence but not all.
+     * If the packet is not corrupted, is an acknowledgement and its acknowledgment
+     * number is one of the unacknowledged sent sequences, then the third
+     * argument for the onReceive() callback will be true, otherwise it will be
+     * false.
      * @param {Packet} packet - The packet to receive.
      * @param {Channel} channel - The channel through which the packet is received.
      */
     receive(packet, channel){
-        super.receive(packet, channel);
         if(!packet.isCorrupted && packet.isAck && packet.ackNum >= this.base && packet.ackNum < this.nextSeqNum){
+            this.onReceive(packet, channel, true);
             clearTimeout(this.currentTimeoutID);
             this.currentTimeoutID = null;
             this.base = packet.ackNum + 1;
             if(this.base < this.nextSeqNum)
                 this._setTimeout();
+        }else{
+            this.onReceive(packet, channel, false);
         }
     }
 }
@@ -123,12 +129,14 @@ export class GBNReceiver extends Node{
      * Receives a packet and sends back an acknowledgment, corresponding to the
      * received packet sequence number if it is the expected one, or sending the
      * previous sequence number if it is not.
+     * If the packet is the expected one, then the third argument for the
+     * onReceive() callback will be true, else it will be false.
      * @param {Packet} packet - The packet to receive.
      * @param {Channel} channel - The channel through which the packet is received.
      */
     receive(packet, channel){
-        super.receive(packet, channel);
         if(!packet.isCorrupted && packet.seqNum == this.expectedSeqNum){
+            this.onReceive(packet, channel, true);
             this.send(new Packet({
                 sender: this,
                 receiver: packet.sender,
@@ -137,6 +145,7 @@ export class GBNReceiver extends Node{
             }), channel);
             this.expectedSeqNum++;
         }else{
+            this.onReceive(packet, channel, false);
             this.send(new Packet({
                 sender: this,
                 receiver: packet.sender,
