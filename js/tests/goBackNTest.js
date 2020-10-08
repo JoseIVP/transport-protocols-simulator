@@ -259,7 +259,7 @@ describe("goBackN.js", function(){
             // We will send 4 packets, of which the third will be lost, and their
             // sequence numbers should be 0, 1, 2 (lost) and 3. Then the receiver
             // will respond with 3 acknowledgments, of which the second will be damaged,
-            // sending sequences 0, 1 (corrupted) and 1 (response to 3, wich was out of order).
+            // sending sequences 0, 1 (corrupted) and 1 (response to 3, which was out of order).
             // Finally, the sender timeout should occur, resending sequences 2 and 3, and
             // the receiver should respond with acknowledgments 2 and 3.
             sender.send();

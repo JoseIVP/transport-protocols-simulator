@@ -18,13 +18,13 @@ export class SWSender extends Node{
      * @param {Object} options - The constructor options.
      * @param {SWReceiver} options.receiver - The *stop-and-wait* receiver.
      * @param {number} [options.timeout=2100] - The time to wait for each acknowledgment from the receiver.
-     * @param {Channel} options.sender - The channel through which to send the packets. 
+     * @param {Channel} options.channel - The channel through which to send the packets. 
      */
     constructor({
         receiver,
         timeout = 2100,
         channel
-    }={}){
+    }){
         super();
         this.currentTimeoutID = null;
         /** @member {SWReceiver} - The receiver of the packets. */
