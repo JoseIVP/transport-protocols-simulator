@@ -99,7 +99,7 @@ class Channel{
 
     /**
      * Creates a new channel.
-     * @param {Object} options - Options for the constructor.
+     * @param {Object} [options] - Options for the constructor.
      * @param {number} [options.delay=1000] - The time that takes the channel to deliver the packet.
      * @param {number} [options.lossProb=0] - The probability between 0 and 1 to lose a packet.
      * @param {number} [options.damageProb=0] - The probability between 0 and 1 of damaging a packet.
@@ -112,7 +112,8 @@ class Channel{
         /** @member {number} - The time in milliseconds that takes the channel to deliver the packet. */
         this.delay = delay;
         /**
-         * @member {Map} - The current travling packets.
+         * @member {Map} - A map with the current traveling packets as keys and their timout
+         * IDs as values.
          * @private
          */
         this._travelingPackets = new Map();
@@ -154,7 +155,7 @@ class Channel{
                 packet.receiver.receive(packet, this);
             }, this.delay);
         }
-        this._travelingPackets.set(packet, {timeoutID});
+        this._travelingPackets.set(packet, timeoutID);
         return true;
     }
 
@@ -169,7 +170,7 @@ class Channel{
      * @param {boolean} damagingPacket - true if the channel is going to damage the packet, false if not.
      */
     onSend(packet, losingPacket, damagingPacket){
-        return
+        return;
     }
 
     /**
@@ -178,7 +179,7 @@ class Channel{
      * for each of the stopped packets.
      */
     stop(){
-        this._travelingPackets.forEach(({timeoutID}, packet) =>{
+        this._travelingPackets.forEach((timeoutID, packet) =>{
             clearTimeout(timeoutID);
             this.onPacketStopped(packet);
         });
@@ -190,7 +191,7 @@ class Channel{
      * @param {Packet} packet - The stopped packet.
      */
     onPacketStopped(packet){
-        return
+        return;
     }
 
     /**
@@ -203,10 +204,10 @@ class Channel{
      * @returns {boolean} - true if the packet was traveling, false if not.
      */
     losePacket(packet){
-        const info = this._travelingPackets.get(packet);
-        if(info !== undefined){
+        const timeoutID = this._travelingPackets.get(packet);
+        if(timeoutID !== undefined){
             this._travelingPackets.delete(packet);
-            clearTimeout(info.timeoutID);
+            clearTimeout(timeoutID);
             this.onPacketLost(packet);
             return true;
         }
@@ -218,7 +219,7 @@ class Channel{
      * @param {Packet} packet - The lost packet. 
      */
     onPacketLost(packet){
-        return
+        return;
     }
 
     /**
