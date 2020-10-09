@@ -108,6 +108,14 @@ export class GBNSender extends Node{
             this.onReceive(packet, channel, false);
         }
     }
+
+    /**
+     * Stops the current timeout.
+     */
+    stop(){
+        clearTimeout(this.currentTimeoutID);
+        this.currentTimeoutID = null;
+    }
 }
 
 

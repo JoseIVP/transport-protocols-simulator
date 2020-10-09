@@ -45,7 +45,7 @@ describe("stopAndWait.js", function(){
                 sender.should.have.property("currentSeqNum").equal(0);
                 sender.should.have.property("isWaitingAck").equal(true);
                 // Prevent it from resending packets
-                clearTimeout(sender.currentTimeoutID);
+                sender.stop();
                 setTimeout(()=>{
                     receivedPacket.should.have.property("seqNum").equal(0);
                     sentPackets.should.have.lengthOf(1);
@@ -63,7 +63,7 @@ describe("stopAndWait.js", function(){
                 }, 1100);
                 setTimeout(()=> {
                     // Prevent next timeouts from happening
-                    clearTimeout(sender.currentTimeoutID);
+                    sender.stop();
                     sentPackets.should.have.lengthOf(2);
                     // The resent packet should be a new one, with the same sequence
                     sentPackets[0].should.not.equal(sentPackets[1]);
@@ -85,7 +85,7 @@ describe("stopAndWait.js", function(){
                 secondWasSent.should.be.false;
                 sender.should.have.property("isWaitingAck").equal(true);
                 // Prevent resending timeouts from happening:
-                clearTimeout(sender.currentTimeoutID);
+                sender.stop();
                 setTimeout(() => {
                     sentPackets.should.have.lengthOf(1);
                     receivedPacket.should.equal(sentPackets[0]);

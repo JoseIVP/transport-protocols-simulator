@@ -93,6 +93,14 @@ export class SWSender extends Node{
         }
     }
 
+    /**
+     * Stops the current timeout. 
+     */
+    stop(){
+        clearTimeout(this.currentTimeoutID);
+        this.currentTimeoutID = null;
+    }
+
 }
 
 
