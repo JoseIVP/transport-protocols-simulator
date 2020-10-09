@@ -1,5 +1,5 @@
-import "https://unpkg.com/chai/chai.js";
-import "https://unpkg.com/mocha/mocha.js";
+import "../../node_modules/chai/chai.js";
+import "../../node_modules/mocha/mocha.js";
 
 mocha.checkLeaks();
 mocha.setup('bdd');

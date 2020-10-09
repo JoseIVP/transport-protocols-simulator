@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "jsdoc": "^3.6.5"
+    "chai": "^4.2.0",
+    "jsdoc": "^3.6.5",
+    "mocha": "^8.1.3"
   }
 }
