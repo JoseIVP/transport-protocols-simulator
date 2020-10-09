@@ -33,7 +33,7 @@ export class SRSender extends Node{
         this.windowSize = windowSize
         /** @member {number} - The base sequence number of the current window. */
         this.base = 0;
-        /** @member {number} - The next sequence number with wich to send a packet. */
+        /** @member {number} - The next sequence number with which to send a packet. */
         this.nextSeqNum = 0;
         /**
          * @member {Map} - A map with sequence numbers as keys and timeout IDs as

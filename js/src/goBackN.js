@@ -14,7 +14,7 @@ export class GBNSender extends Node{
      * @param {Object} options - The constructor options.
      * @param {GBNReceiver} options.receiver - The *go-back-n* receiver.
      * @param {number} [options.timeout=2100] - The time to wait for an acknowledgment from the receiver.
-     * @param {Channel} options.sender - The channel through which to send the packets.
+     * @param {Channel} options.channel - The channel through which to send the packets.
      * @param {number} [options.windowSize=1] - The size of the window.
      */
     constructor({
@@ -33,9 +33,9 @@ export class GBNSender extends Node{
         this.channel = channel;
         /** @member {number} - The size of the window. */
         this.windowSize = windowSize
-        /** @member {number} - The base sequence number, from wich the timer is set when sent. */
+        /** @member {number} - The base sequence number, from which the timer is set when sent. */
         this.base = 0;
-        /** @member {number} - The next sequence number with wich to send a packet */
+        /** @member {number} - The next sequence number with which to send a packet */
         this.nextSeqNum = 0;
     }
 
@@ -107,6 +107,14 @@ export class GBNSender extends Node{
         }else{
             this.onReceive(packet, channel, false);
         }
+    }
+
+    /**
+     * Stops the current timeout.
+     */
+    stop(){
+        clearTimeout(this.currentTimeoutID);
+        this.currentTimeoutID = null;
     }
 }
 
