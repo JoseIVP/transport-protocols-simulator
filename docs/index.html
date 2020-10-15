@@ -91,15 +91,42 @@
 
   <section class="readme">
     <article>
-      <h1>Transport protocols simulator library</h1>
-<p>This small library is a project under construction, whose main purpose
-will be to power the simulations running in the background of a
-graphic visualizer of transport protocols.
-It is aimed to support the visualizations of <em>Automatic Repeat Request</em> protocols
-as <em>Stop-and-Wait</em>, <em>Go-Back-N</em> and <em>Selective Repeat</em>, of which only <em>Stop-and-Wait</em>
-is currently implemented.</p>
-<p>For now you can find examples of how to use the library in the tests under <code>js/tests</code> in
-the project repository.</p>
+      <h1>Transport protocols simulator</h1>
+<p>This is a project under construction. Its main objective is to present graphic
+visualizations of <em>Automatic Repeat Request</em> protocols like <em>Stop-and-Wait</em>,
+<em>Go-Back-N</em> and <em>Selective Repeat</em>.</p>
+<p>The project is divided into two main components, the transport protocols library
+under <code>js/src</code> and the graphic simulator user interface that uses the library.
+For now you can find examples of how to use the library in the tests under
+<code>js/tests</code> in the project repository. Here is also a link for the <a href="https://joseivp.github.io/transport-protocols-simulator/">documentation
+of the library</a>.</p>
+<h2>Local development</h2>
+<p>To develop the project on your machine, you will need <a href="https://nodejs.org/en/">Node.js</a> and npm
+wich comes with Node. After clonning the <a href="https://github.com/JoseIVP/transport-protocols-simulator.git">project repository</a> you should
+open your console and execute:</p>
+<pre class="prettyprint source lang-bash"><code>cd transport-protocols-simulator # Enter the project files
+npm install # Install project dependencies
+</code></pre>
+<p>This will install the project dependencies, wich are only <em>development
+dependencies</em>, meaning that the actual source code does not use any external
+libraries. The only dependencies are for testing and generating documentation.</p>
+<h2>Library testing</h2>
+<p>We use <a href="https://mochajs.org">Mocha</a> for testing the transport protocols library, as the tests
+can be run on the browser. <strong>To run the tests you will have to use an HTTP
+server</strong>, because we use JavaScript modules and this have some CORS security
+requirements. We recommend the <a href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer">Live Server</a> extension for VS Code,
+this will execute any changes automatically, but just to make sure, <strong>we also
+recommend you to manually reload the page when running tests</strong>.</p>
+<p>To run the tests you have to execute the file <code>mocha.html</code> on the browser. If
+you are using VS Code with Live Server, right click over the file in the editor
+and then click over &quot;Open with Live Server&quot;.</p>
+<p>To make changes to the tests, this are under <code>js/tests</code>. If you only want to run
+a subset of the tests, read about <a href="https://mochajs.org/#exclusive-tests">exclusive tests</a> in the
+Mocha documentation.</p>
+<h2>User interface</h2>
+<p>We have a mockup of the user interface made with <a href="https://figma.com">Figma</a>, here is a link
+to <a href="https://www.figma.com/file/bfdgXg1r3ytVbija17RgUh/Transport-protocols-simulator?node-id=0%3A1">the mockup</a>.</p>
+<!-- References -->
     </article>
   </section>
 
