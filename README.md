@@ -13,8 +13,8 @@ of the library][docs].
 
 ## Local development
 
-To develop the project on your machine, you will need [Node.js][node] and npm
-wich comes with Node. After clonning the [project repository][repo] you should
+To develop the project on your machine, you will need [Node.js][node] and npm,
+which comes with Node. After clonning the [project repository][repo] you should
 open your console and execute:
 
 ```bash
@@ -22,7 +22,7 @@ cd transport-protocols-simulator # Enter the project files
 npm install # Install project dependencies
 ```
 
-This will install the project dependencies, wich are only *development
+This will install the project dependencies, which are only *development
 dependencies*, meaning that the actual source code does not use any external
 libraries. The only dependencies are for testing and generating documentation.
 
@@ -31,17 +31,17 @@ libraries. The only dependencies are for testing and generating documentation.
 
 We use [Mocha][mocha] for testing the transport protocols library, as the tests
 can be run on the browser. **To run the tests you will have to use an HTTP
-server**, because we use JavaScript modules and this have some CORS security
+server**, because we use JavaScript modules and these have some CORS security
 requirements. We recommend the [Live Server][live-server] extension for VS Code,
-this will execute any changes automatically, but just to make sure, **we also
+it will execute any changes automatically, but just to make sure, **we also
 recommend you to manually reload the page when running tests**.
 
 To run the tests you have to execute the file `mocha.html` on the browser. If
 you are using VS Code with Live Server, right click over the file in the editor
 and then click over "Open with Live Server".
 
-To make changes to the tests, this are under `js/tests`. If you only want to run
-a subset of the tests, read about [exclusive tests][exclusive-tests] in the
+To make changes to the tests, these are under `js/tests`. If you only want to
+run a subset of them, read about [exclusive tests][exclusive-tests] in the
 Mocha documentation.
 
 
