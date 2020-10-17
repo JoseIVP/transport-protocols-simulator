@@ -55,6 +55,7 @@ export class SRSender extends Node{
         if(this.nextSeqNum < this.base + this.windowSize){
             this._senAndTimeout(this.nextSeqNum);
             this.nextSeqNum++;
+            this.onStateChange();
             return true;
         }
         return false;
@@ -104,9 +105,11 @@ export class SRSender extends Node{
                 // The smallest unacknowledged sequence is at most nextSeqNum
                 // and if it's smaller than that then it has a timeout, because
                 // we remove the timeouts of acknowledged sequences.
-                while(this.base < this.nextSeqNum && !this._windowTimeouts.has(this.base)){
+                const previousBase = this.base;
+                while(this.base < this.nextSeqNum && !this._windowTimeouts.has(this.base))
                     this.base++;
-                }
+                if(previousBase != this.base)
+                    this.onStateChange();
             }
         }else{
             this.onReceive(packet, channel, false);
@@ -170,6 +173,7 @@ export class SRReceiver extends Node{
                     this._buffer.delete(this.base);
                     this.base++;
                 }
+                this.onStateChange();
             }
         }else{
             this.onReceive(packet, channel, false);
