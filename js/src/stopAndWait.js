@@ -26,7 +26,7 @@ export class SWSender extends Node{
         channel
     }){
         super();
-        this.currentTimeoutID = null;
+        this._currentTimeoutID = null;
         /** @member {SWReceiver} - The receiver of the packets. */
         this.receiver = receiver;
         /** @member {number} - The time to wait for each acknowledgment. */
@@ -57,7 +57,8 @@ export class SWSender extends Node{
         if (this.isWaitingAck)
             return false;
         this._sendAndTimeout();
-        this.isWaitingAck = true; 
+        this.isWaitingAck = true;
+        this.onStateChange();
         return true;
     }
 
@@ -68,7 +69,7 @@ export class SWSender extends Node{
             sender: this,
             receiver: this.receiver,
         }), this.channel);
-        this.currentTimeoutID = setTimeout(() => this._sendAndTimeout(), this.timeout);
+        this._currentTimeoutID = setTimeout(() => this._sendAndTimeout(), this.timeout);
     }
 
     /**
@@ -83,11 +84,12 @@ export class SWSender extends Node{
     receive(packet, channel){
         if (this.isWaitingAck && !packet.isCorrupted && isAck(packet, this.currentSeqNum)){
             this.onReceive(packet, channel, true);
-            clearTimeout(this.currentTimeoutID);
-            this.currentTimeoutID = null;
+            clearTimeout(this._currentTimeoutID);
+            this._currentTimeoutID = null;
             // Change the state to enable sending the next sequence number
             this.isWaitingAck = false;
             this.currentSeqNum = (this.currentSeqNum + 1) % 2;
+            this.onStateChange();
         }else{
             this.onReceive(packet, channel, false);
         }
@@ -97,8 +99,8 @@ export class SWSender extends Node{
      * Stops the current timeout. 
      */
     stop(){
-        clearTimeout(this.currentTimeoutID);
-        this.currentTimeoutID = null;
+        clearTimeout(this._currentTimeoutID);
+        this._currentTimeoutID = null;
     }
 
 }
@@ -128,25 +130,21 @@ export class SWReceiver extends Node{
      * @param {Channel} channel - The channel through which the packet arrived.
      */
     receive(packet, channel){
+        const ack = new Packet({
+            isAck: true,
+            sender: this,
+            receiver: packet.sender 
+        })
         if(packet.isCorrupted || packet.seqNum !== this.expectedSeqNum){
             this.onReceive(packet, channel, false);
-            const ack = new Packet({
-                ackNum: (this.expectedSeqNum + 1) % 2,
-                isAck: true,
-                sender: this,
-                receiver: packet.sender
-            })
+            ack.ackNum = (this.expectedSeqNum + 1) % 2;
             this.send(ack, channel);
         } else {
             this.onReceive(packet, channel, true);
-            const ack = new Packet({
-                ackNum: this.expectedSeqNum,
-                isAck: true,
-                sender: this,
-                receiver: packet.sender 
-            });
+            ack.ackNum = this.expectedSeqNum;
             this.send(ack, channel);
             this.expectedSeqNum = (this.expectedSeqNum + 1) % 2;
+            this.onStateChange();
         }
     }
 

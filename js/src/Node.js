@@ -51,6 +51,18 @@ class Node{
         return;
     }
 
+    /**
+     * Override this function to listen for changes in the state
+     * of the node. This should include things like changes to
+     * sliding windows, the current expected sequence number
+     * or acknowledgment and whatever other properties conform the
+     * state of the node. When extending Node, this method 
+     * should be called whenever the state of the node is
+     * changed.
+     */
+    onStateChange(){
+        return;
+    }
 }
 
 export default Node;

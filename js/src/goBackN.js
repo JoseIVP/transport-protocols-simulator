@@ -24,7 +24,7 @@ export class GBNSender extends Node{
         windowSize = 1
     }){
         super();
-        this.currentTimeoutID = null;
+        this._currentTimeoutID = null;
         /** @member {SWReceiver} - The receiver of the packets. */
         this.receiver = receiver;
         /** @member {number} - The time to wait for the base sequence acknowledgment. */
@@ -58,6 +58,7 @@ export class GBNSender extends Node{
             if(this.base == this.nextSeqNum)
                 this._setTimeout();
             this.nextSeqNum++;
+            this.onStateChange();
             return true;
         }
         return false;
@@ -80,7 +81,7 @@ export class GBNSender extends Node{
     }
 
     _setTimeout(){
-        this.currentTimeoutID = setTimeout(() => {
+        this._currentTimeoutID = setTimeout(() => {
             this._timeout();
         }, this.timeout);
     }
@@ -99,11 +100,12 @@ export class GBNSender extends Node{
     receive(packet, channel){
         if(!packet.isCorrupted && packet.isAck && packet.ackNum >= this.base && packet.ackNum < this.nextSeqNum){
             this.onReceive(packet, channel, true);
-            clearTimeout(this.currentTimeoutID);
-            this.currentTimeoutID = null;
+            clearTimeout(this._currentTimeoutID);
+            this._currentTimeoutID = null;
             this.base = packet.ackNum + 1;
             if(this.base < this.nextSeqNum)
                 this._setTimeout();
+            this.onStateChange();
         }else{
             this.onReceive(packet, channel, false);
         }
@@ -113,8 +115,8 @@ export class GBNSender extends Node{
      * Stops the current timeout.
      */
     stop(){
-        clearTimeout(this.currentTimeoutID);
-        this.currentTimeoutID = null;
+        clearTimeout(this._currentTimeoutID);
+        this._currentTimeoutID = null;
     }
 }
 
@@ -152,6 +154,7 @@ export class GBNReceiver extends Node{
                 ackNum: this.expectedSeqNum
             }), channel);
             this.expectedSeqNum++;
+            this.onStateChange();
         }else{
             this.onReceive(packet, channel, false);
             this.send(new Packet({
