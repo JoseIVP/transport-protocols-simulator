@@ -1,10 +1,11 @@
-/** @module "stopAndWait.js"  */
+/** @module selectiveRepeat  */
 
 import Node from "./Node.js";
 import Packet from "./Packet.js";
 
 /**
  * A class that implements the sender of *selective-repeat*.
+ * @extends Node
  */
 export class SRSender extends Node{
 
@@ -120,6 +121,7 @@ export class SRSender extends Node{
 
 /**
  * A class that implements the receiver of *selective-repeat*.
+ * @extends Node
  */
 export class SRReceiver extends Node{
 

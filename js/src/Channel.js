@@ -1,4 +1,4 @@
-/** @module "Channel.js" */
+/** @module Channel */
 
 /**
  * A class that represents the channels through which the packets travel.

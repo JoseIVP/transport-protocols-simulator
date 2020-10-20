@@ -1,4 +1,4 @@
-/** @module "Node.js" */
+/** @module Node */
 
 /**
  * A class that represents a network node.

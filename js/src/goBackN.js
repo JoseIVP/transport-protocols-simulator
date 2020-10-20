@@ -1,4 +1,4 @@
-/** @module "goBackN.js" */
+/** @module goBackN */
 
 import Node from "./Node.js";
 import Packet from "./Packet.js";
@@ -6,6 +6,7 @@ import Packet from "./Packet.js";
 
 /**
  * A class that represents a *go-back-n* sender.
+ * @extends Node
  */
 export class GBNSender extends Node{
 
@@ -123,6 +124,7 @@ export class GBNSender extends Node{
 
 /**
  * A class that represents a *go-back-n* receiver.
+ * @extends Node
  */
 export class GBNReceiver extends Node{
 

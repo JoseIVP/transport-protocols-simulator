@@ -1,4 +1,4 @@
-/** @module "Packet.js" */
+/** @module Packet */
 
 /**
  * A class that represents a network packet.

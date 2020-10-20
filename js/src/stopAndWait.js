@@ -1,4 +1,4 @@
-/** @module "stopAndWait.js"  */
+/** @module stopAndWait  */
 
 import Node from "./Node.js";
 import Packet from "./Packet.js";
@@ -10,6 +10,7 @@ function isAck(packet, seqNum){
 
 /**
  * A class that represents a *stop-and-wait* sender.
+ * @extends Node
  */
 export class SWSender extends Node{
 
@@ -108,6 +109,7 @@ export class SWSender extends Node{
 
 /**
  * A class that represents a *stop-and-wait* receiver.
+ * @extends Node
  */
 export class SWReceiver extends Node{
 
