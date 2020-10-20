@@ -45,6 +45,23 @@ run a subset of them, read about [exclusive tests][exclusive-tests] in the
 Mocha documentation.
 
 
+## Documentation geneneration
+
+To generate the documentation we use [JSDoc][jsdoc]. We also use a template
+under a folder called `jsdoc-template`, which is a *git submodule* and comes
+from a [third party repo][braintree-template]. To download the template execute
+the following command from the root of the project:
+
+```bash
+git submodule update --init
+```
+
+Then, if you make changes to documentation comments across the project, you
+should run `npm run doc` to update the documentation. This will generate a
+website under a folder called `docs`, which we serve using [GitHub
+Pages][gh-pages]. Don't forget to commit any changes to the documentation.
+
+
 ## User interface
 
 We have a mockup of the user interface made with [Figma][figma], here is a link
@@ -59,5 +76,8 @@ to [the mockup][mockup].
 [mocha]: https://mochajs.org
 [live-server]: https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
 [exclusive-tests]: https://mochajs.org/#exclusive-tests
+[jsdoc]: https://jsdoc.app
+[braintree-template]: https://github.com/braintree/jsdoc-template
+[gh-pages]: https://pages.github.com/
 [figma]: https://figma.com
 [mockup]: https://www.figma.com/file/bfdgXg1r3ytVbija17RgUh/Transport-protocols-simulator?node-id=0%3A1
