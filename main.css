@@ -1,0 +1,43 @@
+:root{
+    --font-family: Arial, Helvetica, sans-serif;
+    --page-color: #f2f2f2;
+    --text-color: #4f4f4f;
+    --primary-button-color: #2f80ed;
+    --primary-button-border-color: #8cbdf1;
+    --primary-button-text-color: white;
+    --primary-button-hover-color: #2b76dc;
+    --secondary-button-color: #e4e4e4;
+    --secondary-button-border-color: #c5c5c5;
+    --secondary-button-text-color: #666666;
+    --secondary-button-hover-color: #dbdbdb;
+    --card-color: white;
+    --card-border-color: #bdbdbd;
+    background-color: var(--page-color);
+    font-family: var(--font-family);
+}
+
+*{
+    padding: 0;
+    margin: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+
+h1{
+    color: var(--text-color);
+    font-size: 2.5rem;
+    margin: min(3rem, 5vw) auto;
+    width: min(96vw, 1200px);
+}
+
+@media(max-width: 600px){
+    h1{
+        text-align: center;
+        font-size: 2rem;
+    }
+}
+
+settings-card{
+    --card-width: min(96vw, 1200px);
+    --card-margin: 1rem auto 4rem auto;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport protocols simulator</title>
+    <link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="./fontawesome/css/all.css">
+</head>
+<body>
+    <h1>Transport protocols simulator</h1>
+    <settings-card id="settings"></settings-card>
+
+    <template id="settings-card">
+        <link rel="stylesheet" href="./components/SettingsCard/SettingsCard.css">
+        <link rel="stylesheet" href="./fontawesome/css/all.css">
+        <details open class="open">
+            <summary>
+                <h2>
+                    Settings
+                    <i class="fa fa-info-circle"></i>
+                </h2> 
+                <menu class="top-menu">
+                    <button type="button" class="btn">
+                        <i class="fas fa-file-download"></i>
+                        Download logs
+                    </button>
+                    <button type="button" class="btn">
+                        <i class="fas fa-play"></i>
+                        Start
+                    </button>
+                </menu>
+                <button type="button" class="toggle">
+                    <i class="fas fa-angle-down"></i>
+                </button>
+            </summary>
+            <menu class="tabs">
+                <button type="button" class="tab" data-tab="settings">Use settings</button>
+                <button type="button" class="tab" data-tab="file-upload">Use file</button>
+            </menu>
+            <section data-tab="settings">
+                Settings
+            </section>
+            <section data-tab="file-upload">
+                File
+            </section>
+        </details>
+    </template>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
