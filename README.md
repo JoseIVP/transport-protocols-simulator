@@ -67,6 +67,13 @@ Pages][gh-pages]. Don't forget to commit any changes to the documentation.
 We have a mockup of the user interface made with [Figma][figma], here is a link
 to [the mockup][mockup].
 
+### Fontawesome
+
+We use [Fontawesome 5.15.1-web][fontawesome] (CSS). Meanwhile, this is under a
+folder called `fontawesome` in the root of the project, but we could change this
+by using [Webpack][webpack] and npm if in the future we add new dependencies and
+need to better manage them.
+
 
 <!-- References -->
 
@@ -81,3 +88,5 @@ to [the mockup][mockup].
 [gh-pages]: https://pages.github.com/
 [figma]: https://figma.com
 [mockup]: https://www.figma.com/file/bfdgXg1r3ytVbija17RgUh/Transport-protocols-simulator?node-id=0%3A1
+[fontawesome]: https://github.com/FortAwesome/Font-Awesome/releases/tag/5.15.1
+[webpack]: https://webpack.js.org/
