@@ -5,9 +5,9 @@ visualizations of *Automatic Repeat Request* protocols like *Stop-and-Wait*,
 *Go-Back-N* and *Selective Repeat*.
 
 The project is divided into two main components, the transport protocols library
-under `js/src` and the graphic simulator user interface that uses the library.
+under `/lib` and the graphic simulator user interface that uses the library.
 For now you can find examples of how to use the library in the tests under
-`js/tests` in the project repository. Here is also a link for the [documentation
+`/lib/tests` in the project repository. Here is also a link for the [documentation
 of the library][docs].
 
 
@@ -36,11 +36,11 @@ requirements. We recommend the [Live Server][live-server] extension for VS Code,
 it will execute any changes automatically, but just to make sure, **we also
 recommend you to manually reload the page when running tests**.
 
-To run the tests you have to execute the file `mocha.html` on the browser. If
-you are using VS Code with Live Server, right click over the file in the editor
-and then click over "Open with Live Server".
+To run the tests you have to execute the file `/lib/tests/mocha.html` on the
+browser. If you are using VS Code with Live Server, right click over the file in
+the editor and then click over "Open with Live Server".
 
-To make changes to the tests, these are under `js/tests`. If you only want to
+To make changes to the tests, these are under `/lib/tests`. If you only want to
 run a subset of them, read about [exclusive tests][exclusive-tests] in the
 Mocha documentation.
 

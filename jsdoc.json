@@ -1,6 +1,6 @@
 {
     "source": {
-      "include": ["js/src"],
+      "include": ["lib/src"],
       "includePattern": ".js$",
       "excludePattern": "(node_modules|docs|js/tests)"
     },

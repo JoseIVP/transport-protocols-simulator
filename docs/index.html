@@ -96,9 +96,9 @@
 visualizations of <em>Automatic Repeat Request</em> protocols like <em>Stop-and-Wait</em>,
 <em>Go-Back-N</em> and <em>Selective Repeat</em>.</p>
 <p>The project is divided into two main components, the transport protocols library
-under <code>js/src</code> and the graphic simulator user interface that uses the library.
+under <code>/lib</code> and the graphic simulator user interface that uses the library.
 For now you can find examples of how to use the library in the tests under
-<code>js/tests</code> in the project repository. Here is also a link for the <a href="https://joseivp.github.io/transport-protocols-simulator/">documentation
+<code>/lib/tests</code> in the project repository. Here is also a link for the <a href="https://joseivp.github.io/transport-protocols-simulator/">documentation
 of the library</a>.</p>
 <h2>Local development</h2>
 <p>To develop the project on your machine, you will need <a href="https://nodejs.org/en/">Node.js</a> and npm,
@@ -117,15 +117,31 @@ server</strong>, because we use JavaScript modules and these have some CORS secu
 requirements. We recommend the <a href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer">Live Server</a> extension for VS Code,
 it will execute any changes automatically, but just to make sure, <strong>we also
 recommend you to manually reload the page when running tests</strong>.</p>
-<p>To run the tests you have to execute the file <code>mocha.html</code> on the browser. If
-you are using VS Code with Live Server, right click over the file in the editor
-and then click over &quot;Open with Live Server&quot;.</p>
-<p>To make changes to the tests, these are under <code>js/tests</code>. If you only want to
+<p>To run the tests you have to execute the file <code>/lib/tests/mocha.html</code> on the
+browser. If you are using VS Code with Live Server, right click over the file in
+the editor and then click over &quot;Open with Live Server&quot;.</p>
+<p>To make changes to the tests, these are under <code>/lib/tests</code>. If you only want to
 run a subset of them, read about <a href="https://mochajs.org/#exclusive-tests">exclusive tests</a> in the
 Mocha documentation.</p>
+<h2>Documentation geneneration</h2>
+<p>To generate the documentation we use <a href="https://jsdoc.app">JSDoc</a>. We also use a template
+under a folder called <code>jsdoc-template</code>, which is a <em>git submodule</em> and comes
+from a <a href="https://github.com/braintree/jsdoc-template">third party repo</a>. To download the template execute
+the following command from the root of the project:</p>
+<pre class="prettyprint source lang-bash"><code>git submodule update --init
+</code></pre>
+<p>Then, if you make changes to documentation comments across the project, you
+should run <code>npm run doc</code> to update the documentation. This will generate a
+website under a folder called <code>docs</code>, which we serve using <a href="https://pages.github.com/">GitHub
+Pages</a>. Don't forget to commit any changes to the documentation.</p>
 <h2>User interface</h2>
 <p>We have a mockup of the user interface made with <a href="https://figma.com">Figma</a>, here is a link
 to <a href="https://www.figma.com/file/bfdgXg1r3ytVbija17RgUh/Transport-protocols-simulator?node-id=0%3A1">the mockup</a>.</p>
+<h3>Fontawesome</h3>
+<p>We use <a href="https://github.com/FortAwesome/Font-Awesome/releases/tag/5.15.1">Fontawesome 5.15.1-web</a> (CSS). Meanwhile, this is under a
+folder called <code>fontawesome</code> in the root of the project, but we could change this
+by using <a href="https://webpack.js.org/">Webpack</a> and npm if in the future we add new dependencies and
+need to better manage them.</p>
 <!-- References -->
     </article>
   </section>
