@@ -2,6 +2,7 @@
     --font-family: Arial, Helvetica, sans-serif;
     --page-color: #f2f2f2;
     --text-color: #4f4f4f;
+    --secondary-text-color: #828282;
     --primary-button-color: #2f80ed;
     --primary-button-border-color: #8cbdf1;
     --primary-button-text-color: white;
@@ -12,8 +13,17 @@
     --secondary-button-hover-color: #dbdbdb;
     --card-color: white;
     --card-border-color: #bdbdbd;
+    --input-number-color: #e0e0e0;
     background-color: var(--page-color);
     font-family: var(--font-family);
+    font-size: 16px;
+    /* -webkit-tap-highlight-color: transparent; */
+}
+
+@media(max-width: 400px){
+    :root{
+        font-size: 14px;
+    }
 }
 
 *{

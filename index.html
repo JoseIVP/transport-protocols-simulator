@@ -17,29 +17,96 @@
         <details open class="open">
             <summary>
                 <h2>
-                    Settings
-                    <i class="fa fa-info-circle"></i>
+                    <span id="settings-title">Settings</span>
+                    <i class="fa fa-info-circle" style="display: none;"></i>
                 </h2> 
                 <menu class="top-menu">
-                    <button type="button" class="btn">
+                    <button type="button" class="btn" style="display: none;">
                         <i class="fas fa-file-download"></i>
                         Download logs
                     </button>
-                    <button type="button" class="btn">
-                        <i class="fas fa-play"></i>
-                        Start
+                    <button id="toggle-run" type="button" class="btn">
+                        <span class="start">
+                            <i class="fas fa-play"></i>
+                            Start simulation
+                        </span>
+                        <span class="stop">
+                            <i class="fas fa-stop"></i>
+                            Stop simulation
+                        </span>
                     </button>
                 </menu>
                 <button type="button" class="toggle">
                     <i class="fas fa-angle-down"></i>
                 </button>
             </summary>
-            <menu class="tabs">
+            <menu class="tabs" style="display: none;">
                 <button type="button" class="tab" data-tab="settings">Use settings</button>
-                <button type="button" class="tab" data-tab="file-upload">Use file</button>
+                <button type="button" class="tab" data-tab="file-upload" disabled>Use file</button>
             </menu>
             <section data-tab="settings">
-                Settings
+                <form id="settings-form">
+                    <div class="lock">
+                        <i class="fas fa-lock"></i>
+                        <p>Locked</p>
+                    </div>
+                    <label>
+                        <span class="label-text">Protocol</span>
+                        <div class="select-wrapper">
+                            <i class="fas fa-angle-down"></i>
+                            <select name="protocol" required>
+                                <option value="1" selected>Stop and wait</option>
+                                <option value="2">Go Back N</option>
+                                <option value="3">Selective repeat</option>
+                            </select>
+                        </div>
+                        <small>
+                            The protocol for the simulation.
+                        </small>
+                    </label>
+                    <label>
+                        <span class="label-text">Delay (ms)</span>
+                        <input name="delay" type="range" step="500" min="1000" max="5000" value="2500">
+                        <p>2500</p>
+                        <small>
+                            The time that takes a packet to travel from one
+                            end to the other.
+                        </small>
+                    </label>
+                    <label>
+                        <span class="label-text">Timeout (ms)</span>
+                        <input name="timeout" type="range" step="500" min="1000" max="11000" value="2500">
+                        <p>2500</p>
+                        <small>
+                            The time for the sender to resend a packet.
+                        </small>
+                    </label>
+                    <label>
+                        <span class="label-text">Packets per minute</span>
+                        <input name="packetsPerMinute" type="range" step="1" min="1" max="60" value="1">
+                        <p>1</p>
+                        <small>
+                            The number of packets that the sender attempts to
+                            send per minute.
+                        </small>
+                    </label>
+                    <label>
+                        <span class="label-text">Window size</span>
+                        <input name="windowSize" type="range" step="1" min="1" max="60" value="1">
+                        <p>1</p>
+                        <small>
+                            The size of the window for GBN and SR.
+                        </small>
+                    </label>
+                    <label>
+                        <span class="label-text">Loss probability</span>
+                        <input name="lossProbability" type="range" step="1" min="0" max="10" value="0">
+                        <p>0</p>
+                        <small>
+                            The probability to lose each packet.
+                        </small>
+                    </label>
+                </form>
             </section>
             <section data-tab="file-upload">
                 File
