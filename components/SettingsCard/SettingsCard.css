@@ -229,7 +229,7 @@ section[data-tab=settings] form{
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.2);
-    color: var(--secondary-button-text-color);
+    color: var(--text-color);
 }
 
 .lock i{
@@ -260,7 +260,7 @@ label p{
     background-color: var(--input-number-color);
     padding: .5em;
     border-radius: .3em;
-    font-size: 1rem;
+    font-size: 1.15rem;
 }
 
 .select-wrapper{
@@ -288,7 +288,7 @@ label p{
     background-color: transparent;
     padding: .5em;
     border-radius: .3rem;
-    font-size: 1rem;
+    font-size: 1.15rem;
     color: var(--text-color);
     appearance: none;
     outline: none;

@@ -1,0 +1,65 @@
+#packet{
+    rx: 10px;
+    ry: 10px;
+    stroke-width: 6px;
+}
+
+.pkt{
+    stroke-width: 6px;
+}
+
+.pkt-not-received{
+    fill: #D7D9DB;
+    stroke: #B0B3B7;
+}
+
+.pkt-buffered{
+    fill: #B2D0F9;
+    stroke: #65A2F4;
+}
+
+.pkt-confirmed{
+    fill: #F8F380;
+    stroke: #F1E800;
+}
+
+.pkt-acknowledgment{
+    fill: #9CD8A2;
+    stroke: #3AB146;
+}
+
+.pkt-received{
+    fill: #FDCB80;
+    stroke: #FC9700;
+}
+
+.window{
+    fill: #FCB0B0;
+    stroke: #F96060;
+}
+
+
+#timer{
+    fill: transparent;
+}
+
+.timer{
+    stroke-dasharray: 189px;
+    display: none;
+}
+
+.timer-inner{
+    stroke: #E78CF6;
+    stroke-width: 20px;
+}
+
+.timer-outter{
+    stroke: #CF1AED;
+    stroke-width: 30px;
+}
+
+.track-line{
+    stroke: #bdbdbd;
+    stroke-width: 3px;
+    stroke-dasharray: 15px;
+}
