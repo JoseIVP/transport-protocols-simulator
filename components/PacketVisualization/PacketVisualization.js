@@ -21,9 +21,13 @@ export default class PacketVisualization extends HTMLElement {
      * spaces or tracks in which to move the visualization.
      */
     move(spaces){
-        this.moveWindow(-spaces);
-        this.moveWindow(-spaces, true);
-        const transitionTime = spaces * 100;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                this.moveWindow(-spaces);
+                this.moveWindow(-spaces, true);
+            });
+        });
+        const transitionTime = spaces * 50;
         let lastChildX = Number.parseInt(this.tracks.lastElementChild.getAttribute("x"));
         const children = [];
         for(let i=0; i<this.tracks.children.length; i++)
@@ -37,7 +41,11 @@ export default class PacketVisualization extends HTMLElement {
                 container.setAttribute("x", x);
                 this.tracks.appendChild(container);
                 // Unlink tracks out of sight
-                this.trackContainers.delete(container.dataset.seqNumber);
+                if (this.protocol !== 1){
+                    this.trackContainers.delete(container.seqNum);
+                    delete container.seqNum;
+                }
+                container.children[0].reset();
             }
             // We call this twice for the browser
             // to notice the change in position
@@ -45,13 +53,14 @@ export default class PacketVisualization extends HTMLElement {
                 requestAnimationFrame(() => {
                     container.setAttribute("x", x - 100 * spaces);
                 })
-            })
+            });
         }
     }
 
     /**
      * Set the parameters and initial conditions for the visualization.
      * @param {Object} params - The options to start the visualization.
+     * @param {number} protocol - A number identifying the protocol.
      * @param {Map} params.initialMapping - The initial mapping from sequence numbers to track positions.
      * @param {number} params.nextTrackPosition - The initial next track to send a packet.
      * @param {number} params.senderPosition - The initial position for the sender window.
@@ -62,6 +71,7 @@ export default class PacketVisualization extends HTMLElement {
      * @param {number} params.timeout - The duration for the timer animation.
      */
     setParams({
+        protocol, // 1 = SW, 2 = GBN, 3 = SR
         initialMapping = null,
         nextTrackPosition = 2,
         senderPosition = 2,
@@ -69,12 +79,14 @@ export default class PacketVisualization extends HTMLElement {
         senderSize = 0,
         receiverSize = 0,
         delay = 1000,
-        timeout = 1500
+        timeout = 2500
     }={}){
+        this.senderSize = senderSize;
+        this.protocol = protocol;
         this.delay = delay;
         this.timeout = timeout;
         if(initialMapping !== null){
-            for([seqNumber, trackPosition] of initialMapping)
+            for(const [seqNumber, trackPosition] of initialMapping)
                 this.trackContainers.set(seqNumber, this.tracks.children[trackPosition])
         }
         this.nextTrackContainer = this.tracks.children[nextTrackPosition];
@@ -100,7 +112,7 @@ export default class PacketVisualization extends HTMLElement {
         this.senderWindow.style.display = "none";
         this.receiverWindow.style.display = "none";
         this.tracks.innerHTML = "";
-        for(let i=0; i<27; i++){
+        for(let i=0; i<36; i++){
             const trackContainer = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
             trackContainer.setAttribute("height", 900);
             trackContainer.setAttribute("width", 100);
@@ -112,51 +124,48 @@ export default class PacketVisualization extends HTMLElement {
     }
 
     /**
-     * Play the animation for sending a packet from sender to receiver (isAck = false)
-     * or from receiver to sender (isAck = true).
-     * @param {Object} options - The options for the packet to send.
-     * @param {number} options.seqNumber - The packet sequence number, that tells which track to use.
-     * @param {number} options.id - The packet id with which to link the visual representation.
-     * @param {boolean} [options.startTimer=false] - True if the timer animation should also be played.
-     * @param {boolean} [options.resend=false] - True if the packet corresponds to a resent sequence number.
-     * @param {boolean} [options.isAck=false] - True if the packet is an acknowledgment and the representation
-     * should be a packet traveling from receiver to sender, false otherwise.
+     * Start an animation for sending a packet.
+     * @param {Packet} packet - The packet for the animation.
      */
-    sendPacket({
-        seqNumber,
-        id,
-        startTimer = false,
-        resend = false,
-        isAck = false
-    }){
+    sendPacket(packet){
+        const {isAck, wasReSent} = packet;
+        const seqNum = isAck? packet.ackNum : packet.seqNum;
         let trackContainer = null;
-        if(resend){
-            trackContainer = this.trackContainers.get(seqNumber);
+        if(isAck || wasReSent){
+            trackContainer = this.trackContainers.get(seqNum);
             if(trackContainer === undefined)
                 // The track is out of sight
                 return;
         }else{
             trackContainer = this.nextTrackContainer;
             this.nextTrackContainer = trackContainer.nextElementSibling;
-            this.trackContainers.set(seqNumber, trackContainer);
-            trackContainer.dataset.seqNumber = seqNumber;
-            if(Number.parseInt(this.nextTrackContainer.getAttribute("x")) >= 900)
-                this.move(7);
+            this.trackContainers.set(seqNum, trackContainer);
+            trackContainer.seqNum = seqNum;
+            if (this.protocol === 1){
+                if(Number.parseInt(this.nextTrackContainer.getAttribute("x")) >= 1500)
+                    this.move(12);
+            }else{
+                const windowPosition = (Number.parseInt(this.senderWindow.getAttribute("x")));
+                if((windowPosition + this.senderSize * 100) >= 1400){
+                    this.move(windowPosition / 100 - 1);
+                }
+            }
+            if(Number.parseInt(this.nextTrackContainer.getAttribute("x")) >= 1500 ||
+                (Number.parseInt(this.senderWindow.getAttribute("x")) + this.senderWindow * 100))
+                this.move(12);
         }
         const track = trackContainer.children[0];
-        track.sendPacket(id, this.delay, isAck);
-        if(startTimer)
-            track.startTimer(this.timeout);
+        track.sendPacket(packet, this.delay, isAck);
     }
 
     /**
      * Move the sliding window.
      * @param {number} spaces - The number of spaces in which to move the window.
-     * @param {*} [isReceiver=false] - True if the receiver window should be moved, false to move the sender window.
+     * @param {boolean} [moveReceiver=false] - True to move the receiver window, false to move the sender's.
      */
-    moveWindow(spaces, isReceiver=false){
-        const transitionTime = Math.abs(spaces) * 100;
-        const window = isReceiver ? this.receiverWindow : this.senderWindow;
+    moveWindow(spaces, moveReceiver=false){
+        const transitionTime = Math.abs(spaces) * 50;
+        const window = moveReceiver ? this.receiverWindow : this.senderWindow;
         window.style.transition = `x ${transitionTime}ms linear`;
         const x = Number.parseInt(window.getAttribute("x"));
         window.setAttribute("x", x + spaces * 100);
@@ -164,32 +173,68 @@ export default class PacketVisualization extends HTMLElement {
 
     /**
      * Change the visual representation of the sender's end packet
-     * corresponding to seqNumber to look like a confirmed packet.
-     * @param {number} seqNumber - The sequence number of the packet. 
+     * corresponding to <packet> to look like a confirmed packet.
+     * @param {number} packet
      */
-    packetConfirmed(seqNumber){
-        const trackContainer = this.trackContainers.get(seqNumber);
-        trackContainer.children[0].packetConfirmed();
+    packetConfirmed(packet){
+        if(this.protocol === 2){
+            for(const [seqNum, container] of this.trackContainers){
+                if(seqNum === -1)
+                    continue;
+                if(seqNum <= packet.ackNum)
+                    container.children[0].packetConfirmed();
+            }
+        }else{
+            const trackContainer = this.trackContainers.get(packet.ackNum);
+            trackContainer?.children[0].packetConfirmed();
+        }
     }
     
     /**
      * Change the visual representation of the receivers's end packet
-     * corresponding to seqNumber to look like a received packet.
-     * @param {number} seqNumber - The sequence number of the packet. 
+     * corresponding to <packet> to look like a received packet.
+     * @param {Packet} packet
      */
-    packetReceived(seqNumber){
-        const trackContainer = this.trackContainers.get(seqNumber);
-        trackContainer.children[0].packetReceived();
+    packetReceived(packet){
+        const trackContainer = this.trackContainers.get(packet.seqNum);
+        trackContainer?.children[0].packetReceived();
     }
 
     /**
      * Remove the visual representation of a packet.
-     * @param {number} seqNumber - The sequence number of the packet to remove.
-     * @param {number} id - The id of the packet to remove.
+     * @param {Packet} packet
      */
-    removePacket(seqNumber, id){
-        const trackContainer = this.trackContainers.get(seqNumber);
+    removePacket(packet){
+        const seqNum = packet.isAck? packet.ackNum : packet.seqNum;
+        const trackContainer = this.trackContainers.get(seqNum);
         if(trackContainer !== undefined)
-            trackContainer.children[0].remove(id);
+            trackContainer.children[0].removePacket(packet);
+    }
+
+    /**
+     * Sets onPacketClicked() callback to each track.
+     */
+    set onPacketClicked(callback){
+        for(const container of this.tracks.children){
+            container.children[0].onPacketClicked = callback;
+        }
+    }
+
+    /**
+     * Start the timer for the track related to seqNum.
+     * @param {number} seqNum - The sequence number of the track.
+     */
+    startTimeout(seqNum){
+        const container = this.trackContainers.get(seqNum);
+        if(container !== undefined){
+            container.children[0].startTimer(this.timeout);
+        }
+    }
+
+    stopTimeout(seqNum){
+        const container = this.trackContainers.get(seqNum);
+        if(container !== undefined){
+            container.children[0].stopTimer();
+        }
     }
 }

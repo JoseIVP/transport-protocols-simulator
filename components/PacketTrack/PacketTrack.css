@@ -1,11 +1,11 @@
-#packet{
+#packet-rect{
     rx: 10px;
     ry: 10px;
     stroke-width: 6px;
 }
 
-.pkt{
-    stroke-width: 6px;
+.pkt-traveling{
+    cursor: pointer;
 }
 
 .pkt-not-received{
@@ -33,19 +33,24 @@
     stroke: #FC9700;
 }
 
+.pkt-lost{
+    fill: #FCB0B0;
+    stroke: #F96060;
+}
+
 .window{
     fill: #FCB0B0;
     stroke: #F96060;
 }
 
 
-#timer{
+#timer-circle{
     fill: transparent;
 }
 
-.timer{
+#timer{
     stroke-dasharray: 189px;
-    display: none;
+    visibility: hidden;
 }
 
 .timer-inner{
@@ -58,7 +63,7 @@
     stroke-width: 30px;
 }
 
-.track-line{
+#track-line{
     stroke: #bdbdbd;
     stroke-width: 3px;
     stroke-dasharray: 15px;
