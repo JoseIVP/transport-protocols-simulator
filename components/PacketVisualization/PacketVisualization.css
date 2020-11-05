@@ -36,7 +36,7 @@ h2{
 svg{
     flex: 6 2 725px;
     display: block;
-    padding: 1.5rem;
+    padding: clamp(.5rem, 2vw, 1.5rem);
     box-sizing: border-box;
 }
 
@@ -55,11 +55,18 @@ svg .window{
     ry: 10px;
 }
 
+.node-tag{
+    font-weight: bolder;
+    font-size: 125px;
+    fill: #e0e0e0;
+}
+
 legend{
     flex: 2 2 375px;
     display: block;
     color: var(--text-color);
     padding: 2rem;
+    padding-top: min(2.5vw, 2rem);
 }
 
 legend h3{
@@ -102,12 +109,12 @@ legend li.legend-confirmed::before{
     border-color: #F1E800;
 }
 
-legend li.legend-acknowledgment::before{
+legend li.legend-acknowledgment-or-received::before{
     background-color: #9CD8A2;
     border-color: #3AB146;
 }
 
-legend li.legend-received::before{
+legend li.legend-next-sequence-timer::before{
     background-color: #FDCB80;
     border-color: #FC9700;
 }
@@ -117,7 +124,7 @@ legend li.legend-window::before{
     border-color: #F96060;
 }
 
-legend li.legend-timer::before{
+legend li.legend-timeout::before{
     background-color: #E78CF6;
     border-color: #CF1AED;
 }

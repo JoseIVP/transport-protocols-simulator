@@ -29,8 +29,8 @@
 }
 
 .pkt-received{
-    fill: #FDCB80;
-    stroke: #FC9700;
+    fill: #9CD8A2;
+    stroke: #3AB146;
 }
 
 .pkt-lost{
@@ -53,13 +53,23 @@
     visibility: hidden;
 }
 
-.timer-inner{
+.timer-timeout .timer-inner{
     stroke: #E78CF6;
     stroke-width: 20px;
 }
 
-.timer-outter{
+.timer-timeout .timer-outter{
     stroke: #CF1AED;
+    stroke-width: 30px;
+}
+
+.timer-next-sequence .timer-inner{
+    stroke: #FDCB80;
+    stroke-width: 20px;
+}
+
+.timer-next-sequence .timer-outter{
+    stroke: #FC9700;
     stroke-width: 30px;
 }
 

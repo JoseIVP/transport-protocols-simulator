@@ -20,8 +20,17 @@ export default class PacketTrack extends HTMLElement{
     /**
      * Start the timer animation for the sender.
      * @param {number} duration - The duration of the timer animation.
+     * @param {boolean} isNextSequence - true if the animation should be for
+     * trying to send the next sequence.
      */
-    startTimer(duration){
+    startTimer(duration, isNextSequence=false){
+        if(isNextSequence){
+            this.timer.classList.remove("timer-timeout");
+            this.timer.classList.add("timer-next-sequence");
+        }else{
+            this.timer.classList.remove("timer-next-sequence");
+            this.timer.classList.add("timer-timeout");
+        }  
         const keyframes = [
             { visibility: "visible", strokeDashoffset: 0},
             { visibility: "hidden", strokeDashoffset: -157} // timerDiameter * PI = 157

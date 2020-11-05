@@ -231,10 +231,25 @@ export default class PacketVisualization extends HTMLElement {
         }
     }
 
+    /**
+     * Stop the timer for the track related to seqNum.
+     * @param {number} seqNum - The sequence number of the track.
+     */
     stopTimeout(seqNum){
         const container = this.trackContainers.get(seqNum);
         if(container !== undefined){
             container.children[0].stopTimer();
+        }
+    }
+
+    /**
+     * Start the animation of the timer for attempting to send
+     * the next sequence number.
+     * @param {number} duration - The duration of the timer.
+     */
+    startNextPacketTimer(duration){
+        if(this.nextTrackContainer !== undefined){
+            this.nextTrackContainer.children[0].startTimer(duration, true);
         }
     }
 }
