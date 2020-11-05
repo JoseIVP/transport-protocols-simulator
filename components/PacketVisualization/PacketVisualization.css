@@ -109,12 +109,12 @@ legend li.legend-confirmed::before{
     border-color: #F1E800;
 }
 
-legend li.legend-acknowledgment::before{
+legend li.legend-acknowledgment-or-received::before{
     background-color: #9CD8A2;
     border-color: #3AB146;
 }
 
-legend li.legend-received::before{
+legend li.legend-next-sequence-timer::before{
     background-color: #FDCB80;
     border-color: #FC9700;
 }
@@ -124,7 +124,7 @@ legend li.legend-window::before{
     border-color: #F96060;
 }
 
-legend li.legend-timer::before{
+legend li.legend-timeout::before{
     background-color: #E78CF6;
     border-color: #CF1AED;
 }

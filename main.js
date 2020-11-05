@@ -111,10 +111,13 @@ settingsCard.onStart = (settings) => {
     visualization.onPacketClicked = packet => channel.losePacket(packet);
     
     // Start the simulation
+    const timeToNextPacket = 60 * 1000 / settings.packetRate;
     sender.send();
+    visualization.startNextPacketTimer(timeToNextPacket);
     intervalID = setInterval(() => {
         sender.send();
-    }, 60 * 1000 / settings.packetRate);
+        visualization.startNextPacketTimer(timeToNextPacket);
+    }, timeToNextPacket);
 };
 
 
