@@ -2,7 +2,8 @@
 
 This is a project under construction. Its main objective is to present graphic
 visualizations of *Automatic Repeat Request* protocols like *Stop-and-Wait*,
-*Go-Back-N* and *Selective Repeat*.
+*Go-Back-N* and *Selective Repeat*. Here is a link to the [simulator][simulator]
+hosted with [GitHub Pages][gh-pages].
 
 The project is divided into two main components, the transport protocols library
 under `/lib` and the graphic simulator user interface that uses the library.
@@ -77,7 +78,8 @@ need to better manage them.
 
 <!-- References -->
 
-[docs]: https://joseivp.github.io/transport-protocols-simulator/
+[simulator]: https://joseivp.github.io/transport-protocols-simulator/
+[docs]: https://joseivp.github.io/transport-protocols-simulator/docs/
 [node]: https://nodejs.org/en/
 [repo]: https://github.com/JoseIVP/transport-protocols-simulator.git
 [mocha]: https://mochajs.org
