@@ -92,9 +92,9 @@ export default class SettingsCard extends HTMLElement {
             "protocol",
             "delay",
             "timeout",
-            "packetsPerMinute",
+            "packetRate",
             "windowSize",
-            "lossProbability"
+            "lossProb"
         ]
         const settings = {};
         // Convert the data and disable the form elements
@@ -103,7 +103,7 @@ export default class SettingsCard extends HTMLElement {
             formElement.disabled = true;
             settings[setting] = Number.parseInt(formElement.value);
         }
-        settings.lossProbability /= 10;
+        settings.lossProb /= 10;
         this.onStart(settings);
     }
 
@@ -135,7 +135,7 @@ export default class SettingsCard extends HTMLElement {
             if(element.tagName == "INPUT"){
                 const p = element.nextElementSibling;
                 p.textContent = element.value;
-                if(element.name == "lossProbability")
+                if(element.name == "lossProb")
                     element.oninput = () => {
                         p.textContent = element.value / 10;
                     };
