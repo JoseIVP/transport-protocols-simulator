@@ -47,7 +47,23 @@ h1{
     }
 }
 
+#warning{
+    color: var(--text-color);
+    font-size: 1.25rem;
+    margin: 2rem auto 2.5rem auto;
+    width: min(96vw, 1200px);
+    background-color: #FCB0B0;
+    border: .25em solid #F96060;
+    border-radius: .5em;
+    padding: 1em;
+    text-align: center;
+}
+
+#warning strong{
+    font-weight: bold;
+}
+
 settings-card{
     --card-width: min(96vw, 1200px);
-    --card-margin: 1rem auto 3rem auto;
+    --card-margin: 1rem auto 2.5rem auto;
 }

@@ -46,6 +46,24 @@ svg .background{
     ry: 20px;
 }
 
+@media(max-width: 600px){
+    h2{
+        padding-left: 1rem;
+        justify-content: center;
+    }
+
+    svg{
+        padding: 0;
+        margin-bottom: .8rem;
+    }
+
+    svg .background{
+        fill: #f2f2f2;
+        rx: 0px;
+        ry: 0px;
+    }
+}
+
 svg .window{
     display: none;
     fill: #fcb0b0;
@@ -65,7 +83,7 @@ legend{
     flex: 2 2 375px;
     display: block;
     color: var(--text-color);
-    padding: 2rem;
+    padding: 2rem clamp(5px, 5vw, 2rem);
     padding-top: min(2.5vw, 2rem);
 }
 

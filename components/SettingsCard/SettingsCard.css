@@ -12,7 +12,6 @@ h2{
     color: var(--text-color);
     display: inline-flex;
     align-items: center;
-    padding-left: .8rem;
 }
 
 #settings-title{
@@ -43,6 +42,7 @@ summary{
     list-style: none;
     outline: none;
     padding: 1rem;
+    padding-left: clamp(5px, 5vw, 1.8rem);
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -194,6 +194,7 @@ details.open .top-menu{
 section{
     min-height: 300px;
     display: none;
+    border-top: 1px solid var(--card-border-color);
 }
 
 section.active{
