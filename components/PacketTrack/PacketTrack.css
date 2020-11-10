@@ -6,6 +6,7 @@
 
 .pkt-traveling{
     cursor: pointer;
+    visibility: hidden;
 }
 
 .pkt-not-received{

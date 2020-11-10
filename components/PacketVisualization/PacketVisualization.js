@@ -208,7 +208,7 @@ export default class PacketVisualization extends HTMLElement {
         const seqNum = packet.isAck? packet.ackNum : packet.seqNum;
         const trackContainer = this.trackContainers.get(seqNum);
         if(trackContainer !== undefined)
-            trackContainer.children[0].removePacket(packet);
+            trackContainer.children[0].losePacket(packet);
     }
 
     /**
