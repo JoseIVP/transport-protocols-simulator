@@ -38,12 +38,6 @@
     stroke: #F96060;
 }
 
-.window{
-    fill: #FCB0B0;
-    stroke: #F96060;
-}
-
-
 #timer-circle{
     fill: transparent;
 }
@@ -53,22 +47,22 @@
     visibility: hidden;
 }
 
-.timer-timeout .timer-inner{
+#timer .timer-inner{
     stroke: #E78CF6;
     stroke-width: 20px;
 }
 
-.timer-timeout .timer-outter{
+#timer .timer-outter{
     stroke: #CF1AED;
     stroke-width: 30px;
 }
 
-.timer-next-sequence .timer-inner{
+#timer.next-sequence .timer-inner{
     stroke: #FDCB80;
     stroke-width: 20px;
 }
 
-.timer-next-sequence .timer-outter{
+#timer.next-sequence .timer-outter{
     stroke: #FC9700;
     stroke-width: 30px;
 }

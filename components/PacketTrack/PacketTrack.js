@@ -7,7 +7,7 @@ export default class PacketTrack extends HTMLElement{
     constructor(){
         super();
         this.attachShadow({mode: "open"});
-        const template = document.getElementById("packet-track");
+        const template = document.querySelector("#packet-track");
         this.shadowRoot.appendChild(template.content.cloneNode(true));
         this.svg = this.shadowRoot.querySelector("svg");
         this.timer = this.shadowRoot.querySelector("#timer");
@@ -15,35 +15,33 @@ export default class PacketTrack extends HTMLElement{
         this.receiver = this.shadowRoot.querySelector("#receiver");
         // Maps packets to their svg representations
         this.packets = new Map();
+        this.timerAnimation = null;
     }
 
     /**
-     * Start the timer animation for the sender.
-     * @param {number} duration - The duration of the timer animation.
+     * Starts the timer animation in the sender side.
+     * @param {number} duration - The duration of the timer.
      * @param {boolean} isNextSequence - true if the animation should be for
      * trying to send the next sequence.
      */
     startTimer(duration, isNextSequence=false){
-        if(isNextSequence){
-            this.timer.classList.remove("timer-timeout");
-            this.timer.classList.add("timer-next-sequence");
-        }else{
-            this.timer.classList.remove("timer-next-sequence");
-            this.timer.classList.add("timer-timeout");
-        }  
+        if(isNextSequence)
+            this.timer.classList.add("next-sequence");
+        else
+            this.timer.classList.remove("next-sequence"); 
         const keyframes = [
             { visibility: "visible", strokeDashoffset: 0},
             { visibility: "hidden", strokeDashoffset: -157} // timerDiameter * PI = 157
         ];
         const options = {duration};
-        this.currentAnimation = this.timer.animate(keyframes, options);
+        this.timerAnimation = this.timer.animate(keyframes, options);
     }
 
     /**
-     * Stop the timer animation.
+     * Stops the timer animation.
      */
     stopTimer(){
-        this.currentAnimation.finish();
+        this.timerAnimation?.finish();
     }
 
     /**
