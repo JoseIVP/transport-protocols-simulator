@@ -58,47 +58,40 @@ export default class PacketVisualization extends HTMLElement {
     }
 
     /**
-     * Set the parameters and initial conditions for the visualization.
-     * @param {Object} params - The options to start the visualization.
-     * @param {number} protocol - A number identifying the protocol.
-     * @param {Map} params.initialMapping - The initial mapping from sequence numbers to track positions.
-     * @param {number} params.nextTrackPosition - The initial next track to send a packet.
-     * @param {number} params.senderPosition - The initial position for the sender window.
-     * @param {number} params.receiverPosition - The initial position for the receiver window.
-     * @param {number} params.senderSize - The size of the sender window.
-     * @param {number} params.receiverSize - The size of the receiver window.
+     * Set the parameters and initial conditions for the visualization. The
+     * protocol number should be one of 1 = SW, 2 = GBN or 3 = SR.
+     * @param {Object} params - The parameters to start the visualization.
+     * @param {number} params.protocol - A number identifying the protocol.
+     * @param {number} params.windowSize - The size of the sliding windows.
      * @param {number} params.delay - The duration for the packet sending animation.
      * @param {number} params.timeout - The duration for the timer animation.
      */
     setParams({
-        protocol, // 1 = SW, 2 = GBN, 3 = SR
-        initialMapping = null,
-        nextTrackPosition = 2,
-        senderPosition = 2,
-        receiverPosition =2,
-        senderSize = 0,
-        receiverSize = 0,
+        protocol = 1,
+        windowSize = 0,
         delay = 1000,
         timeout = 2500
     }={}){
-        this.senderSize = senderSize;
+        this.windowSize = windowSize;
         this.protocol = protocol;
         this.delay = delay;
         this.timeout = timeout;
-        if(initialMapping !== null){
-            for(const [seqNumber, trackPosition] of initialMapping)
-                this.trackContainers.set(seqNumber, this.tracks.children[trackPosition])
-        }
-        this.nextTrackContainer = this.tracks.children[nextTrackPosition];
-        if(senderSize !== 0){
+        // Set initial sequence number to track container mapping
+        if(protocol === 1)
+            this.trackContainers.set(1, this.tracks.children[1]);
+        else if(protocol === 2)
+            this.trackContainers.set(-1, this.tracks.children[1]);
+        const initialPosition = 2;
+        this.nextTrackContainer = this.tracks.children[initialPosition];
+        if(protocol !== 1){
             this.senderWindow.style.display = "inline"
-            this.senderWindow.setAttribute("width", senderSize * 100);
-            this.senderWindow.setAttribute("x", senderPosition * 100);
-        }
-        if(receiverSize !== 0){
-            this.receiverWindow.style.display = "inline"
-            this.receiverWindow.setAttribute("width", receiverSize * 100);
-            this.receiverWindow.setAttribute("x", receiverPosition * 100);
+            this.senderWindow.setAttribute("width", windowSize * 100);
+            this.senderWindow.setAttribute("x", initialPosition * 100);
+            if(protocol === 3){
+                this.receiverWindow.style.display = "inline"
+                this.receiverWindow.setAttribute("width", windowSize * 100);
+                this.receiverWindow.setAttribute("x", initialPosition * 100);
+            }
         }
     }
 
@@ -146,13 +139,10 @@ export default class PacketVisualization extends HTMLElement {
                     this.move(12);
             }else{
                 const windowPosition = (Number.parseInt(this.senderWindow.getAttribute("x")));
-                if((windowPosition + this.senderSize * 100) >= 1400){
+                if((windowPosition + this.windowSize * 100) >= 1400){
                     this.move(windowPosition / 100 - 1);
                 }
             }
-            if(Number.parseInt(this.nextTrackContainer.getAttribute("x")) >= 1500 ||
-                (Number.parseInt(this.senderWindow.getAttribute("x")) + this.senderWindow * 100))
-                this.move(12);
         }
         const track = trackContainer.children[0];
         track.sendPacket(packet, this.delay, isAck);
