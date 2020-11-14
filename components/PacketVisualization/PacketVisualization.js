@@ -17,44 +17,48 @@ export default class PacketVisualization extends HTMLElement {
 
     /**
      * Moves the visualization to the left.
-     * @param {number} spaces - A positive integer as the number of
-     * spaces or tracks in which to move the visualization.
+     * @param {number} spaces - Number of spaces to move.
      */
     move(spaces){
+        if(spaces === 0)
+            return;
+        const transition= `x ${spaces * 50}ms linear`;
+        let lastChildX = Number.parseInt(this.tracks.lastElementChild.getAttribute("x"));
+        // Make a copy, as we may modify children positions
+        const children = Array.from(this.tracks.children);
+        for(const container of children){
+            container.style.transition = transition;
+            let containerX = Number.parseInt(container.getAttribute("x"));
+            if(containerX < 0){
+                // Move the container to the end
+                lastChildX += 100
+                containerX = lastChildX;
+                container.setAttribute("x", containerX);
+                this.tracks.appendChild(container);
+                container.firstElementChild.reset();
+                if (this.protocol !== 1){
+                    // For GBN and SR, detach containers from sequence
+                    // numbers as we do not use a finite number of sequences
+                    this.trackContainers.delete(container.seqNum);
+                    container.seqNum = null;
+                }
+            }
+            // Make the browser see the change in position for
+            // containers sent to the end and sync the begining of
+            // the animation with the other containers
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    container.setAttribute("x", containerX - 100 * spaces);
+                });
+            });
+        }
+        // Sync the begining of the window animation with the containers
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 this.moveWindow(-spaces);
                 this.moveWindow(-spaces, true);
             });
         });
-        const transitionTime = spaces * 50;
-        let lastChildX = Number.parseInt(this.tracks.lastElementChild.getAttribute("x"));
-        const children = [];
-        for(let i=0; i<this.tracks.children.length; i++)
-            children.push(this.tracks.children[i]);
-        for(const container of children){
-            container.style.transition = `x ${transitionTime}ms linear`;
-            let x = Number.parseInt(container.getAttribute("x"));
-            if(x < 0){
-                lastChildX = lastChildX + 100
-                x = lastChildX;
-                container.setAttribute("x", x);
-                this.tracks.appendChild(container);
-                // Unlink tracks out of sight
-                if (this.protocol !== 1){
-                    this.trackContainers.delete(container.seqNum);
-                    delete container.seqNum;
-                }
-                container.children[0].reset();
-            }
-            // We call this twice for the browser
-            // to notice the change in position
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    container.setAttribute("x", x - 100 * spaces);
-                })
-            });
-        }
     }
 
     /**
@@ -154,6 +158,8 @@ export default class PacketVisualization extends HTMLElement {
      * @param {boolean} [moveReceiver=false] - True to move the receiver window, false to move the sender's.
      */
     moveWindow(spaces, moveReceiver=false){
+        if(spaces === 0)
+            return;
         const transitionTime = Math.abs(spaces) * 50;
         const window = moveReceiver ? this.receiverWindow : this.senderWindow;
         window.style.transition = `x ${transitionTime}ms linear`;
