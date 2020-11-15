@@ -112,8 +112,8 @@ class Channel{
         /** @member {number} - The time in milliseconds that takes the channel to deliver the packet. */
         this.delay = delay;
         /**
-         * @member {Map} - A map with the current traveling packets as keys and their timout
-         * IDs as values.
+         * @member {Map} - A map with the current traveling packets as keys and as values, objects that
+         * may contain three properties: lose, damage and deliver, as the timeout ids for those actions.
          * @private
          */
         this._travelingPackets = new Map();
@@ -142,20 +142,22 @@ class Channel{
         const isLosingPacket = Math.random() &lt; this.lossProb;
         const isDamagingPacket = Math.random() &lt; this.damageProb;
         this.onSend(packet, isLosingPacket, isDamagingPacket);
-        let timeoutID = null;
+        const timeouts = {};
         if(isLosingPacket){
-            timeoutID = setTimeout(() => {
+            timeouts.lose = setTimeout(() => {
                 this.losePacket(packet);
             }, this.delay / 2);
         }else{
             if(isDamagingPacket)
-                packet.getCorrupted();
-            timeoutID = setTimeout(() => {
+                timeouts.damage = setTimeout(() => {
+                    this.damagePacket(packet);
+                }, this.delay / 2);
+            timeouts.deliver = setTimeout(() => {
                 this._travelingPackets.delete(packet);
                 packet.receiver.receive(packet, this);
             }, this.delay);
         }
-        this._travelingPackets.set(packet, timeoutID);
+        this._travelingPackets.set(packet, timeouts);
         return true;
     }
 
@@ -179,8 +181,9 @@ class Channel{
      * for each of the stopped packets.
      */
     stop(){
-        this._travelingPackets.forEach((timeoutID, packet) =>{
-            clearTimeout(timeoutID);
+        this._travelingPackets.forEach((timeouts, packet) =>{
+            for(const timeoutID of Object.values(timeouts))
+                clearTimeout(timeoutID);
             this.onPacketStopped(packet);
         });
         this._travelingPackets.clear();
@@ -204,10 +207,11 @@ class Channel{
      * @returns {boolean} - true if the packet was traveling, false if not.
      */
     losePacket(packet){
-        const timeoutID = this._travelingPackets.get(packet);
-        if(timeoutID !== undefined){
+        const timeouts = this._travelingPackets.get(packet);
+        if(timeouts !== undefined){
             this._travelingPackets.delete(packet);
-            clearTimeout(timeoutID);
+            for(const timeoutID of Object.values(timeouts))
+                clearTimeout(timeoutID);
             this.onPacketLost(packet);
             return true;
         }
@@ -228,8 +232,11 @@ class Channel{
      * @param {Packet} packet - The packet to damage.
      */
     damagePacket(packet){
-        if(this._travelingPackets.has(packet))
+        const timeouts = this._travelingPackets.get(packet);
+        if(timeouts !== undefined){
+            clearTimeout(timeouts.damage);
             packet.getCorrupted();
+        }
     }
 
 }
