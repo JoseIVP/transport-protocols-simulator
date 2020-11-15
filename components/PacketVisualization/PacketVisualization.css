@@ -64,7 +64,7 @@ svg .background{
     }
 }
 
-svg .window{
+#sender-window, #receiver-window{
     display: none;
     fill: #fcb0b0;
     stroke: #f96060;

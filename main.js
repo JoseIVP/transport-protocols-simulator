@@ -84,29 +84,17 @@ settingsCard.onStart = (settings) => {
             const spacesToMove = sender.base - senderBase;
             senderBase = sender.base;
             visualization.moveWindow(spacesToMove);
-        }
+        };
     }
     sender.onTimeoutSet = seqNum => visualization.startTimeout(seqNum);
     sender.onTimeoutUnset = seqNum => visualization.stopTimeout(seqNum);
 
-    // Prepare visualization component
-    const initialMapping = new Map();
-    switch (settings.protocol) {
-        case 1:
-            initialMapping.set(1, 1);
-            break;
-        case 2:
-            initialMapping.set(-1, 1);
-            break;
-    }
-    
+    // Prepare visualization component    
     visualization.setParams({
-        initialMapping,
         protocol: settings.protocol,
         delay: settings.delay,
         timeout: settings.timeout,
-        senderSize: senderBase === null ? 0 : settings.windowSize,
-        receiverSize: receiverBase === null ? 0 : settings.windowSize
+        windowSize: settings.windowSize,
     });
     visualization.onPacketClicked = packet => channel.losePacket(packet);
     

@@ -7,119 +7,140 @@ export default class PacketVisualization extends HTMLElement {
     constructor(){
         super();
         this.attachShadow({mode: "open"});
-        const template = document.getElementById("packet-visualization");
+        const template = document.querySelector("#packet-visualization");
         this.shadowRoot.appendChild(template.content.cloneNode(true));
-        this.senderWindow = this.shadowRoot.querySelector(".sender.window");
-        this.receiverWindow = this.shadowRoot.querySelector(".receiver.window");
+        this.senderWindow = this.shadowRoot.querySelector("#sender-window");
+        this.receiverWindow = this.shadowRoot.querySelector("#receiver-window");
         this.tracks = this.shadowRoot.querySelector("#tracks");
-        this.reset();
+        this._init();
+    }
+
+    /**
+     * Sets the initial state of the component.
+     * @param {boolean} reset - true to reset the component.
+     */
+    _init(reset=false){
+        this.windowSize = null;
+        this.protocol = null;
+        this.delay = null;
+        this.timeout = null;
+        // Maps sequence numbers to track containers
+        this.trackContainers = new Map();
+        this.senderWindow.style.display = "none";
+        this.receiverWindow.style.display = "none";
+        // Put double the number of visible tracks
+        for(let i=0; i< 32; i++){
+            let trackContainer;
+            if(reset){
+                // Reset track containers
+                trackContainer = this.tracks.children[i];
+                trackContainer.firstElementChild.reset();
+                // Prevent animation when reseting position
+                trackContainer.style.transition = null;
+            }else{
+                // We put track components inside foreignObject as
+                // SVG does not accept web components
+                trackContainer = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                trackContainer.setAttribute("height", 900);
+                trackContainer.setAttribute("width", 100);
+                const track = document.createElement("packet-track");
+                trackContainer.append(track);
+                this.tracks.append(trackContainer);
+            }
+            trackContainer.seqNum = null;
+            trackContainer.setAttribute("x", i * 100);
+        }
+        const initialPosition = 1;
+        // The container for the next sequence number
+        this.nextTrackContainer = this.tracks.children[initialPosition];
+        this.senderWindow.setAttribute("x", initialPosition * 100);
+        this.receiverWindow.setAttribute("x", initialPosition * 100);
+    }
+
+    /**
+     * Resets the component.
+     */
+    reset(){
+        this._init(true);
     }
 
     /**
      * Moves the visualization to the left.
-     * @param {number} spaces - A positive integer as the number of
-     * spaces or tracks in which to move the visualization.
+     * @param {number} spaces - Number of spaces to move.
      */
     move(spaces){
+        if(spaces === 0)
+            return;
+        const transition= `x ${spaces * 50}ms linear`;
+        let lastChildX = Number.parseInt(this.tracks.lastElementChild.getAttribute("x"));
+        // Make a copy, as we may modify children positions
+        const children = Array.from(this.tracks.children);
+        for(const container of children){
+            container.style.transition = transition;
+            let containerX = Number.parseInt(container.getAttribute("x"));
+            if(containerX < 0){
+                // Move the container to the end
+                lastChildX += 100
+                containerX = lastChildX;
+                container.setAttribute("x", containerX);
+                this.tracks.append(container);
+                container.firstElementChild.reset();
+                if (this.protocol !== 1){
+                    // For GBN and SR, detach containers from sequence
+                    // numbers as we do not use a finite number of sequences
+                    this.trackContainers.delete(container.seqNum);
+                    container.seqNum = null;
+                }
+            }
+            // Make the browser see the change in position for
+            // containers sent to the end and sync the begining of
+            // the animation with the other containers
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    container.setAttribute("x", containerX - 100 * spaces);
+                });
+            });
+        }
+        // Sync the begining of the window animation with the containers
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 this.moveWindow(-spaces);
                 this.moveWindow(-spaces, true);
             });
         });
-        const transitionTime = spaces * 50;
-        let lastChildX = Number.parseInt(this.tracks.lastElementChild.getAttribute("x"));
-        const children = [];
-        for(let i=0; i<this.tracks.children.length; i++)
-            children.push(this.tracks.children[i]);
-        for(const container of children){
-            container.style.transition = `x ${transitionTime}ms linear`;
-            let x = Number.parseInt(container.getAttribute("x"));
-            if(x < 0){
-                lastChildX = lastChildX + 100
-                x = lastChildX;
-                container.setAttribute("x", x);
-                this.tracks.appendChild(container);
-                // Unlink tracks out of sight
-                if (this.protocol !== 1){
-                    this.trackContainers.delete(container.seqNum);
-                    delete container.seqNum;
-                }
-                container.children[0].reset();
-            }
-            // We call this twice for the browser
-            // to notice the change in position
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    container.setAttribute("x", x - 100 * spaces);
-                })
-            });
-        }
     }
 
     /**
-     * Set the parameters and initial conditions for the visualization.
-     * @param {Object} params - The options to start the visualization.
-     * @param {number} protocol - A number identifying the protocol.
-     * @param {Map} params.initialMapping - The initial mapping from sequence numbers to track positions.
-     * @param {number} params.nextTrackPosition - The initial next track to send a packet.
-     * @param {number} params.senderPosition - The initial position for the sender window.
-     * @param {number} params.receiverPosition - The initial position for the receiver window.
-     * @param {number} params.senderSize - The size of the sender window.
-     * @param {number} params.receiverSize - The size of the receiver window.
+     * Set the parameters and initial conditions for the visualization. The
+     * protocol number should be one of 1 = SW, 2 = GBN or 3 = SR.
+     * @param {Object} params - The parameters to start the visualization.
+     * @param {number} params.protocol - A number identifying the protocol.
+     * @param {number} params.windowSize - The size of the sliding windows.
      * @param {number} params.delay - The duration for the packet sending animation.
      * @param {number} params.timeout - The duration for the timer animation.
      */
     setParams({
-        protocol, // 1 = SW, 2 = GBN, 3 = SR
-        initialMapping = null,
-        nextTrackPosition = 2,
-        senderPosition = 2,
-        receiverPosition =2,
-        senderSize = 0,
-        receiverSize = 0,
+        protocol = 1,
+        windowSize = 0,
         delay = 1000,
         timeout = 2500
     }={}){
-        this.senderSize = senderSize;
+        this.windowSize = windowSize;
         this.protocol = protocol;
         this.delay = delay;
         this.timeout = timeout;
-        if(initialMapping !== null){
-            for(const [seqNumber, trackPosition] of initialMapping)
-                this.trackContainers.set(seqNumber, this.tracks.children[trackPosition])
-        }
-        this.nextTrackContainer = this.tracks.children[nextTrackPosition];
-        if(senderSize !== 0){
+        // Set initial sequence number to track container mapping
+        if(protocol === 1)
+            this.trackContainers.set(1, this.tracks.children[0]);
+        else if(protocol === 2)
+            this.trackContainers.set(-1, this.tracks.children[0]);
+        if(protocol !== 1){
             this.senderWindow.style.display = "inline"
-            this.senderWindow.setAttribute("width", senderSize * 100);
-            this.senderWindow.setAttribute("x", senderPosition * 100);
-        }
-        if(receiverSize !== 0){
-            this.receiverWindow.style.display = "inline"
-            this.receiverWindow.setAttribute("width", receiverSize * 100);
-            this.receiverWindow.setAttribute("x", receiverPosition * 100);
-        }
-    }
-
-    /**
-     * Reset the visualization rendering to only show
-     * the packet tracks without the windows.
-     */
-    reset(){
-        this.trackContainers = new Map();
-        this.nextTrackContainer = null;
-        this.senderWindow.style.display = "none";
-        this.receiverWindow.style.display = "none";
-        this.tracks.innerHTML = "";
-        for(let i=0; i<36; i++){
-            const trackContainer = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-            trackContainer.setAttribute("height", 900);
-            trackContainer.setAttribute("width", 100);
-            trackContainer.setAttribute("x", i * 100);
-            const track = document.createElement("packet-track");
-            trackContainer.appendChild(track);
-            this.tracks.appendChild(trackContainer);
+            this.senderWindow.setAttribute("width", windowSize * 100);
+            if(protocol === 3){
+                this.receiverWindow.style.display = "inline"
+                this.receiverWindow.setAttribute("width", windowSize * 100);
+            }
         }
     }
 
@@ -142,28 +163,27 @@ export default class PacketVisualization extends HTMLElement {
             this.trackContainers.set(seqNum, trackContainer);
             trackContainer.seqNum = seqNum;
             if (this.protocol === 1){
-                if(Number.parseInt(this.nextTrackContainer.getAttribute("x")) >= 1500)
-                    this.move(12);
+                const nexContainerPosition = Number.parseInt(this.nextTrackContainer.getAttribute("x"));
+                if(nexContainerPosition >= 1500)
+                    this.move(nexContainerPosition / 100 - 2);
             }else{
-                const windowPosition = (Number.parseInt(this.senderWindow.getAttribute("x")));
-                if((windowPosition + this.senderSize * 100) >= 1400){
+                const windowPosition = Number.parseInt(this.senderWindow.getAttribute("x"));
+                if((windowPosition + this.windowSize * 100) >= 1500)
                     this.move(windowPosition / 100 - 1);
-                }
             }
-            if(Number.parseInt(this.nextTrackContainer.getAttribute("x")) >= 1500 ||
-                (Number.parseInt(this.senderWindow.getAttribute("x")) + this.senderWindow * 100))
-                this.move(12);
         }
-        const track = trackContainer.children[0];
-        track.sendPacket(packet, this.delay, isAck);
+        trackContainer.firstElementChild.sendPacket(packet, this.delay);
     }
 
     /**
-     * Move the sliding window.
+     * Move the sliding window. Use positive space numbers to move to the right and
+     * negative to move to the left.
      * @param {number} spaces - The number of spaces in which to move the window.
      * @param {boolean} [moveReceiver=false] - True to move the receiver window, false to move the sender's.
      */
     moveWindow(spaces, moveReceiver=false){
+        if(spaces === 0)
+            return;
         const transitionTime = Math.abs(spaces) * 50;
         const window = moveReceiver ? this.receiverWindow : this.senderWindow;
         window.style.transition = `x ${transitionTime}ms linear`;
@@ -172,32 +192,33 @@ export default class PacketVisualization extends HTMLElement {
     }
 
     /**
-     * Change the visual representation of the sender's end packet
-     * corresponding to <packet> to look like a confirmed packet.
+     * Change the visual representation of the sender's end
+     * corresponding to packet, to look like a confirmed packet.
      * @param {number} packet
      */
     packetConfirmed(packet){
         if(this.protocol === 2){
+            // For GBN show as confirmed any previous sequence numbers
             for(const [seqNum, container] of this.trackContainers){
                 if(seqNum === -1)
-                    continue;
+                    continue; // Except for the preset one
                 if(seqNum <= packet.ackNum)
-                    container.children[0].packetConfirmed();
+                    container.firstElementChild.packetConfirmed();
             }
         }else{
             const trackContainer = this.trackContainers.get(packet.ackNum);
-            trackContainer?.children[0].packetConfirmed();
+            trackContainer?.firstElementChild.packetConfirmed();
         }
     }
     
     /**
-     * Change the visual representation of the receivers's end packet
-     * corresponding to <packet> to look like a received packet.
+     * Change the visual representation of the receivers's end
+     * corresponding to packet to look like a received packet.
      * @param {Packet} packet
      */
     packetReceived(packet){
         const trackContainer = this.trackContainers.get(packet.seqNum);
-        trackContainer?.children[0].packetReceived();
+        trackContainer?.firstElementChild.packetReceived();
     }
 
     /**
@@ -207,17 +228,15 @@ export default class PacketVisualization extends HTMLElement {
     removePacket(packet){
         const seqNum = packet.isAck? packet.ackNum : packet.seqNum;
         const trackContainer = this.trackContainers.get(seqNum);
-        if(trackContainer !== undefined)
-            trackContainer.children[0].removePacket(packet);
+        trackContainer?.firstElementChild.losePacket(packet);
     }
 
     /**
      * Sets onPacketClicked() callback to each track.
      */
     set onPacketClicked(callback){
-        for(const container of this.tracks.children){
-            container.children[0].onPacketClicked = callback;
-        }
+        for(const container of this.tracks.children)
+            container.firstElementChild.onPacketClicked = callback;
     }
 
     /**
@@ -226,9 +245,7 @@ export default class PacketVisualization extends HTMLElement {
      */
     startTimeout(seqNum){
         const container = this.trackContainers.get(seqNum);
-        if(container !== undefined){
-            container.children[0].startTimer(this.timeout);
-        }
+        container?.firstElementChild.startTimer(this.timeout);
     }
 
     /**
@@ -237,9 +254,7 @@ export default class PacketVisualization extends HTMLElement {
      */
     stopTimeout(seqNum){
         const container = this.trackContainers.get(seqNum);
-        if(container !== undefined){
-            container.children[0].stopTimer();
-        }
+        container?.firstElementChild.stopTimer();
     }
 
     /**
@@ -248,8 +263,6 @@ export default class PacketVisualization extends HTMLElement {
      * @param {number} duration - The duration of the timer.
      */
     startNextPacketTimer(duration){
-        if(this.nextTrackContainer !== undefined){
-            this.nextTrackContainer.children[0].startTimer(duration, true);
-        }
+        this.nextTrackContainer?.firstElementChild.startTimer(duration, true);
     }
 }

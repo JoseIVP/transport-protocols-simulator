@@ -282,6 +282,7 @@ label p{
     height: 100%;
     display: inline-flex;
     align-items: center;
+    pointer-events: none;
 }
 
 .select-wrapper select{
