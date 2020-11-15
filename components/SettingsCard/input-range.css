@@ -71,7 +71,7 @@ input[type=range]::-moz-range-track{
 }
 
 input[type=range]:focus::-moz-range-track{
-    box-shadow: 0 0 0 3px var(--primary-button-border-color);
+    box-shadow: 0 0 0 3px var(--secondary-button-border-color);
 }
 
 input[type=range]::-moz-range-thumb{

@@ -95,7 +95,7 @@ export default class SettingsCard extends HTMLElement {
             "packetRate",
             "windowSize",
             "lossProb"
-        ]
+        ];
         const settings = {};
         // Convert the data and disable the form elements
         for(const setting of settingsList){
@@ -127,23 +127,18 @@ export default class SettingsCard extends HTMLElement {
      * paragraph below them.
      */
     _initFormElements(){
-        const formElements = this.shadowRoot.getElementById("settings-form").elements;
-        for(let i=0; i<formElements.length; i++){
-            const element = formElements[i];
-            // SELECT does not have a paragraph so we only
-            // take the INPUT tags
-            if(element.tagName == "INPUT"){
-                const p = element.nextElementSibling;
-                p.textContent = element.value;
-                if(element.name == "lossProb")
-                    element.oninput = () => {
-                        p.textContent = element.value / 10;
-                    };
-                else
-                    element.oninput = () => {
-                        p.textContent = element.value;
-                    };
-            }
+        const inputs = this.shadowRoot.querySelectorAll("input");
+        for(const input of inputs){
+            const p = input.nextElementSibling;
+            p.textContent = input.value;
+            if(input.name == "lossProb")
+                input.oninput = () => {
+                    p.textContent = input.value / 10;
+                };
+            else
+                input.oninput = () => {
+                    p.textContent = input.value;
+                };
         }
     }
 }

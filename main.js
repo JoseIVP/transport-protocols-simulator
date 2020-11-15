@@ -84,7 +84,7 @@ settingsCard.onStart = (settings) => {
             const spacesToMove = sender.base - senderBase;
             senderBase = sender.base;
             visualization.moveWindow(spacesToMove);
-        }
+        };
     }
     sender.onTimeoutSet = seqNum => visualization.startTimeout(seqNum);
     sender.onTimeoutUnset = seqNum => visualization.stopTimeout(seqNum);
