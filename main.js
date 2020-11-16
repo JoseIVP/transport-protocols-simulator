@@ -48,9 +48,11 @@ settingsCard.onStart = (settings) => {
     // Prepare channel
     channel = new Channel({
         delay: settings.delay,
-        lossProb: settings.lossProb
+        lossProb: settings.lossProb,
+        damageProb: settings.damageProb
     });
     channel.onPacketLost = packet => visualization.removePacket(packet);
+    channel.onPacketDamaged = packet => visualization.damagePacket(packet);
 
     // Prepare receiver
     receiver = new ReceiverClass({windowSize: settings.windowSize});
