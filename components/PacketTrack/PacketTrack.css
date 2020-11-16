@@ -34,6 +34,11 @@
     stroke: #3AB146;
 }
 
+.pkt-damaged{
+    fill: #AE9F9B;
+    stroke: #5D4037;
+}
+
 .pkt-lost{
     fill: #FCB0B0;
     stroke: #F96060;

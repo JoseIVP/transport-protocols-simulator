@@ -146,3 +146,8 @@ legend li.legend-timeout::before{
     background-color: #E78CF6;
     border-color: #CF1AED;
 }
+
+legend li.legend-damaged-packet::before{
+    background-color: #AE9F9B;
+    border-color: #5D4037;
+}

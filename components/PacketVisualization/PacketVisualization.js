@@ -232,6 +232,16 @@ export default class PacketVisualization extends HTMLElement {
     }
 
     /**
+     * Change a packet to look like a damaged packet.
+     * @param {Packet} packet 
+     */
+    damagePacket(packet){
+        const seqNum = packet.isAck? packet.ackNum : packet.seqNum;
+        const trackContainer = this.trackContainers.get(seqNum);
+        trackContainer?.firstElementChild.damagePacket(packet);
+    }
+
+    /**
      * Sets onPacketClicked() callback to each track.
      */
     set onPacketClicked(callback){

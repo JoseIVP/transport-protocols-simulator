@@ -126,4 +126,14 @@ export default class PacketTrack extends HTMLElement{
             }, 200);
         }
     }
+
+    /**
+     * Changes the appearance of a traveling packet to look
+     * like a damaged packet.
+     * @param {Packet} packet - The packet related to the svg.
+     */
+    damagePacket(packet){
+        const packetInfo = this.packets.get(packet);
+        packetInfo?.svg.classList.add("pkt-damaged");
+    }
 }

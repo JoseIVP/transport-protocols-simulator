@@ -94,7 +94,8 @@ export default class SettingsCard extends HTMLElement {
             "timeout",
             "packetRate",
             "windowSize",
-            "lossProb"
+            "lossProb",
+            "damageProb"
         ];
         const settings = {};
         // Convert the data and disable the form elements
@@ -104,6 +105,7 @@ export default class SettingsCard extends HTMLElement {
             settings[setting] = Number.parseInt(formElement.value);
         }
         settings.lossProb /= 10;
+        settings.damageProb /= 10;
         this.onStart(settings);
     }
 
@@ -131,7 +133,7 @@ export default class SettingsCard extends HTMLElement {
         for(const input of inputs){
             const p = input.nextElementSibling;
             p.textContent = input.value;
-            if(input.name == "lossProb")
+            if(input.name == "lossProb" || input.name == "damageProb")
                 input.oninput = () => {
                     p.textContent = input.value / 10;
                 };
