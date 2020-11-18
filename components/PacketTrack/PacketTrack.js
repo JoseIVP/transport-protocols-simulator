@@ -136,4 +136,24 @@ export default class PacketTrack extends HTMLElement{
         const packetInfo = this.packets.get(packet);
         packetInfo?.svg.classList.add("pkt-damaged");
     }
+
+    /**
+     * Pauses all the animations.
+     */
+    pause(){
+        this.timerAnimation?.pause();
+        this.packets.forEach(({animation}) => {
+            animation.pause();
+        });
+    }
+
+    /**
+     * Resumes all the animations.
+     */
+    resume(){
+        this.timerAnimation?.play();
+        this.packets.forEach(({animation}) => {
+            animation.play();
+        });
+    }
 }
