@@ -135,7 +135,7 @@ export class Timeout{
      */
     stop(){
         if(this._state == this._RUNNING){
-           clearTimeout(this._timeoutId);
+            clearTimeout(this._timeoutId);
             this._state = this._STOPPED; 
         }
     }

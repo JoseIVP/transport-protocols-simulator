@@ -94,6 +94,7 @@
 
 import Node from "./Node.js";
 import Packet from "./Packet.js";
+import { Timeout } from "./utils.js";
 
 
 function isAck(packet, seqNum){
@@ -119,7 +120,11 @@ export class SWSender extends Node{
         channel
     }){
         super();
-        this._currentTimeoutID = null;
+        /**
+         * @member {Timeout} - The current timeout object.
+         * @private
+         */
+        this._currentTimeout = null;
         /** @member {SWReceiver} - The receiver of the packets. */
         this.receiver = receiver;
         /** @member {number} - The time to wait for each acknowledgment. */
@@ -161,7 +166,7 @@ export class SWSender extends Node{
     }
 
     _setTimeout(){
-        this._currentTimeoutID = setTimeout(() => {
+        this._currentTimeout = new Timeout(this.timeout, () => {
             super.send(new Packet({
                 seqNum: this.currentSeqNum,
                 sender: this,
@@ -169,7 +174,7 @@ export class SWSender extends Node{
                 wasReSent: true,
             }), this.channel);
             this._setTimeout();
-        }, this.timeout);
+        });
         this.onTimeoutSet(this.currentSeqNum);
     }
 
@@ -185,9 +190,9 @@ export class SWSender extends Node{
     receive(packet, channel){
         if (this.isWaitingAck &amp;&amp; !packet.isCorrupted &amp;&amp; isAck(packet, this.currentSeqNum)){
             this.onReceive(packet, channel, true);
-            clearTimeout(this._currentTimeoutID);
+            this._currentTimeout.stop();
+            this._currentTimeout = null;
             this.onTimeoutUnset(packet.ackNum);
-            this._currentTimeoutID = null;
             // Change the state to enable sending the next sequence number
             this.isWaitingAck = false;
             this.currentSeqNum = (this.currentSeqNum + 1) % 2;
@@ -201,8 +206,8 @@ export class SWSender extends Node{
      * Stops the current timeout. 
      */
     stop(){
-        clearTimeout(this._currentTimeoutID);
-        this._currentTimeoutID = null;
+        this._currentTimeout.stop();
+        this._currentTimeout = null;
     }
 
 }
