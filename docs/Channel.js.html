@@ -92,6 +92,8 @@
   <article>
     <pre class="prettyprint source linenums"><code>/** @module Channel */
 
+import { Timeout } from "./utils.js";
+
 /**
  * A class that represents the channels through which the packets travel.
  */
@@ -113,7 +115,7 @@ class Channel{
         this.delay = delay;
         /**
          * @member {Map} - A map with the current traveling packets as keys and as values, objects that
-         * may contain three properties: lose, damage and deliver, as the timeout ids for those actions.
+         * may contain three properties: lose, damage and deliver, as the Timeout objects for those actions.
          * @private
          */
         this._travelingPackets = new Map();
@@ -144,18 +146,18 @@ class Channel{
         this.onSend(packet, isLosingPacket, isDamagingPacket);
         const timeouts = {};
         if(isLosingPacket){
-            timeouts.lose = setTimeout(() => {
+            timeouts.lose = new Timeout(this.delay / 2 , () => {
                 this.losePacket(packet);
-            }, this.delay / 2);
+            });
         }else{
             if(isDamagingPacket)
-                timeouts.damage = setTimeout(() => {
+                timeouts.damage = new Timeout(this.delay / 2, () => {
                     this.damagePacket(packet);
-                }, this.delay / 2);
-            timeouts.deliver = setTimeout(() => {
+                });
+            timeouts.deliver = new Timeout(this.delay, () => {
                 this._travelingPackets.delete(packet);
                 packet.receiver.receive(packet, this);
-            }, this.delay);
+            });
         }
         this._travelingPackets.set(packet, timeouts);
         return true;
@@ -182,8 +184,8 @@ class Channel{
      */
     stop(){
         this._travelingPackets.forEach((timeouts, packet) =>{
-            for(const timeoutID of Object.values(timeouts))
-                clearTimeout(timeoutID);
+            for(const timeout of Object.values(timeouts))
+                timeout.stop();
             this.onPacketStopped(packet);
         });
         this._travelingPackets.clear();
@@ -210,8 +212,8 @@ class Channel{
         const timeouts = this._travelingPackets.get(packet);
         if(timeouts !== undefined){
             this._travelingPackets.delete(packet);
-            for(const timeoutID of Object.values(timeouts))
-                clearTimeout(timeoutID);
+            for(const timeout of Object.values(timeouts))
+                timeout.stop();
             this.onPacketLost(packet);
             return true;
         }
@@ -237,7 +239,7 @@ class Channel{
     damagePacket(packet){
         const timeouts = this._travelingPackets.get(packet);
         if(timeouts !== undefined){
-            clearTimeout(timeouts.damage);
+            timeouts.damage?.stop();;
             packet.getCorrupted();
             this.onPacketDamaged(packet);
             return true;
