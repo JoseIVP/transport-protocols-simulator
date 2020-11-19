@@ -107,7 +107,6 @@ settingsCard.onStart = (settings) => {
     visualization.startNextPacketTimer(timeToNextPacket);
     interval = new Timeout(timeToNextPacket, () => {
         sender.send();
-        console.log("Sending packet");
         visualization.startNextPacketTimer(timeToNextPacket);
     }, true);
 };
