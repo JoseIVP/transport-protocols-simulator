@@ -206,7 +206,7 @@ export class SWSender extends Node{
      * Stops the current timeout. 
      */
     stop(){
-        this._currentTimeout.stop();
+        this._currentTimeout?.stop();
         this._currentTimeout = null;
     }
 

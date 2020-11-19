@@ -5,6 +5,7 @@ import {SWReceiver, SWSender} from "./lib/src/stopAndWait.js";
 import {GBNReceiver, GBNSender} from "./lib/src/goBackN.js";
 import {SRReceiver, SRSender} from "./lib/src/selectiveRepeat.js";
 import Channel from "./lib/src/Channel.js";
+import {Timeout} from "./lib/src/utils.js";
 
 customElements.define("settings-card", SettingsCard);
 customElements.define("packet-visualization", PacketVisualization);
@@ -16,10 +17,10 @@ const visualization = document.querySelector("packet-visualization");
 let sender = null;
 let receiver = null;
 let channel = null;
-let intervalID = null;
+let interval = null;
 
 settingsCard.onStart = (settings) => {
-    console.log("start!");
+    console.log("started!");
     console.log(settings);
 
     // Each window base sequence
@@ -104,22 +105,47 @@ settingsCard.onStart = (settings) => {
     const timeToNextPacket = 60 * 1000 / settings.packetRate;
     sender.send();
     visualization.startNextPacketTimer(timeToNextPacket);
-    intervalID = setInterval(() => {
+    interval = new Timeout(timeToNextPacket, () => {
         sender.send();
+        console.log("Sending packet");
         visualization.startNextPacketTimer(timeToNextPacket);
-    }, timeToNextPacket);
+    }, true);
 };
 
 
 settingsCard.onStop = () => {
     // Reset the visualization
-    console.log("stop!");
-    clearInterval(intervalID);
-    intervalID = null;
+    console.log("stopped!");
+    interval.stop();
+    interval = null;
     sender.stop();
     sender = null;
     channel.stop();
     channel = null;
     receiver = null;
     visualization.reset();
+};
+
+settingsCard.onResume = () => {
+    // Resum simulation
+    sender.resume();
+    channel.resume();
+    interval.resume();
+    visualization.resume();
+    console.log("resumed!");
+};
+
+settingsCard.onPause = () => {
+    // Pause simulation
+    sender.pause();
+    channel.pause();
+    interval.pause();
+    visualization.pause();
+    console.log("paused!");
+};
+
+document.onvisibilitychange = () => {
+    // Pause simulation if the user leaves the tab
+    if(document.visibilityState == "hidden")
+        settingsCard.pause();
 };
