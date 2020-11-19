@@ -107,11 +107,13 @@ export class Timeout{
      * Creates and starts a new timeout.
      * @param {number} duration - The duration of the timeout in miliseconds.
      * @param {function} callback - The callback to execute when the timeout is completed.
+     * @param {boolean} [repeat=false] - true if the timeout should repeat like an interval.
      */
-    constructor(duration, callback){
+    constructor(duration, callback, repeat=false){
         this._duration = duration;
         this._elapsedTime = 0;
         this._callback = callback;
+        this._repeat = repeat;
         this._start(duration);
     }
 
@@ -121,10 +123,21 @@ export class Timeout{
      * @private
      */
     _start(duration){
-        this._state = this._RUNNING;
+        this._state = Timeout._RUNNING;
         this._timeoutId = setTimeout(() => {
-            this._state = this._ENDED;
-            this._callback();
+            if(this._repeat){
+                this._timeoutId = setInterval(() => {
+                    this._elapsedTime = 0;
+                    this._resumeTime = Date.now();
+                    this._callback();
+                }, this._duration);
+                this._elapsedTime = 0;
+                this._resumeTime = Date.now();
+                this._callback();
+            }else{
+                this._state = Timeout._ENDED;
+                this._callback();
+            }
         }, duration);
         this._resumeTime = Date.now();
     }
@@ -134,9 +147,9 @@ export class Timeout{
      * be resumed.
      */
     stop(){
-        if(this._state == this._RUNNING){
+        if(this._state == Timeout._RUNNING){
             clearTimeout(this._timeoutId);
-            this._state = this._STOPPED; 
+            this._state = Timeout._STOPPED; 
         }
     }
 
@@ -144,10 +157,10 @@ export class Timeout{
      * Pauses the timeout.
      */
     pause(){
-        if(this._state == this._RUNNING){
+        if(this._state == Timeout._RUNNING){
             clearTimeout(this._timeoutId);
             this._elapsedTime += Date.now() - this._resumeTime;
-            this._state = this._PAUSED;  
+            this._state = Timeout._PAUSED;  
         }
         
     }
@@ -156,7 +169,7 @@ export class Timeout{
      * Resumes the timeout if it is paused.
      */
     resume(){
-        if(this._state == this._PAUSED){
+        if(this._state == Timeout._PAUSED){
             const time = this._duration - this._elapsedTime;
             this._start(time &lt; 0 ? 0 : time);
         }
