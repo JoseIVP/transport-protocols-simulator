@@ -275,4 +275,20 @@ export default class PacketVisualization extends HTMLElement {
     startNextPacketTimer(duration){
         this.nextTrackContainer?.firstElementChild.startTimer(duration, true);
     }
+
+    /**
+     * Pauses the visualization animations.
+     */
+    pause(){
+        for(const container of this.tracks.children)
+            container.firstElementChild.pause();
+    }
+
+    /**
+     * Resumes the visualization animations.
+     */
+    resume(){
+        for(const container of this.tracks.children)
+            container.firstElementChild.resume();
+    }
 }

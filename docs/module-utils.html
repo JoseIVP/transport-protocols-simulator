@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      Packet.js - Documentation
+      utils - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -81,71 +79,61 @@
   <div id="main">
     
       <h1 class="page-title">
-        Packet.js
+        utils
       </h1>
     
 
     
-      
 
 <section>
+  <header>
+    
+      
+  </header>
+
   <article>
-    <pre class="prettyprint source linenums"><code>/** @module Packet */
+    <div class="container-overview">
+      
+        
 
-/**
- * A class that represents a network packet.
- */
-class Packet{
+        
+      
+    </div>
 
-    /**
-     * Creates a new packet.
-     * @param {Object} [options] - Options for the constructor.
-     * @param {number} options.seqNum - The sequence number of the packet.
-     * @param {Node} options.sender - The sender of the packet.
-     * @param {Node} options.receiver - The receiver of the packet.
-     * @param {boolean} [options.isAck=false] - true if the packet is an acknowledgment.
-     * @param {boolean} [options.ackNum=null] - The sequence number to acknowledge.
-     * @param {boolean} [options.wasReSent=false] - true if the packet was re-sent.
-     */
-    constructor({
-        seqNum,
-        sender,
-        receiver,
-        isAck = false,
-        ackNum = null,
-        wasReSent = false,
-    }={}){
-        /** @member {number} - The sequence number of the packet. */
-        this.seqNum = seqNum;
-        /** @member {Node} - The sender of the packet. */
-        this.sender = sender;
-        /** @member {Node} - The receiver of the packet. */
-        this.receiver = receiver;
-        /** @member {boolean} - true if the packet is an acknowledgment, false otherwise. */
-        this.isAck = isAck;
-        /** @member {number} - The sequence number to acknowledge. */
-        this.ackNum = ackNum;
-        /** @member {booblean} - true if the packet is corrupted, false if not. */
-        this.isCorrupted = false;
-        /** @member {boolean} - true if the packet was re-sent. */
-        this.wasReSent = wasReSent;
-    }
+    
 
-    /**
-     * Turns packet.isCorrupted true.
-     */
-    getCorrupted(){
-        this.isCorrupted = true;
-    }
+    
 
-}
+    
+      <h3 class="subsection-title">Classes</h3>
 
-export default Packet;
-</code></pre>
+      <dl>
+        
+          <dt>
+            <a href="module-utils.Timeout.html">Timeout</a>
+          </dt>
+          <dd>
+            
+          </dd>
+        
+      </dl>
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
   </article>
 </section>
 
-    
+
 
 
   </div>

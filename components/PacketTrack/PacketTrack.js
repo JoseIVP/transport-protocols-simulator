@@ -34,7 +34,15 @@ export default class PacketTrack extends HTMLElement{
             { visibility: "hidden", strokeDashoffset: -157} // timerDiameter * PI = 157
         ];
         const options = {duration};
-        this.timerAnimation = this.timer.animate(keyframes, options);
+        const animation = this.timer.animate(keyframes, options);
+        this.timerAnimation = animation;
+        animation.onfinish = () => {
+            // Sometimes onfinish() is executed after a new timer animation
+            // already began, and if we set to null the wrong animation
+            // we will not be able to pause it.
+            if(animation === this.timerAnimation)
+                this.timerAnimation = null;
+        };
     }
 
     /**
@@ -42,7 +50,6 @@ export default class PacketTrack extends HTMLElement{
      */
     stopTimer(){
         this.timerAnimation?.finish();
-        this.timerAnimation = null;
     }
 
     /**
@@ -135,5 +142,25 @@ export default class PacketTrack extends HTMLElement{
     damagePacket(packet){
         const packetInfo = this.packets.get(packet);
         packetInfo?.svg.classList.add("pkt-damaged");
+    }
+
+    /**
+     * Pauses all the animations.
+     */
+    pause(){
+        this.timerAnimation?.pause();
+        this.packets.forEach(({animation}) => {
+            animation.pause();
+        });
+    }
+
+    /**
+     * Resumes all the animations.
+     */
+    resume(){
+        this.timerAnimation?.play();
+        this.packets.forEach(({animation}) => {
+            animation.play();
+        });
     }
 }

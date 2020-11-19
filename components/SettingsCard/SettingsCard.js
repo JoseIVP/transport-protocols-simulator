@@ -32,6 +32,11 @@ export default class SettingsCard extends HTMLElement {
         this.toggleRunBtn.onclick = () => {
             this.running ? this.stop() : this.start();
         };
+        this.paused = false;
+        this.togglePauseBtn = this.shadowRoot.getElementById("toggle-pause");
+        this.togglePauseBtn.onclick = () => {
+            this.paused ? this.resume() : this.pause();
+        };
     }
 
     /**
@@ -88,6 +93,7 @@ export default class SettingsCard extends HTMLElement {
         const lock = this.shadowRoot.querySelector(".lock");
         lock.classList.add("active");
         this.toggleRunBtn.classList.add("running");
+        this.togglePauseBtn.disabled = false;
         const settingsList = [
             "protocol",
             "delay",
@@ -113,8 +119,14 @@ export default class SettingsCard extends HTMLElement {
      * Unlock the entry of data to the forms, and call onStop().
      */
     stop(){
+        // Reset playing button
         this.running = false;
         this.toggleRunBtn.classList.remove("running");
+        // Reset pausing button
+        this.paused = false;
+        this.togglePauseBtn.classList.remove("paused");
+        this.togglePauseBtn.disabled = true;
+        // Unlock form inputs
         const formElements = this.shadowRoot.getElementById("settings-form").elements;
         for(let i=0; i<formElements.length; i++){
             formElements[i].disabled = false;
@@ -141,6 +153,30 @@ export default class SettingsCard extends HTMLElement {
                 input.oninput = () => {
                     p.textContent = input.value;
                 };
+        }
+    }
+
+    /**
+     * Changes the states of the pause button to paused,
+     * and calls onPause().
+     */
+    pause(){
+        if(this.running && !this.paused){
+            this.paused = true;
+            this.togglePauseBtn.classList.add("paused");
+            this.onPause();
+        }
+    }
+
+    /**
+     * Removes the paused state from the pause button
+     * and calls onResume().
+     */
+    resume(){
+        if(this.paused){
+            this.paused = false;
+            this.togglePauseBtn.classList.remove("paused");
+            this.onResume(); 
         }
     }
 }
