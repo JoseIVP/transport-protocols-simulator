@@ -99,7 +99,9 @@ settingsCard.onStart = (settings) => {
         timeout: settings.timeout,
         windowSize: settings.windowSize,
     });
-    visualization.onPacketClicked = packet => channel.losePacket(packet);
+    visualization.onPacketClicked = (packet, ctrlKey) => {
+        ctrlKey? channel.damagePacket(packet) : channel.losePacket(packet);
+    };
     
     // Start the simulation
     const timeToNextPacket = 60 * 1000 / settings.packetRate;
