@@ -133,6 +133,19 @@ class Channel{
         return this._travelingPackets.keys();
     }
 
+
+    /**
+     * Returns a number between 1/4 and 3/4 of the delay.
+     * Used to randomly lose or damage a packet around the
+     * middle of the trajectory, so suddenly losing or
+     * damaging a packet just before delivery or after
+     * emission doesn't happen in the visualization.
+     * @private
+     */
+    _getRandomTime(){
+        return this.delay / 4 + Math.random() * this.delay / 2;
+    }
+
     /**
      * Sends a packet to its receiver, returning a boolean that is true
      * if the packet entered the channel and false if not. For now, the
@@ -146,12 +159,12 @@ class Channel{
         this.onSend(packet, isLosingPacket, isDamagingPacket);
         const timeouts = {};
         if(isLosingPacket){
-            timeouts.lose = new Timeout(this.delay / 2 , () => {
+            timeouts.lose = new Timeout(this._getRandomTime() , () => {
                 this.losePacket(packet);
             });
         }else{
             if(isDamagingPacket)
-                timeouts.damage = new Timeout(this.delay / 2, () => {
+                timeouts.damage = new Timeout(this._getRandomTime(), () => {
                     this.damagePacket(packet);
                 });
             timeouts.deliver = new Timeout(this.delay, () => {
