@@ -63,7 +63,7 @@ export default class PacketTrack extends HTMLElement{
     sendPacket(packet, delay){
         const {isAck} = packet;
         const svgPacket = document.createElementNS("http://www.w3.org/2000/svg", "use");
-        svgPacket.onclick = () => this.onPacketClicked(packet);
+        svgPacket.onclick = event => this.onPacketClicked(packet, event.ctrlKey);
         svgPacket.setAttribute("href", "#packet-rect");
         svgPacket.classList.add("pkt-traveling");
         svgPacket.classList.add(isAck? "pkt-acknowledgment" : "pkt-buffered");
@@ -87,8 +87,9 @@ export default class PacketTrack extends HTMLElement{
     /**
      * A callback that is fired when a packet svg is clicked.
      * @param {Packet} packet - The packet related to the svg.
+     * @param {boolean} ctrlKey - true if ctrl was pressed while clicking the packet.
      */
-    onPacketClicked(packet){
+    onPacketClicked(packet, ctrlKey){
         return
     }
 
