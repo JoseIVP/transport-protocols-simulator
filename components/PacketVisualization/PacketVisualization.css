@@ -7,7 +7,7 @@
 
 .card{
     --card-width: min(96vw, 1200px);
-    --card-margin: 1rem auto 4rem auto;
+    --card-margin: 1rem auto 2.5rem auto;
     width: var(--card-width);
     margin: var(--card-margin);
     background-color: var(--card-color);
