@@ -1,23 +1,27 @@
 import SettingsCard from "./components/SettingsCard/SettingsCard.js";
 import PacketVisualization from "./components/PacketVisualization/PacketVisualization.js";
 import PacketTrack from "./components/PacketTrack/PacketTrack.js";
+import StatisticsCard from "./components/StatisticsCard/StatisticsCard.js";
 import {SWReceiver, SWSender} from "./lib/src/stopAndWait.js";
 import {GBNReceiver, GBNSender} from "./lib/src/goBackN.js";
 import {SRReceiver, SRSender} from "./lib/src/selectiveRepeat.js";
 import Channel from "./lib/src/Channel.js";
-import {Timeout} from "./lib/src/utils.js";
+import {Timeout, StatsComputer} from "./lib/src/utils.js";
 
 customElements.define("settings-card", SettingsCard);
 customElements.define("packet-visualization", PacketVisualization);
 customElements.define("packet-track", PacketTrack);
+customElements.define("statistics-card", StatisticsCard);
 
 const settingsCard = document.querySelector("settings-card");
 const visualization = document.querySelector("packet-visualization");
+const statsCard = document.querySelector("statistics-card");
 
 let sender = null;
 let receiver = null;
 let channel = null;
 let interval = null;
+let stats = null;
 
 settingsCard.onStart = (settings) => {
     console.log("started!");
@@ -46,6 +50,11 @@ settingsCard.onStart = (settings) => {
             receiverBase = 0;
     }
 
+    // Initialize stats generation
+    stats = new StatsComputer(2000);
+    stats.pause(); // Resume it when actually starting
+    stats.onUpdate = () => statsCard.update(stats);
+
     // Prepare channel
     channel = new Channel({
         delay: settings.delay,
@@ -57,17 +66,21 @@ settingsCard.onStart = (settings) => {
 
     // Prepare receiver
     receiver = new ReceiverClass({windowSize: settings.windowSize});
-    receiver.onSend = packet => visualization.sendPacket(packet);
+    receiver.onSend = packet => {
+        stats.packetSent(packet);
+        visualization.sendPacket(packet);
+    };
     receiver.onReceive = (packet, channel, isOk) => {
+        stats.packetReceived(packet, isOk);
         if(isOk)
             visualization.packetReceived(packet);
-    }
+    };
     if(receiverBase !== null){
         receiver.onStateChange = () => {
             const spacesToMove = receiver.base - receiverBase;
             receiverBase = receiver.base;
             visualization.moveWindow(spacesToMove, true);
-        }
+        };
     }
 
     // Prepare sender
@@ -77,8 +90,12 @@ settingsCard.onStart = (settings) => {
         timeout: settings.timeout,
         windowSize: settings.windowSize
     });
-    sender.onSend = packet => visualization.sendPacket(packet);
+    sender.onSend = packet => {
+        stats.packetSent(packet);
+        visualization.sendPacket(packet);
+    };
     sender.onReceive = (packet, channel, isOk) => {
+        stats.packetReceived(packet, isOk);
         if(isOk)
             visualization.packetConfirmed(packet);
     };
@@ -111,6 +128,7 @@ settingsCard.onStart = (settings) => {
         sender.send();
         visualization.startNextPacketTimer(timeToNextPacket);
     }, true);
+    stats.resume();
 };
 
 
@@ -124,11 +142,14 @@ settingsCard.onStop = () => {
     channel.stop();
     channel = null;
     receiver = null;
+    stats.stop();
+    stats = null;
     visualization.reset();
 };
 
 settingsCard.onResume = () => {
     // Resum simulation
+    stats.resume();
     sender.resume();
     channel.resume();
     interval.resume();
@@ -138,6 +159,7 @@ settingsCard.onResume = () => {
 
 settingsCard.onPause = () => {
     // Pause simulation
+    stats.pause();
     sender.pause();
     channel.pause();
     interval.pause();
