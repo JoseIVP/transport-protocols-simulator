@@ -29,7 +29,7 @@ h2{
 }
 
 #stats-content{
-    padding: clamp(.5rem, 2vw, 2rem);
+    padding: clamp(1rem, 2vw, 2rem);
     padding-bottom: 2rem;
     padding-top: clamp(1rem, 2vw, 2rem);
 }
