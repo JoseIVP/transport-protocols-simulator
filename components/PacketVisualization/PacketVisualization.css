@@ -18,14 +18,72 @@
     border: 1px solid var(--card-border-color);
 }
 
+.card-header{
+    padding: 1rem;
+    padding-left: clamp(5px, 5vw, 1.8rem);
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .6rem;
+    border-bottom: 1px solid var(--card-border-color);
+}
+
 h2{
     font-size: 2rem;
     color: var(--text-color);
     display: flex;
     align-items: center;
-    padding: 1rem;
-    padding-left: 1.8rem;
-    border-bottom: 1px solid var(--card-border-color);
+}
+
+.card-header menu{
+    display: flex;
+}
+
+button{
+    outline: none;
+    cursor: pointer;
+}
+
+.btn{
+    background-color: var(--primary-button-color);
+    color: var(--primary-button-text-color);
+    font-size: 1rem;
+    padding: 0.5em 1em;
+    border-radius: 0.3em;
+    transition: box-shadow .15s,
+        background-color .2s;
+}
+
+.btn i{
+    margin-right: 0.5em;
+    font-size: 1em;
+}  
+
+.btn:focus{
+    box-shadow: 0 0 0 .25em var(--primary-button-border-color);
+}
+
+.btn:hover{
+    background-color: var(--primary-button-hover-color);
+}
+
+.btn:disabled{
+    background-color: var(--primary-button-disabled-color);
+    cursor: default;
+}
+
+#expand-tracks-btn span{
+    display: none;
+    align-items: center;
+}
+
+#expand-tracks-btn:not(.expanded) .show-more{
+    display: inline-flex;
+}
+
+#expand-tracks-btn.expanded .show-less{
+    display: inline-flex;
 }
 
 #visualization-content{
@@ -40,6 +98,11 @@ svg{
     box-sizing: border-box;
 }
 
+svg.expanded{
+    flex-basis: 100%;
+    padding-bottom: 0px;
+}
+
 svg .background{
     fill: #f2f2f2;
     rx: 20px;
@@ -47,11 +110,6 @@ svg .background{
 }
 
 @media(max-width: 600px){
-    h2{
-        padding-left: 1rem;
-        justify-content: center;
-    }
-
     svg{
         padding: 0;
         margin-bottom: .8rem;
