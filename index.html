@@ -120,7 +120,7 @@
                     </label>
                     <label>
                         <span class="label-text">Window size</span>
-                        <input name="windowSize" type="range" step="1" min="1" max="10" value="1">
+                        <input name="windowSize" type="range" step="1" min="1" max="40" value="1">
                         <p>1</p>
                         <small>
                             The size of the window for GBN and SR.
@@ -152,10 +152,26 @@
 
     <template id="packet-visualization">
         <link rel="stylesheet" href="./components/PacketVisualization/PacketVisualization.css">
+        <link rel="stylesheet" href="./fontawesome/css/all.css">
         <section class="card">
+            <div class="card-header">
             <h2>Visualization</h2>
+                <menu class="top-menu">
+                    <button id="expand-tracks-btn" type="button" class="btn">
+                        <span class="show-more">
+                            <i class="fas fa-plus-square"></i>
+                            Show more tracks
+                        </span>
+                        <span class="show-less">
+                            <i class="fas fa-minus-square"></i>
+                            Show less tracks
+                        </span>
+                    </button>
+                </menu>
+            </div>
+            
             <div id="visualization-content">
-                <svg viewBox="0 0 1600 900">
+                <svg id="root-svg" viewBox="0 0 1600 900">
                     <rect class="background" width="100%" height="100%"/>
                     <text x="540" y="250" id="sender-tag" class="node-tag">SENDER</text>
                     <text x="480" y="735" id="receiver-tag" class="node-tag">RECEIVER</text>

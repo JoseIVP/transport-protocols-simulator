@@ -12,6 +12,13 @@ export default class PacketVisualization extends HTMLElement {
         this.senderWindow = this.shadowRoot.querySelector("#sender-window");
         this.receiverWindow = this.shadowRoot.querySelector("#receiver-window");
         this.tracks = this.shadowRoot.querySelector("#tracks");
+        this.expandTracksBtn = this.shadowRoot.querySelector("#expand-tracks-btn");
+        this.rootSvg = this.shadowRoot.querySelector("#root-svg");
+        this.senderTag = this.shadowRoot.querySelector("#sender-tag");
+        this.receiverTag = this.shadowRoot.querySelector("#receiver-tag");
+        this.isExpanded = false;
+        this.returnLimit = 800;
+        this.expandTracksBtn.onclick = () => this._toggleExpandTracks();
         this._init();
     }
 
@@ -29,7 +36,7 @@ export default class PacketVisualization extends HTMLElement {
         this.senderWindow.style.display = "none";
         this.receiverWindow.style.display = "none";
         // Put double the number of visible tracks
-        for(let i=0; i< 32; i++){
+        for(let i=0; i< 96; i++){
             let trackContainer;
             if(reset){
                 // Reset track containers
@@ -71,7 +78,7 @@ export default class PacketVisualization extends HTMLElement {
     move(spaces){
         if(spaces === 0)
             return;
-        const transition= `x ${spaces * 50}ms linear`;
+        const transition= `x ${spaces * 25}ms linear`;
         let lastChildX = Number.parseInt(this.tracks.lastElementChild.getAttribute("x"));
         // Make a copy, as we may modify children positions
         const children = Array.from(this.tracks.children);
@@ -164,11 +171,11 @@ export default class PacketVisualization extends HTMLElement {
             trackContainer.seqNum = seqNum;
             if (this.protocol === 1){
                 const nexContainerPosition = Number.parseInt(this.nextTrackContainer.getAttribute("x"));
-                if(nexContainerPosition >= 1500)
+                if(nexContainerPosition >= this.returnLimit)
                     this.move(nexContainerPosition / 100 - 2);
             }else{
                 const windowPosition = Number.parseInt(this.senderWindow.getAttribute("x"));
-                if((windowPosition + this.windowSize * 100) >= 1500)
+                if(windowPosition >= this.returnLimit)
                     this.move(windowPosition / 100 - 1);
             }
         }
@@ -184,7 +191,7 @@ export default class PacketVisualization extends HTMLElement {
     moveWindow(spaces, moveReceiver=false){
         if(spaces === 0)
             return;
-        const transitionTime = Math.abs(spaces) * 50;
+        const transitionTime = Math.abs(spaces) * 25;
         const window = moveReceiver ? this.receiverWindow : this.senderWindow;
         window.style.transition = `x ${transitionTime}ms linear`;
         const x = Number.parseInt(window.getAttribute("x"));
@@ -290,5 +297,29 @@ export default class PacketVisualization extends HTMLElement {
     resume(){
         for(const container of this.tracks.children)
             container.firstElementChild.resume();
+    }
+
+    /**
+     * Show or hide additional tracks of the visualization.
+     * @private
+     */
+    _toggleExpandTracks(){
+        if(this.isExpanded){
+            this.rootSvg.setAttribute("viewBox", "0 0 1600 900");
+            this.rootSvg.classList.remove("expanded");
+            this.senderTag.setAttribute("x", 540);
+            this.receiverTag.setAttribute("x", 480);
+            this.expandTracksBtn.classList.remove("expanded");
+            this.returnLimit = 800;
+            this.isExpanded = false;
+        }else{
+            this.rootSvg.setAttribute("viewBox", "0 0 4200 900");
+            this.rootSvg.classList.add("expanded");
+            this.senderTag.setAttribute("x", 1940);
+            this.receiverTag.setAttribute("x", 1880); 
+            this.expandTracksBtn.classList.add("expanded");
+            this.returnLimit = 2100;
+            this.isExpanded = true;
+        }
     }
 }
