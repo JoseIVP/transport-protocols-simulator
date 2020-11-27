@@ -106,6 +106,7 @@ class Packet{
      * @param {boolean} [options.isAck=false] - true if the packet is an acknowledgment.
      * @param {boolean} [options.ackNum=null] - The sequence number to acknowledge.
      * @param {boolean} [options.wasReSent=false] - true if the packet was re-sent.
+     * @param {boolean} [options.isCAck=false] - true if the packet is a cumulative acknowledgment.
      */
     constructor({
         seqNum,
@@ -114,6 +115,7 @@ class Packet{
         isAck = false,
         ackNum = null,
         wasReSent = false,
+        isCAck = false,
     }={}){
         /** @member {number} - The sequence number of the packet. */
         this.seqNum = seqNum;
@@ -129,6 +131,8 @@ class Packet{
         this.isCorrupted = false;
         /** @member {boolean} - true if the packet was re-sent. */
         this.wasReSent = wasReSent;
+        /** @member {boolean} - true if the packet is a cumulative acknowledgment. */
+        this.isCAck = isCAck;
     }
 
     /**

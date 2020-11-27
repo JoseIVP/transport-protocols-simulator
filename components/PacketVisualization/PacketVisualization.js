@@ -144,7 +144,7 @@ export default class PacketVisualization extends HTMLElement {
         if(protocol !== 1){
             this.senderWindow.style.display = "inline"
             this.senderWindow.setAttribute("width", windowSize * 100);
-            if(protocol === 3){
+            if(protocol === 3 || protocol === 4){
                 this.receiverWindow.style.display = "inline"
                 this.receiverWindow.setAttribute("width", windowSize * 100);
             }
@@ -204,7 +204,7 @@ export default class PacketVisualization extends HTMLElement {
      * @param {number} packet
      */
     packetConfirmed(packet){
-        if(this.protocol === 2){
+        if(this.protocol === 2 || this.protocol === 4 && packet.isCAck){
             // For GBN show as confirmed any previous sequence numbers
             for(const [seqNum, container] of this.trackContainers){
                 if(seqNum === -1)
