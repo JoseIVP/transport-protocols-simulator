@@ -209,3 +209,8 @@ legend li.legend-damaged-packet::before{
     background-color: #AE9F9B;
     border-color: #5D4037;
 }
+
+legend li.legend-cumulative-acknowledgment::before{
+    background-color: #80DFD2;
+    border-color: #00BFA5;
+}

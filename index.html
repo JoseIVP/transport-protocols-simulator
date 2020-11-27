@@ -86,6 +86,7 @@
                                 <option value="1" selected>Stop and wait</option>
                                 <option value="2">Go Back N</option>
                                 <option value="3">Selective repeat</option>
+                                <option value="4">Selective repeat + CACK</option>
                             </select>
                         </div>
                         <small>
@@ -111,7 +112,7 @@
                     </label>
                     <label>
                         <span class="label-text">Packets per minute</span>
-                        <input name="packetRate" type="range" step="1" min="1" max="120" value="1">
+                        <input name="packetRate" type="range" step="1" min="1" max="120" value="60">
                         <p>1</p>
                         <small>
                             The number of packets that the sender attempts to
@@ -186,6 +187,7 @@
                         <li class="legend-buffered">Data buffered / packets to send</li>
                         <li class="legend-confirmed">Transmission confirmed</li>
                         <li class="legend-acknowledgment-or-received">Acknowledgment / correctly received</li>
+                        <li class="legend-cumulative-acknowledgment">Cumulative acknowledgment</li>
                         <li class="legend-damaged-packet">Damaged packet</li>
                         <li class="legend-next-sequence-timer">Time for trying to send next packet</li>
                         <li class="legend-window">Window</li>

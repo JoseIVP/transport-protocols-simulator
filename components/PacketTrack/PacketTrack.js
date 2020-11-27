@@ -61,12 +61,15 @@ export default class PacketTrack extends HTMLElement{
      * one end to the other.
      */
     sendPacket(packet, delay){
-        const {isAck} = packet;
+        const {isAck, isCAck} = packet;
         const svgPacket = document.createElementNS("http://www.w3.org/2000/svg", "use");
         svgPacket.onclick = event => this.onPacketClicked(packet, event.ctrlKey);
         svgPacket.setAttribute("href", "#packet-rect");
         svgPacket.classList.add("pkt-traveling");
-        svgPacket.classList.add(isAck? "pkt-acknowledgment" : "pkt-buffered");
+        let pktClass = "pkt-buffered";
+        if(isAck)
+            pktClass = isCAck? "pkt-cumulative-acknowledgment": "pkt-acknowledgment";
+        svgPacket.classList.add(pktClass);
         this.svg.append(svgPacket);
         const keyframes = [
             { visibility: "visible", transform: `translate(0px, ${isAck? 774 : 26}px)`},

@@ -31,6 +31,7 @@ settingsCard.onStart = (settings) => {
     let senderBase = null;
     let receiverBase = null;
 
+    let useCAck = false;
     let SenderClass = null;
     let ReceiverClass = null;
     switch (settings.protocol) {
@@ -43,6 +44,8 @@ settingsCard.onStart = (settings) => {
             ReceiverClass = GBNReceiver;
             senderBase = 0;
             break;
+        case 4:
+            useCAck = true; // SRReceiver with cumulative Acks
         case 3:
             SenderClass = SRSender;
             ReceiverClass = SRReceiver;
@@ -65,7 +68,10 @@ settingsCard.onStart = (settings) => {
     channel.onPacketDamaged = packet => visualization.damagePacket(packet);
 
     // Prepare receiver
-    receiver = new ReceiverClass({windowSize: settings.windowSize});
+    receiver = new ReceiverClass({
+        windowSize: settings.windowSize,
+        useCAck
+    });
     receiver.onSend = packet => {
         stats.packetSent(packet);
         visualization.sendPacket(packet);

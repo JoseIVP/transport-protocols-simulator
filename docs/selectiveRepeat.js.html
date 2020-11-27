@@ -193,6 +193,16 @@ export class SRSender extends Node{
     }
 
     /**
+     * Test if a packet is a cumulative acknowledgment and its acknowledgment
+     * number is within the expected range.
+     * @param {Packet} packet - The packet to test.
+     * @private
+     */
+    _isOkCAck(packet){
+        return packet.isCAck &amp;&amp; packet.ackNum >= this.base &amp;&amp; packet.ackNum &lt; this.nextSeqNum;
+    }
+
+    /**
      * Receives a packet. If the packet is corrupted or does not correspond
      * to one of the unacknowledged packets in the window, then it is
      * ignored. If the packet correctly acknowledges the base sequence
@@ -204,13 +214,18 @@ export class SRSender extends Node{
      * @param {Channel} channel - The channel through which the packet is received. 
      */
     receive(packet, channel){
-        if(!packet.isCorrupted &amp;&amp; packet.isAck &amp;&amp; this._windowTimeouts.has(packet.ackNum)){
+        if(!packet.isCorrupted &amp;&amp; packet.isAck &amp;&amp; (this._isOkCAck(packet) || this._windowTimeouts.has(packet.ackNum))){
             this.onReceive(packet, channel, true);
-            const timeout = this._windowTimeouts.get(packet.ackNum);
-            timeout.stop();
-            this._windowTimeouts.delete(packet.ackNum);
-            this.onTimeoutUnset(packet.ackNum);
-            if(packet.ackNum == this.base){
+            let seqNum = packet.isCAck ? this.base : packet.ackNum;
+            for(; seqNum&lt;=packet.ackNum; seqNum++){
+                const timeout = this._windowTimeouts.get(seqNum);
+                if(timeout !== undefined){
+                    timeout.stop();
+                    this._windowTimeouts.delete(seqNum);
+                    this.onTimeoutUnset(seqNum); 
+                }
+            }
+            if(packet.ackNum == this.base || packet.isCAck){
                 // The smallest unacknowledged sequence is at most nextSeqNum
                 // and if it's smaller than that then it has a timeout, because
                 // we remove the timeouts of acknowledged sequences.
@@ -237,9 +252,11 @@ export class SRReceiver extends Node{
      * Creates a new SRReceiver instance.
      * @param {Object} [options] - The constructor options.
      * @param {number} [options.windowSize=1] - The size of the window.
+     * @param {boolean} [options.useCAck=false] - true if the receiver should send cumulative acknowledgments.
      */
     constructor({
-        windowSize = 1
+        windowSize = 1,
+        useCAck = false
     }={}){
         super();
         /** @member {number} - The size of the window. */
@@ -252,6 +269,7 @@ export class SRReceiver extends Node{
          * @private
          */
         this._buffer = new Set();
+        this.useCAck = useCAck;
     }
 
     /**
@@ -270,12 +288,6 @@ export class SRReceiver extends Node{
             const isDuplicate = this._buffer.has(packet.seqNum) || packet.seqNum &lt; this.base;
             // A duplicate packet is not ok
             this.onReceive(packet, channel, !isDuplicate);
-            super.send(new Packet({
-                sender: this,
-                receiver: packet.sender,
-                isAck: true,
-                ackNum: packet.seqNum
-            }), channel);
             this._buffer.add(packet.seqNum);
             if(packet.seqNum == this.base){
                 // Move the window
@@ -285,6 +297,17 @@ export class SRReceiver extends Node{
                 }
                 this.onStateChange();
             }
+            const packetOptions = {
+                sender: this,
+                receiver: packet.sender,
+                isAck: true,
+                ackNum: packet.seqNum
+            };
+            if(this.useCAck &amp;&amp; packet.seqNum &lt; this.base){
+                packetOptions.ackNum = this.base - 1;
+                packetOptions.isCAck = true;
+            }
+            super.send(new Packet(packetOptions), channel);
         }else{
             this.onReceive(packet, channel, false);
         }
