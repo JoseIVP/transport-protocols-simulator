@@ -220,60 +220,68 @@
         <section class="card">
             <h2>Live statistics</h2>
             <div id="stats-content">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Measure</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Packets sent per second (in the last 2 s)</td>
-                            <td id="pkts-sent-per-second">0</td>
-                        </tr>
-                        <tr>
-                            <td>Packets sent per second (from start)</td>
-                            <td id="total-pkts-sent-per-second">0</td>
-                        </tr>
-                        <tr>
-                            <td><abbr title="Acknowledgments">Acks</abbr> correctly received per second (in the last 2 s)</td>
-                            <td id="acks-received-ok-per-second">0</td>
-                        </tr>
-                        <tr>
-                            <td><abbr title="Acknowledgments">Acks</abbr> correctly received per second (from start)</td>
-                            <td id="total-acks-received-ok-per-second">0</td>
-                        </tr>
-                        <tr>
-                            <td>Packets sent</td>
-                            <td id="pkts-sent">0</td>
-                        </tr>
-                        <tr>
-                            <td>Packets re-sent</td>
-                            <td id="pkts-re-sent">0</td>
-                        </tr>
-                        <tr>
-                            <td>Packets received</td>
-                            <td id="pkts-received">0</td>
-                        </tr>
-                        <tr>
-                            <td>Packets correctly received</td>
-                            <td id="pkts-received-ok">0</td>
-                        </tr>
-                        <tr>
-                            <td><abbr title="Acknowledgments">Acks</abbr> sent</td>
-                            <td id="acks-sent">0</td>
-                        </tr>
-                        <tr>
-                            <td><abbr title="Acknowledgments">Acks</abbr> received</td>
-                            <td id="acks-received">0</td>
-                        </tr>
-                        <tr>
-                            <td><abbr title="Acknowledgments">Acks</abbr> correctly received</td>
-                            <td id="acks-received-ok">0</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <figure id="table-figure">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Measure</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Packets sent per second (in the last 2 s)</td>
+                                <td id="pkts-sent-per-second">0</td>
+                            </tr>
+                            <tr>
+                                <td>Packets sent per second (from start)</td>
+                                <td id="total-pkts-sent-per-second">0</td>
+                            </tr>
+                            <tr>
+                                <td><abbr title="Acknowledgments">Acks</abbr> correctly received per second (in the last 2 s)</td>
+                                <td id="acks-received-ok-per-second">0</td>
+                            </tr>
+                            <tr>
+                                <td><abbr title="Acknowledgments">Acks</abbr> correctly received per second (from start)</td>
+                                <td id="total-acks-received-ok-per-second">0</td>
+                            </tr>
+                            <tr>
+                                <td>Packets sent</td>
+                                <td id="pkts-sent">0</td>
+                            </tr>
+                            <tr>
+                                <td>Packets re-sent</td>
+                                <td id="pkts-re-sent">0</td>
+                            </tr>
+                            <tr>
+                                <td>Packets received</td>
+                                <td id="pkts-received">0</td>
+                            </tr>
+                            <tr>
+                                <td>Packets correctly received</td>
+                                <td id="pkts-received-ok">0</td>
+                            </tr>
+                            <tr>
+                                <td><abbr title="Acknowledgments">Acks</abbr> sent</td>
+                                <td id="acks-sent">0</td>
+                            </tr>
+                            <tr>
+                                <td><abbr title="Acknowledgments">Acks</abbr> received</td>
+                                <td id="acks-received">0</td>
+                            </tr>
+                            <tr>
+                                <td><abbr title="Acknowledgments">Acks</abbr> correctly received</td>
+                                <td id="acks-received-ok">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </figure>
+                <figure id="chart-figure">
+                    <figcaption>Packets/s VS Time</figcaption>
+                    <div id="chart-container" class="chart-container">
+                        <canvas id="chart" width="200" height="150"></canvas>
+                    </div>
+                </figure>
             </div>
         </section>
     </template>
