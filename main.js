@@ -54,6 +54,7 @@ settingsCard.onStart = (settings) => {
     }
 
     // Initialize stats generation
+    statsCard.reset();
     stats = new StatsComputer(2000);
     stats.pause(); // Resume it when actually starting
     stats.onUpdate = () => statsCard.update(stats);

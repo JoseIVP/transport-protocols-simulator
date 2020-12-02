@@ -6,8 +6,8 @@
 }
 
 .card{
-    --card-width: min(96vw, 600px);
-    --card-margin: 1rem auto 4rem calc((100% - min(96vw, 1200px)) / 2);
+    --card-width: min(96vw, 1200px);
+    --card-margin: 1rem auto 4rem auto;
     width: var(--card-width);
     margin: var(--card-margin);
     background-color: var(--card-color);
@@ -31,17 +31,25 @@ h2{
 #stats-content{
     padding: clamp(1rem, 2vw, 2rem);
     padding-bottom: 2rem;
-    padding-top: clamp(1rem, 2vw, 2rem);
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-around;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+#table-figure{
+    flex: 1 1 350px;
 }
 
 table{
+    width: 100%;
     font-size: 1.25rem;
-    border-collapse: collapse;
-    border-radius: 10px;
+    --cell-border-width: 3px;
+    border-spacing: var(--cell-border-width);
 }
 
 th, td{
-    border-style: solid;
     padding: .5em;
 }
 
@@ -50,7 +58,7 @@ th{
     color: #2F80ED;
     position: relative;
     z-index: 2;
-    box-shadow: 0 0 0 2px #2F80ED;
+    box-shadow: 0 0 0 var(--cell-border-width) #2F80ED;
 }
 
 th:first-child{
@@ -62,10 +70,9 @@ th:last-child{
 }
 
 td{
-    border-color: transparent;
     background-color: #F2F2F2;
     color: #4f4f4f;
-    box-shadow: 0 0 0 2px #828282;
+    box-shadow: 0 0 0 var(--cell-border-width) #828282;
 }
 
 td abbr{
@@ -88,4 +95,27 @@ tbody tr:last-child td:first-child{
 
 tbody tr:last-child td:last-child{
     border-bottom-right-radius: 5px;
+}
+
+#chart-figure{
+    flex-grow: 1;
+    width: 500px;
+    background-color: #F2F2F2;
+    align-self: flex-start;
+    border-radius: 8px;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+#chart-figure figcaption{
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+#chart-container{
+    width: 100%;
+    position: relative;
 }
