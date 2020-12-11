@@ -92,12 +92,13 @@ export default class PacketVisualization extends HTMLElement {
                 container.setAttribute("x", containerX);
                 this.tracks.append(container);
                 container.firstElementChild.reset();
-                if (this.protocol !== 1){
-                    // For GBN and SR, detach containers from sequence
-                    // numbers as we do not use a finite number of sequences
-                    this.trackContainers.delete(container.seqNum);
-                    container.seqNum = null;
-                }
+                // TODO: remove this part
+                // if (this.protocol !== 1){
+                //     // For GBN and SR, detach containers from sequence
+                //     // numbers as we do not use a finite number of sequences
+                //     this.trackContainers.delete(container.seqNum);
+                //     container.seqNum = null;
+                // }
             }
             // Make the browser see the change in position for
             // containers sent to the end and sync the begining of
@@ -139,8 +140,8 @@ export default class PacketVisualization extends HTMLElement {
         // Set initial sequence number to track container mapping
         if(protocol === 1)
             this.trackContainers.set(1, this.tracks.children[0]);
-        else if(protocol === 2)
-            this.trackContainers.set(-1, this.tracks.children[0]);
+        else if(protocol === 2 || protocol === 4)
+            this.trackContainers.set(windowSize * 2 - 1, this.tracks.children[0]);
         if(protocol !== 1){
             this.senderWindow.style.display = "inline"
             this.senderWindow.setAttribute("width", windowSize * 100);
@@ -176,7 +177,7 @@ export default class PacketVisualization extends HTMLElement {
             }else{
                 const windowPosition = Number.parseInt(this.senderWindow.getAttribute("x"));
                 if(windowPosition >= this.returnLimit)
-                    this.move(windowPosition / 100 - 1);
+                    this.move(windowPosition / 100);
             }
         }
         trackContainer.firstElementChild.sendPacket(packet, this.delay);
@@ -203,19 +204,9 @@ export default class PacketVisualization extends HTMLElement {
      * corresponding to packet, to look like a confirmed packet.
      * @param {number} packet
      */
-    packetConfirmed(packet){
-        if(this.protocol === 2 || this.protocol === 4 && packet.isCAck){
-            // For GBN show as confirmed any previous sequence numbers
-            for(const [seqNum, container] of this.trackContainers){
-                if(seqNum === -1)
-                    continue; // Except for the preset one
-                if(seqNum <= packet.ackNum)
-                    container.firstElementChild.packetConfirmed();
-            }
-        }else{
-            const trackContainer = this.trackContainers.get(packet.ackNum);
-            trackContainer?.firstElementChild.packetConfirmed();
-        }
+    packetConfirmed(seqNum){
+        const trackContainer = this.trackContainers.get(seqNum);
+        trackContainer?.firstElementChild.packetConfirmed();
     }
     
     /**

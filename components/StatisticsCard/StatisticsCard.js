@@ -25,15 +25,15 @@ export default class StatisticsCard extends HTMLElement {
         this.acksSent = this.shadowRoot.getElementById("acks-sent");
         this.acksReceived = this.shadowRoot.getElementById("acks-received");
         this.acksReceivedOk = this.shadowRoot.getElementById("acks-received-ok");
-        this.pktsSentPerSecond = this.shadowRoot.getElementById("pkts-sent-per-second");
-        this.totalPktsSentPerSecond = this.shadowRoot.getElementById("total-pkts-sent-per-second");
-        this.acksReceivedOkPerSecond = this.shadowRoot.getElementById("acks-received-ok-per-second");
-        this.totalAcksReceivedOkPerSecond = this.shadowRoot.getElementById("total-acks-received-ok-per-second");
+        this.pktsSentRate = this.shadowRoot.getElementById("pkts-sent-per-second");
+        this.totalPktsSentRate = this.shadowRoot.getElementById("total-pkts-sent-per-second");
+        this.acksReceivedOkRate = this.shadowRoot.getElementById("acks-received-ok-per-second");
+        this.totalAcksReceivedOkRate = this.shadowRoot.getElementById("total-acks-received-ok-per-second");
 
-        this.pktsSentPerSecondData = [];
-        this.totalPktsSentPerSecondData = [];
-        this.acksReceivedOkPerSecondData = [];
-        this.totalAcksReceivedOkPerSecondData = [];
+        this.pktsSentRateData = [];
+        this.totalPktsSentRateData = [];
+        this.acksReceivedOkRateData = [];
+        this.totalAcksReceivedOkRateData = [];
         this.sampleSize = 16;
         this.labelsLength = 16;
         this.labels = []; // x axis time labels
@@ -69,25 +69,25 @@ export default class StatisticsCard extends HTMLElement {
                 datasets: [
                     {
                         label: "Total packets sent",
-                        data: this.totalPktsSentPerSecondData,
+                        data: this.totalPktsSentRateData,
                         borderColor: "#65A2F4",
                         pointBackgroundColor: "#B2D0F9",
                     },
                     {
                         label: "Packets sent (last 2 s)",
-                        data: this.pktsSentPerSecondData,
+                        data: this.pktsSentRateData,
                         borderColor: "#F96060",
                         pointBackgroundColor: "#FCB0B0",
                     },
                     {
                         label: "Total acknowledgments received ok",
-                        data: this.totalAcksReceivedOkPerSecondData,
+                        data: this.totalAcksReceivedOkRateData,
                         borderColor: "#3AB146",
                         pointBackgroundColor: "#9CD8A2",
                     },
                     {
                         label: "Acknowledgments received ok (last 2 s)",
-                        data: this.acksReceivedOkPerSecondData,
+                        data: this.acksReceivedOkRateData,
                         borderColor: "#CF1AED",
                         pointBackgroundColor: "#E78CF6",
                     },
@@ -130,27 +130,27 @@ export default class StatisticsCard extends HTMLElement {
      * @param {StatsComputer} stats
      */
     update(stats){
-        this.pktsSent.textContent = stats.totalPacketsSent;
-        this.pktsReSent.textContent = stats.totalPacketsReSent;
-        this.pktsReceived.textContent = stats.totalPacketsReceived;
-        this.pktsReceivedOk.textContent = stats.totalPacketsReceivedOk;
+        this.pktsSent.textContent = stats.totalPktsSent;
+        this.pktsReSent.textContent = stats.totalPktsReSent;
+        this.pktsReceived.textContent = stats.totalPktsReceived;
+        this.pktsReceivedOk.textContent = stats.totalPktsReceivedOk;
         this.acksSent.textContent = stats.totalAcksSent;
         this.acksReceived.textContent = stats.totalAcksReceived;
         this.acksReceivedOk.textContent = stats.totalAcksReceivedOk;
-        this.pktsSentPerSecond.textContent = trunc(stats.packetsSentPerSecond, 3);
-        this.totalPktsSentPerSecond.textContent = trunc(stats.totalPacketsSentPerSecond, 3);
-        this.acksReceivedOkPerSecond.textContent = trunc(stats.acksReceivedOkPerSecond, 3);
-        this.totalAcksReceivedOkPerSecond.textContent = trunc(stats.totalAcksReceivedOkPerSecond, 3);
+        this.pktsSentRate.textContent = trunc(stats.pktsSentRate, 3);
+        this.totalPktsSentRate.textContent = trunc(stats.totalPktsSentRate, 3);
+        this.acksReceivedOkRate.textContent = trunc(stats.acksReceivedOkRate, 3);
+        this.totalAcksReceivedOkRate.textContent = trunc(stats.totalAcksReceivedOkRate, 3);
 
-        this.totalPktsSentPerSecondData.push(trunc(stats.totalPacketsSentPerSecond, 3));
-        this.totalAcksReceivedOkPerSecondData.push(trunc(stats.totalAcksReceivedOkPerSecond, 3));
-        this.pktsSentPerSecondData.push(trunc(stats.packetsSentPerSecond, 3));
-        this.acksReceivedOkPerSecondData.push(trunc(stats.acksReceivedOkPerSecond, 3));
-        if(this.totalPktsSentPerSecondData.length > this.sampleSize){
-            this.totalPktsSentPerSecondData.shift();
-            this.totalAcksReceivedOkPerSecondData.shift();
-            this.acksReceivedOkPerSecondData.shift();
-            this.pktsSentPerSecondData.shift();
+        this.totalPktsSentRateData.push(trunc(stats.totalPktsSentRate, 3));
+        this.totalAcksReceivedOkRateData.push(trunc(stats.totalAcksReceivedOkRate, 3));
+        this.pktsSentRateData.push(trunc(stats.pktsSentRate, 3));
+        this.acksReceivedOkRateData.push(trunc(stats.acksReceivedOkRate, 3));
+        if(this.totalPktsSentRateData.length > this.sampleSize){
+            this.totalPktsSentRateData.shift();
+            this.totalAcksReceivedOkRateData.shift();
+            this.acksReceivedOkRateData.shift();
+            this.pktsSentRateData.shift();
             this.labels.push(this.nextLabel);
             this.labels.shift();
             this.nextLabel += 2;
@@ -166,15 +166,15 @@ export default class StatisticsCard extends HTMLElement {
         this.acksSent.textContent = 0;
         this.acksReceived.textContent = 0;
         this.acksReceivedOk.textContent = 0;
-        this.pktsSentPerSecond.textContent = 0;
-        this.totalPktsSentPerSecond.textContent = 0;
-        this.acksReceivedOkPerSecond.textContent = 0;
-        this.totalAcksReceivedOkPerSecond.textContent = 0;
+        this.pktsSentRate.textContent = 0;
+        this.totalPktsSentRate.textContent = 0;
+        this.acksReceivedOkRate.textContent = 0;
+        this.totalAcksReceivedOkRate.textContent = 0;
 
-        this.pktsSentPerSecondData.splice(0, this.pktsSentPerSecondData.length);
-        this.totalPktsSentPerSecondData.splice(0, this.totalPktsSentPerSecondData.length);
-        this.acksReceivedOkPerSecondData.splice(0, this.acksReceivedOkPerSecondData.length);
-        this.totalAcksReceivedOkPerSecondData.splice(0, this.totalAcksReceivedOkPerSecondData.length);
+        this.pktsSentRateData.splice(0, this.pktsSentRateData.length);
+        this.totalPktsSentRateData.splice(0, this.totalPktsSentRateData.length);
+        this.acksReceivedOkRateData.splice(0, this.acksReceivedOkRateData.length);
+        this.totalAcksReceivedOkRateData.splice(0, this.totalAcksReceivedOkRateData.length);
         this.labels.splice(0, this.labels.length);
         for(let i=1; i<= this.labelsLength; i++)
             this.labels.push(i*2);
