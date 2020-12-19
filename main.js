@@ -68,16 +68,16 @@ settingsCard.onStart = (settings) => {
         channel
     });
     receiver.onSend = packet => {
-        stats.packetSent(packet);
+        stats.pktSent(packet);
         visualization.sendPacket(packet);
     };
     receiver.onReceive = (packet, isOk) => {
-        stats.packetReceived(packet, isOk);
+        stats.pktReceived(packet, isOk);
         if(isOk)
             visualization.packetReceived(packet);
     };
     if(receiver instanceof SRReceiver)
-        receiver.onWindowMoved = spaces => visualization.moveWindow(spaces, true);
+        receiver.onWindowMoved = spaces => visualization.moveReceiverWindow(spaces);
 
     // Prepare sender
     sender = new SenderClass({
@@ -87,15 +87,20 @@ settingsCard.onStart = (settings) => {
         windowSize: settings.windowSize
     });
     sender.onSend = packet => {
-        stats.packetSent(packet);
+        stats.pktSent(packet);
         visualization.sendPacket(packet);
     };
-    sender.onReceive = (packet, isOk) => stats.packetReceived(packet, isOk);
-    sender.onPktConfirmed = seqNum => visualization.packetConfirmed(seqNum);
+    sender.onReceive = (packet, isOk) => stats.pktReceived(packet, isOk);
+    sender.onPktConfirmed = seqNum => {
+        visualization.packetConfirmed(seqNum);
+        stats.pktConfirmed();
+        if(sender instanceof SWSender)
+            visualization.moveSenderWindow(1);
+    };
     sender.onTimeoutSet = seqNum => visualization.startTimeout(seqNum);
     sender.onTimeoutUnset = seqNum => visualization.stopTimeout(seqNum);
     if(sender instanceof AbstractWindowedSender)
-        sender.onWindowMoved = spaces => visualization.moveWindow(spaces)
+        sender.onWindowMoved = spaces => visualization.moveSenderWindow(spaces)
 
     // Prepare visualization component    
     visualization.setParams({
@@ -136,7 +141,7 @@ settingsCard.onStop = () => {
 };
 
 settingsCard.onResume = () => {
-    // Resume simulation
+    // Resume the simulation
     stats.resume();
     sender.resume();
     channel.resume();
@@ -146,7 +151,7 @@ settingsCard.onResume = () => {
 };
 
 settingsCard.onPause = () => {
-    // Pause simulation
+    // Pause the simulation
     stats.pause();
     sender.pause();
     channel.pause();
@@ -156,7 +161,7 @@ settingsCard.onPause = () => {
 };
 
 document.onvisibilitychange = () => {
-    // Pause simulation if the user leaves the tab
+    // Pause the simulation if the user leaves the tab
     if(document.visibilityState == "hidden")
         settingsCard.pause();
 };

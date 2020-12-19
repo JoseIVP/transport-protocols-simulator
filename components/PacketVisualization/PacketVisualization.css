@@ -91,7 +91,7 @@ button{
     flex-wrap: wrap;
 }
 
-svg{
+#root-svg{
     align-self: flex-start;
     flex: 6 2 725px;
     display: block;
@@ -99,28 +99,33 @@ svg{
     box-sizing: border-box;
 }
 
-svg.expanded{
+#root-svg.expanded{
     flex-basis: 100%;
     padding-bottom: 0px;
 }
 
-svg .background{
+#root-svg .background{
     fill: #f2f2f2;
     rx: 20px;
     ry: 20px;
 }
 
 @media(max-width: 600px){
-    svg{
+    #root-svg{
         padding: 0;
         margin-bottom: .8rem;
     }
 
-    svg .background{
+    #root-svg .background{
         fill: #f2f2f2;
         rx: 0px;
         ry: 0px;
     }
+}
+
+#sliding-view, #sliding-view-content{
+    overflow: visible;
+    x: 0 px;
 }
 
 #sender-window, #receiver-window{

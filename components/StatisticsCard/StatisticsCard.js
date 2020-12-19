@@ -9,85 +9,124 @@ function trunc(x, places){
     return Math.trunc(x * 10 ** places) / 10 ** places;
 }
 
+/**
+ * Fills labels with numbers from 2 to sampleSize with a step of size 2.
+ * @param {Array} labels - The array of labels to fill.
+ * @param {number} sampleSize - The number of labels to add.
+ */
+function fillLabels(labels, sampleSize){
+    for(let i=1; i<= sampleSize; i++)
+        labels.push(i*2);
+}
+
+// The initial value for the next label to add to the x axis
 const INITIAL_NEXT_LABEL = 34;
 
+/**
+ * A web component for a card that shows various statistics and a chart.
+ */
 export default class StatisticsCard extends HTMLElement {
-    
+
+    /**
+     * Creates a new StatisticsCard component.
+     */
     constructor(){
         super();
         this.attachShadow({mode: "open"});
         const template = document.querySelector("#statistics-card");
         this.shadowRoot.appendChild(template.content.cloneNode(true));
-        this.pktsSent = this.shadowRoot.getElementById("pkts-sent");
-        this.pktsReSent = this.shadowRoot.getElementById("pkts-re-sent");
-        this.pktsReceived = this.shadowRoot.getElementById("pkts-received");
-        this.pktsReceivedOk = this.shadowRoot.getElementById("pkts-received-ok");
-        this.acksSent = this.shadowRoot.getElementById("acks-sent");
-        this.acksReceived = this.shadowRoot.getElementById("acks-received");
-        this.acksReceivedOk = this.shadowRoot.getElementById("acks-received-ok");
-        this.pktsSentRate = this.shadowRoot.getElementById("pkts-sent-per-second");
-        this.totalPktsSentRate = this.shadowRoot.getElementById("total-pkts-sent-per-second");
-        this.acksReceivedOkRate = this.shadowRoot.getElementById("acks-received-ok-per-second");
-        this.totalAcksReceivedOkRate = this.shadowRoot.getElementById("total-acks-received-ok-per-second");
-
-        this.pktsSentRateData = [];
-        this.totalPktsSentRateData = [];
-        this.acksReceivedOkRateData = [];
-        this.totalAcksReceivedOkRateData = [];
-        this.sampleSize = 16;
-        this.labelsLength = 16;
-        this.labels = []; // x axis time labels
-        for(let i=1; i<= this.labelsLength; i++)
-            this.labels.push(i*2);
-        this.nextLabel = INITIAL_NEXT_LABEL;
-        this.chartCanvas = this.shadowRoot.getElementById("chart");
+        // Counters of packets:
+        this._pktsSent = this.shadowRoot.getElementById("pkts-sent");
+        this._pktsConfirmed = this.shadowRoot.getElementById("pkts-confirmed");
+        this._pktsReSent = this.shadowRoot.getElementById("pkts-re-sent");
+        this._pktsReceived = this.shadowRoot.getElementById("pkts-received");
+        this._pktsReceivedOk = this.shadowRoot.getElementById("pkts-received-ok");
+        this._acksSent = this.shadowRoot.getElementById("acks-sent");
+        this._acksReceived = this.shadowRoot.getElementById("acks-received");
+        this._acksReceivedOk = this.shadowRoot.getElementById("acks-received-ok");
+        this._pktsSentRate = this.shadowRoot.getElementById("pkts-sent-rate");
+        this._totalPktsSentRate = this.shadowRoot.getElementById("total-pkts-sent-rate");
+        this._pktsConfirmedRate = this.shadowRoot.getElementById("pkts-confirmed-rate");
+        this._totalPktsConfirmedRate = this.shadowRoot.getElementById("total-pkts-confirmed-rate");
+        this._acksReceivedOkRate = this.shadowRoot.getElementById("acks-received-ok-rate");
+        this._totalAcksReceivedOkRate = this.shadowRoot.getElementById("total-acks-received-ok-rate");
+        // Arrays with packet rates:
+        this._pktsSentRateData = [];
+        this._totalPktsSentRateData = [];
+        this._pktsConfirmedRateData = [];
+        this._totalPktsConfirmedRateData = [];
+        this._acksReceivedOkRateData = [];
+        this._totalAcksReceivedOkRateData = [];
+        this._sampleSize = 16; // The number of points to show in the x axis
+        this._labels = []; // The x axis time labels
+        fillLabels(this._labels, this._sampleSize);
+        // The next label to add to the x axis when it is moved
+        this._nextLabel = INITIAL_NEXT_LABEL;
+        this._chartCanvas = this.shadowRoot.getElementById("chart");
         Chart.defaults.global.animation.duration = 0;
         Chart.defaults.global.defaultFontColor = "#4f4f4f";
         Chart.defaults.global.elements.line.fill = false;
         Chart.defaults.global.elements.line.tension = 0;
-        this._makeChart();
+        this._renderChart();
+        // Re-render the chart when the window is resized
         window.addEventListener("resize", () => {
-            // Re-render the chart
-            this.chart.destroy();
-            this._makeChart();
+            this._chart.destroy();
+            this._renderChart();
         });
     }
 
-    _makeChart(){
-        let maxTicksLimit = null;
+    /**
+     * Creates and renders a new chart instance.
+     * @private
+     */
+    _renderChart(){
+        // The number of ticks to show in the x axis
+        let maxTicksLimit; 
         if(window.innerWidth <= 550){
-            this.chartCanvas.height = 300;
+            this._chartCanvas.height = 300;
             maxTicksLimit = 10;
         }else{
-           this.chartCanvas.height = 150; 
+           this._chartCanvas.height = 150; 
            maxTicksLimit = 16;
         }
-        this.chart = new Chart(this.chartCanvas, {
+        this._chart = new Chart(this._chartCanvas, {
             type: "line",
             data: {
-                labels: this.labels,
+                labels: this._labels,
                 datasets: [
                     {
                         label: "Total packets sent",
-                        data: this.totalPktsSentRateData,
+                        data: this._totalPktsSentRateData,
                         borderColor: "#65A2F4",
                         pointBackgroundColor: "#B2D0F9",
                     },
                     {
                         label: "Packets sent (last 2 s)",
-                        data: this.pktsSentRateData,
+                        data: this._pktsSentRateData,
                         borderColor: "#F96060",
                         pointBackgroundColor: "#FCB0B0",
                     },
                     {
-                        label: "Total acknowledgments received ok",
-                        data: this.totalAcksReceivedOkRateData,
+                        label: "Total packets confirmed",
+                        data: this._totalPktsConfirmedRateData,
                         borderColor: "#3AB146",
                         pointBackgroundColor: "#9CD8A2",
                     },
                     {
-                        label: "Acknowledgments received ok (last 2 s)",
-                        data: this.acksReceivedOkRateData,
+                        label: "Packets confirmed (last 2 s)",
+                        data: this._pktsConfirmedRateData,
+                        borderColor: "#5D4037",
+                        pointBackgroundColor: "#AE9F9B",
+                    },
+                    {
+                        label: "Total acks received ok",
+                        data: this._totalAcksReceivedOkRateData,
+                        borderColor: "#FC9700",
+                        pointBackgroundColor: "#FDCB80",
+                    },
+                    {
+                        label: "Acks received ok (last 2 s)",
+                        data: this._acksReceivedOkRateData,
                         borderColor: "#CF1AED",
                         pointBackgroundColor: "#E78CF6",
                     },
@@ -126,60 +165,83 @@ export default class StatisticsCard extends HTMLElement {
     }
 
     /**
-     * Update the shown statistics from the data in a StatsComputer object.
+     * Updates the shown statistics from the data in a StatsComputer object.
      * @param {StatsComputer} stats
      */
     update(stats){
-        this.pktsSent.textContent = stats.totalPktsSent;
-        this.pktsReSent.textContent = stats.totalPktsReSent;
-        this.pktsReceived.textContent = stats.totalPktsReceived;
-        this.pktsReceivedOk.textContent = stats.totalPktsReceivedOk;
-        this.acksSent.textContent = stats.totalAcksSent;
-        this.acksReceived.textContent = stats.totalAcksReceived;
-        this.acksReceivedOk.textContent = stats.totalAcksReceivedOk;
-        this.pktsSentRate.textContent = trunc(stats.pktsSentRate, 3);
-        this.totalPktsSentRate.textContent = trunc(stats.totalPktsSentRate, 3);
-        this.acksReceivedOkRate.textContent = trunc(stats.acksReceivedOkRate, 3);
-        this.totalAcksReceivedOkRate.textContent = trunc(stats.totalAcksReceivedOkRate, 3);
-
-        this.totalPktsSentRateData.push(trunc(stats.totalPktsSentRate, 3));
-        this.totalAcksReceivedOkRateData.push(trunc(stats.totalAcksReceivedOkRate, 3));
-        this.pktsSentRateData.push(trunc(stats.pktsSentRate, 3));
-        this.acksReceivedOkRateData.push(trunc(stats.acksReceivedOkRate, 3));
-        if(this.totalPktsSentRateData.length > this.sampleSize){
-            this.totalPktsSentRateData.shift();
-            this.totalAcksReceivedOkRateData.shift();
-            this.acksReceivedOkRateData.shift();
-            this.pktsSentRateData.shift();
-            this.labels.push(this.nextLabel);
-            this.labels.shift();
-            this.nextLabel += 2;
+        // Update the counters of the table
+        this._pktsSent.textContent = stats.totalPktsSent;
+        this._pktsConfirmed.textContent = stats.totalPktsConfirmed;
+        this._pktsReSent.textContent = stats.totalPktsReSent;
+        this._pktsReceived.textContent = stats.totalPktsReceived;
+        this._pktsReceivedOk.textContent = stats.totalPktsReceivedOk;
+        this._acksSent.textContent = stats.totalAcksSent;
+        this._acksReceived.textContent = stats.totalAcksReceived;
+        this._acksReceivedOk.textContent = stats.totalAcksReceivedOk;
+        // Get packet rates data
+        const pktsSentRate = trunc(stats.pktsSentRate, 3);
+        const totalPktsSentRate = trunc(stats.totalPktsSentRate, 3);
+        const pktsConfirmedRate = trunc(stats.pktsConfirmedRate, 3);
+        const totalPktsConfirmedRate = trunc(stats.totalPktsConfirmedRate, 3);
+        const acksReceivedOkRate = trunc(stats.acksReceivedOkRate, 3);
+        const totalAcksReceivedOkRate = trunc(stats.totalAcksReceivedOkRate, 3);
+        // Update the packet rates in the table
+        this._pktsSentRate.textContent = pktsSentRate;
+        this._totalPktsSentRate.textContent = totalPktsSentRate;
+        this._pktsConfirmedRate.textContent = pktsConfirmedRate;
+        this._totalPktsConfirmedRate.textContent = totalPktsConfirmedRate;
+        this._acksReceivedOkRate.textContent = acksReceivedOkRate;
+        this._totalAcksReceivedOkRate.textContent = totalAcksReceivedOkRate;
+        // Update arrays of data
+        this._pktsSentRateData.push(pktsSentRate);
+        this._totalPktsSentRateData.push(totalPktsSentRate);
+        this._pktsConfirmedRateData.push(pktsConfirmedRate);
+        this._totalPktsConfirmedRateData.push(totalPktsConfirmedRate);
+        this._acksReceivedOkRateData.push(acksReceivedOkRate);
+        this._totalAcksReceivedOkRateData.push(totalAcksReceivedOkRate);
+        if(this._pktsSentRateData.length > this._sampleSize){
+            // Move the x axis to the left
+            this._totalPktsSentRateData.shift();
+            this._totalAcksReceivedOkRateData.shift();
+            this._pktsConfirmedRateData.shift();
+            this._totalPktsConfirmedRateData.shift();
+            this._acksReceivedOkRateData.shift();
+            this._pktsSentRateData.shift();
+            this._labels.push(this._nextLabel);
+            this._labels.shift();
+            this._nextLabel += 2;
         }
-        this.chart.update();
+        this._chart.update();
     }
 
+    /**
+     * Resets the statistics card.
+     */
     reset(){
-        this.pktsSent.textContent = 0;
-        this.pktsReSent.textContent = 0;
-        this.pktsReceived.textContent = 0;
-        this.pktsReceivedOk.textContent = 0;
-        this.acksSent.textContent = 0;
-        this.acksReceived.textContent = 0;
-        this.acksReceivedOk.textContent = 0;
-        this.pktsSentRate.textContent = 0;
-        this.totalPktsSentRate.textContent = 0;
-        this.acksReceivedOkRate.textContent = 0;
-        this.totalAcksReceivedOkRate.textContent = 0;
-
-        this.pktsSentRateData.splice(0, this.pktsSentRateData.length);
-        this.totalPktsSentRateData.splice(0, this.totalPktsSentRateData.length);
-        this.acksReceivedOkRateData.splice(0, this.acksReceivedOkRateData.length);
-        this.totalAcksReceivedOkRateData.splice(0, this.totalAcksReceivedOkRateData.length);
-        this.labels.splice(0, this.labels.length);
-        for(let i=1; i<= this.labelsLength; i++)
-            this.labels.push(i*2);
-        this.nextLabel = INITIAL_NEXT_LABEL;
-        this.chart.update();
+        // Reset the table
+        this._pktsSent.textContent = 0;
+        this._pktsConfirmed.textContent = 0;
+        this._pktsReSent.textContent = 0;
+        this._pktsReceived.textContent = 0;
+        this._pktsReceivedOk.textContent = 0;
+        this._acksSent.textContent = 0;
+        this._acksReceived.textContent = 0;
+        this._acksReceivedOk.textContent = 0;
+        this._pktsSentRate.textContent = 0;
+        this._totalPktsSentRate.textContent = 0;
+        this._acksReceivedOkRate.textContent = 0;
+        this._totalAcksReceivedOkRate.textContent = 0;
+        // Reset arrays of data and labels
+        this._pktsSentRateData.splice(0, this._pktsSentRateData.length);
+        this._totalPktsSentRateData.splice(0, this._totalPktsSentRateData.length);
+        this._pktsConfirmedRateData.splice(0, this._pktsConfirmedRateData.length);
+        this._totalPktsConfirmedRateData.splice(0, this._totalPktsConfirmedRateData.length);
+        this._acksReceivedOkRateData.splice(0, this._acksReceivedOkRateData.length);
+        this._totalAcksReceivedOkRateData.splice(0, this._totalAcksReceivedOkRateData.length);
+        this._labels.splice(0, this._labels.length);
+        fillLabels(this._labels, this._sampleSize);
+        this._nextLabel = INITIAL_NEXT_LABEL;
+        this._chart.update();
     }
 
 }

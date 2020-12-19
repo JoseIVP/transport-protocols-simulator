@@ -1,5 +1,49 @@
+/**
+ * A class for a web component that enables the configuration of the simulation.
+ */
 export default class SettingsCard extends HTMLElement {
+
+    /**
+     * @member {HTMLDetailsElement} - The root element of the card.
+     * @private
+     */
+    _details;
+    /**
+     * @member {boolean} - true if the simulation is running, false otherwise.
+     * @private
+     */
+    _isRunning = false;
+    /**
+     * @member {HTMLButtonElement} - The button that allows to run and stop the
+     * simulation.
+     * @private
+     */
+    _toggleRunBtn;
+    /**
+     * @member {boolean} - true if the simualtion is paused, false otherwise.
+     * @private
+     */
+    _isPaused = false;
+    /**
+     * @member {HTMLButtonElement} - The button that allows to pause and resume
+     * the simulation.
+     * @private
+     */
+    _togglePauseBtn;
+    /**
+     * @member {HTMLSectionElement} - The current active tab.
+     * @private
+     */
+    _selectedTab;
+    /**
+     * @member {HTMLButtonElement} - The button of the current active tab.
+     * @private
+     */
+    _selectedTabButton;
     
+    /**
+     * Creates a new SettingsCard instance.
+     */
     constructor(){
         super();
         this.attachShadow({mode: "open"});
@@ -7,9 +51,9 @@ export default class SettingsCard extends HTMLElement {
         this.shadowRoot.appendChild(template.content.cloneNode(true));
 
         // Set card open/close behaviour
-        this.details = this.shadowRoot.querySelector("details");
+        this._details = this.shadowRoot.querySelector("details");
         // Prevent actioning <details> default toggle zone
-        this.details.addEventListener("click", e => e.preventDefault());
+        this._details.addEventListener("click", e => e.preventDefault());
         const toggleBtn = this.shadowRoot.querySelector(".toggle");
         toggleBtn.addEventListener("click", () => this.toggle());
         this.shadowRoot.getElementById("settings-title")
@@ -27,15 +71,13 @@ export default class SettingsCard extends HTMLElement {
         this._initFormElements();
 
         // Set execution behaviour
-        this.running = false;
-        this.toggleRunBtn = this.shadowRoot.getElementById("toggle-run");
-        this.toggleRunBtn.onclick = () => {
-            this.running ? this.stop() : this.start();
+        this._toggleRunBtn = this.shadowRoot.getElementById("toggle-run");
+        this._toggleRunBtn.onclick = () => {
+            this._isRunning ? this.stop() : this.start();
         };
-        this.paused = false;
-        this.togglePauseBtn = this.shadowRoot.getElementById("toggle-pause");
-        this.togglePauseBtn.onclick = () => {
-            this.paused ? this.resume() : this.pause();
+        this._togglePauseBtn = this.shadowRoot.getElementById("toggle-pause");
+        this._togglePauseBtn.onclick = () => {
+            this._isPaused ? this.resume() : this.pause();
         };
     }
 
@@ -44,7 +86,7 @@ export default class SettingsCard extends HTMLElement {
      */
     toggle(){
         // Measure heights and animate transition
-        const {details} = this;
+        const {_details: details} = this;
         const initialHeight = getComputedStyle(details).height;
         const wasOpen = details.open;
         details.open= !details.open;
@@ -67,33 +109,33 @@ export default class SettingsCard extends HTMLElement {
     }
 
     /**
-     * Changes the seleted tab to the one with the attribute
-     * data-tab set to tabName.
+     * Changes the seleted tab to the one with the attribute data-tab set to
+     * tabName.
      * @param {string} tabName - The name of the tab to select.
      */
     selectTab(tabName){
-        this.selectedTab?.classList.remove("active");
-        this.selectedTabButton?.classList.remove("active");
-        this.selectedTab = this.shadowRoot.querySelector(`section[data-tab="${tabName}"]`);
-        this.selectedTabButton = this.shadowRoot.querySelector(`button[data-tab="${tabName}"]`);
-        this.selectedTab.classList.add("active");
-        this.selectedTabButton.classList.add("active");
+        this._selectedTab?.classList.remove("active");
+        this._selectedTabButton?.classList.remove("active");
+        this._selectedTab = this.shadowRoot.querySelector(`section[data-tab="${tabName}"]`);
+        this._selectedTabButton = this.shadowRoot.querySelector(`button[data-tab="${tabName}"]`);
+        this._selectedTab.classList.add("active");
+        this._selectedTabButton.classList.add("active");
     }
 
     /**
-     * Gets the data from the forms, validates it, and then calls
-     * onStart() with a settings object as argument.
+     * Gets the data from the forms, validates it, and then calls onStart() with
+     * a settings object as argument.
      */
     start(){
         const settingsForm = this.shadowRoot.getElementById("settings-form");
         if(!settingsForm.reportValidity())
             return
-        this.running = true;
+        this._isRunning = true;
         // Tell the user that the settings are locked
         const lock = this.shadowRoot.querySelector(".lock");
         lock.classList.add("active");
-        this.toggleRunBtn.classList.add("running");
-        this.togglePauseBtn.disabled = false;
+        this._toggleRunBtn.classList.add("running");
+        this._togglePauseBtn.disabled = false;
         const settingsList = [
             "protocol",
             "delay",
@@ -116,16 +158,16 @@ export default class SettingsCard extends HTMLElement {
     }
 
     /**
-     * Unlock the entry of data to the forms, and call onStop().
+     * Unlocks the entry of data to the forms, and calls onStop().
      */
     stop(){
         // Reset playing button
-        this.running = false;
-        this.toggleRunBtn.classList.remove("running");
+        this._isRunning = false;
+        this._toggleRunBtn.classList.remove("running");
         // Reset pausing button
-        this.paused = false;
-        this.togglePauseBtn.classList.remove("paused");
-        this.togglePauseBtn.disabled = true;
+        this._isPaused = false;
+        this._togglePauseBtn.classList.remove("paused");
+        this._togglePauseBtn.disabled = true;
         // Unlock form inputs
         const formElements = this.shadowRoot.getElementById("settings-form").elements;
         for(let i=0; i<formElements.length; i++){
@@ -137,8 +179,9 @@ export default class SettingsCard extends HTMLElement {
     }
 
     /**
-     * Init the form elements behaviour, making them change the
-     * paragraph below them.
+     * Initializes the elements of the form and their behaviour, making them
+     * change the paragraph below them.
+     * @private
      */
     _initFormElements(){
         const inputs = this.shadowRoot.querySelectorAll("input");
@@ -157,25 +200,23 @@ export default class SettingsCard extends HTMLElement {
     }
 
     /**
-     * Changes the states of the pause button to paused,
-     * and calls onPause().
+     * Changes the states of the pause button to paused, and calls onPause().
      */
     pause(){
-        if(this.running && !this.paused){
-            this.paused = true;
-            this.togglePauseBtn.classList.add("paused");
+        if(this._isRunning && !this._isPaused){
+            this._isPaused = true;
+            this._togglePauseBtn.classList.add("paused");
             this.onPause();
         }
     }
 
     /**
-     * Removes the paused state from the pause button
-     * and calls onResume().
+     * Removes the paused state from the pause button and calls onResume().
      */
     resume(){
-        if(this.paused){
-            this.paused = false;
-            this.togglePauseBtn.classList.remove("paused");
+        if(this._isPaused){
+            this._isPaused = false;
+            this._togglePauseBtn.classList.remove("paused");
             this.onResume(); 
         }
     }
