@@ -7,6 +7,7 @@ import {GBNReceiver, GBNSender} from "./lib/src/goBackN.js";
 import {SRReceiver, SRSender} from "./lib/src/selectiveRepeat.js";
 import Channel from "./lib/src/Channel.js";
 import {Timeout, StatsComputer} from "./lib/src/utils.js";
+import { AbstractWindowedSender } from "./lib/src/abstractNodes.js";
 
 customElements.define("settings-card", SettingsCard);
 customElements.define("packet-visualization", PacketVisualization);
@@ -27,10 +28,6 @@ settingsCard.onStart = (settings) => {
     console.log("started!");
     console.log(settings);
 
-    // Each window base sequence
-    let senderBase = null;
-    let receiverBase = null;
-
     let useCAck = false;
     let SenderClass = null;
     let ReceiverClass = null;
@@ -42,21 +39,17 @@ settingsCard.onStart = (settings) => {
         case 2:
             SenderClass = GBNSender;
             ReceiverClass = GBNReceiver;
-            senderBase = 0;
             break;
         case 4:
             useCAck = true; // SRReceiver with cumulative Acks
         case 3:
             SenderClass = SRSender;
             ReceiverClass = SRReceiver;
-            senderBase = 0;
-            receiverBase = 0;
     }
 
     // Initialize stats generation
     statsCard.reset();
     stats = new StatsComputer(2000);
-    stats.pause(); // Resume it when actually starting
     stats.onUpdate = () => statsCard.update(stats);
 
     // Prepare channel
@@ -71,24 +64,20 @@ settingsCard.onStart = (settings) => {
     // Prepare receiver
     receiver = new ReceiverClass({
         windowSize: settings.windowSize,
-        useCAck
+        useCAck,
+        channel
     });
     receiver.onSend = packet => {
-        stats.packetSent(packet);
+        stats.pktSent(packet);
         visualization.sendPacket(packet);
     };
-    receiver.onReceive = (packet, channel, isOk) => {
-        stats.packetReceived(packet, isOk);
+    receiver.onReceive = (packet, isOk) => {
+        stats.pktReceived(packet, isOk);
         if(isOk)
             visualization.packetReceived(packet);
     };
-    if(receiverBase !== null){
-        receiver.onStateChange = () => {
-            const spacesToMove = receiver.base - receiverBase;
-            receiverBase = receiver.base;
-            visualization.moveWindow(spacesToMove, true);
-        };
-    }
+    if(receiver instanceof SRReceiver)
+        receiver.onWindowMoved = spaces => visualization.moveReceiverWindow(spaces);
 
     // Prepare sender
     sender = new SenderClass({
@@ -98,23 +87,20 @@ settingsCard.onStart = (settings) => {
         windowSize: settings.windowSize
     });
     sender.onSend = packet => {
-        stats.packetSent(packet);
+        stats.pktSent(packet);
         visualization.sendPacket(packet);
     };
-    sender.onReceive = (packet, channel, isOk) => {
-        stats.packetReceived(packet, isOk);
-        if(isOk)
-            visualization.packetConfirmed(packet);
+    sender.onReceive = (packet, isOk) => stats.pktReceived(packet, isOk);
+    sender.onPktConfirmed = seqNum => {
+        visualization.packetConfirmed(seqNum);
+        stats.pktConfirmed();
+        if(sender instanceof SWSender)
+            visualization.moveSenderWindow(1);
     };
-    if(senderBase !== null){
-        sender.onStateChange = () => {
-            const spacesToMove = sender.base - senderBase;
-            senderBase = sender.base;
-            visualization.moveWindow(spacesToMove);
-        };
-    }
     sender.onTimeoutSet = seqNum => visualization.startTimeout(seqNum);
     sender.onTimeoutUnset = seqNum => visualization.stopTimeout(seqNum);
+    if(sender instanceof AbstractWindowedSender)
+        sender.onWindowMoved = spaces => visualization.moveSenderWindow(spaces)
 
     // Prepare visualization component    
     visualization.setParams({
@@ -135,7 +121,7 @@ settingsCard.onStart = (settings) => {
         sender.send();
         visualization.startNextPacketTimer(timeToNextPacket);
     }, true);
-    stats.resume();
+    stats.start();
 };
 
 
@@ -155,7 +141,7 @@ settingsCard.onStop = () => {
 };
 
 settingsCard.onResume = () => {
-    // Resum simulation
+    // Resume the simulation
     stats.resume();
     sender.resume();
     channel.resume();
@@ -165,7 +151,7 @@ settingsCard.onResume = () => {
 };
 
 settingsCard.onPause = () => {
-    // Pause simulation
+    // Pause the simulation
     stats.pause();
     sender.pause();
     channel.pause();
@@ -175,7 +161,7 @@ settingsCard.onPause = () => {
 };
 
 document.onvisibilitychange = () => {
-    // Pause simulation if the user leaves the tab
+    // Pause the simulation if the user leaves the tab
     if(document.visibilityState == "hidden")
         settingsCard.pause();
 };

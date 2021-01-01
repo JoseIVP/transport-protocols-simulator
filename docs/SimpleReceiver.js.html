@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      selectiveRepeat - Documentation
+      SimpleReceiver.js - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -79,68 +81,48 @@
   <div id="main">
     
       <h1 class="page-title">
-        selectiveRepeat
+        SimpleReceiver.js
       </h1>
     
 
     
+      
 
 <section>
-  <header>
-    
-      
-  </header>
-
   <article>
-    <div class="container-overview">
-      
-        
+    <pre class="prettyprint source linenums"><code>/** @module SimpleReceiver*/
 
-        
-      
-    </div>
+import { AbstractARQReceiver } from "./abstractNodes.js";
 
-    
+/**
+ * A class that receives all packets and does nothing with them.
+ */
+class SimpleReceiver extends AbstractARQReceiver{
 
-    
+    constructor(){
+        super({channel: null, windowSize: null});
+    }
 
-    
-      <h3 class="subsection-title">Classes</h3>
+    _checkReceivedPkt(packet){
+        return true;
+    }
 
-      <dl>
-        
-          <dt>
-            <a href="module-selectiveRepeat.SRReceiver.html">SRReceiver</a>
-          </dt>
-          <dd>
-            
-          </dd>
-        
-          <dt>
-            <a href="module-selectiveRepeat.SRSender.html">SRSender</a>
-          </dt>
-          <dd>
-            
-          </dd>
-        
-      </dl>
-    
+    _processExpectedPkt(packet){
+        return;
+    }
 
-     
+    _processUnexpectedPkt(packet){
+        return;
+    }
 
-    
+}
 
-    
-
-    
-
-    
-
-    
+export default SimpleReceiver;
+</code></pre>
   </article>
 </section>
 
-
+    
 
 
   </div>
