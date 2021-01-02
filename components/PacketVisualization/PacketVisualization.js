@@ -157,7 +157,7 @@ export default class PacketVisualization extends HTMLElement {
         this._senderTag = this.shadowRoot.querySelector("#sender-tag");
         this._receiverTag = this.shadowRoot.querySelector("#receiver-tag");
         this._rootSvg.onload = () => this._centerTags();
-        this._expandTracksBtn = this.shadowRoot.querySelector("#expand-tracks-btn");
+        this._expandTracksBtn = this.shadowRoot.querySelector("#toggle-expand-btn");
         this._expandTracksBtn.onclick = () => this._toggleExpandTracks();
     }
     

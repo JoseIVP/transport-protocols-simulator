@@ -73,16 +73,16 @@ button{
     cursor: default;
 }
 
-#expand-tracks-btn span{
+#toggle-expand-btn span{
     display: none;
     align-items: center;
 }
 
-#expand-tracks-btn:not(.expanded) .show-more{
+#toggle-expand-btn:not(.expanded) .show-more{
     display: inline-flex;
 }
 
-#expand-tracks-btn.expanded .show-less{
+#toggle-expand-btn.expanded .show-less{
     display: inline-flex;
 }
 
@@ -95,7 +95,7 @@ button{
     align-self: flex-start;
     flex: 6 2 725px;
     display: block;
-    padding: clamp(.5rem, 2vw, 1.5rem);
+    padding: clamp(.5rem, 2%, 1.5rem);
     box-sizing: border-box;
 }
 
@@ -104,7 +104,7 @@ button{
     padding-bottom: 0px;
 }
 
-#root-svg .background{
+#background-svg{
     fill: #f2f2f2;
     rx: 20px;
     ry: 20px;
@@ -116,7 +116,7 @@ button{
         margin-bottom: .8rem;
     }
 
-    #root-svg .background{
+    #background-svg{
         fill: #f2f2f2;
         rx: 0px;
         ry: 0px;
@@ -125,7 +125,7 @@ button{
 
 #sliding-view, #sliding-view-content{
     overflow: visible;
-    x: 0 px;
+    x: 0px;
 }
 
 #sender-window, #receiver-window{
@@ -176,47 +176,47 @@ legend li::before{
 }
 
 /* Legend colors **/
-legend li.legend-not-received::before{
+legend .not-received::before{
     background-color: #D7D9DB;
     border-color: #B0B3B7;
 }
 
-legend li.legend-buffered::before{
+legend .buffered::before{
     background-color: #B2D0F9;
     border-color: #65A2F4;
 }
 
-legend li.legend-confirmed::before{
+legend .confirmed::before{
     background-color: #F8F380;
     border-color: #F1E800;
 }
 
-legend li.legend-acknowledgment-or-received::before{
+legend .ack-or-received::before{
     background-color: #9CD8A2;
     border-color: #3AB146;
 }
 
-legend li.legend-next-sequence-timer::before{
+legend .next-sequence-timer::before{
     background-color: #FDCB80;
     border-color: #FC9700;
 }
 
-legend li.legend-window::before{
+legend .window::before{
     background-color: #FCB0B0;
     border-color: #F96060;
 }
 
-legend li.legend-timeout::before{
+legend .timeout::before{
     background-color: #E78CF6;
     border-color: #CF1AED;
 }
 
-legend li.legend-damaged-packet::before{
+legend .damaged::before{
     background-color: #AE9F9B;
     border-color: #5D4037;
 }
 
-legend li.legend-cumulative-acknowledgment::before{
+legend .cumulative-ack::before{
     background-color: #80DFD2;
     border-color: #00BFA5;
 }

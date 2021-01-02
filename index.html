@@ -147,7 +147,7 @@
             <div class="card-header">
             <h2>Visualization</h2>
                 <menu class="top-menu">
-                    <button id="expand-tracks-btn" type="button" class="btn">
+                    <button id="toggle-expand-btn" type="button" class="btn">
                         <span class="show-more">
                             <i class="fas fa-plus-square"></i>
                             Show more tracks
@@ -162,7 +162,7 @@
             
             <div id="visualization-content">
                 <svg id="root-svg" viewBox="0 0 1600 900">
-                    <rect class="background" width="100%" height="100%"/>
+                    <rect id="background-svg" width="100%" height="100%"/>
                     <text y="250" id="sender-tag" class="node-tag">SENDER</text>
                     <text y="735" id="receiver-tag" class="node-tag">RECEIVER</text>
                     <foreignObject id="sliding-view" width="100%" height="100%" x="0" y="0" >
@@ -176,15 +176,15 @@
                 <legend>
                     <h3>Legend</h3>
                     <ul>
-                        <li class="legend-not-received">No data received yet</li>
-                        <li class="legend-buffered">Data buffered / packets to send</li>
-                        <li class="legend-confirmed">Transmission confirmed</li>
-                        <li class="legend-acknowledgment-or-received">Acknowledgment / correctly received</li>
-                        <li class="legend-cumulative-acknowledgment">Cumulative acknowledgment</li>
-                        <li class="legend-damaged-packet">Damaged packet</li>
-                        <li class="legend-next-sequence-timer">Time for trying to send next packet</li>
-                        <li class="legend-window">Window</li>
-                        <li class="legend-timeout">Timeout</li>
+                        <li class="not-received">No data received yet</li>
+                        <li class="buffered">Data buffered / packets to send</li>
+                        <li class="confirmed">Transmission confirmed</li>
+                        <li class="ack-or-received">Acknowledgment / correctly received</li>
+                        <li class="cumulative-ack">Cumulative acknowledgment</li>
+                        <li class="damaged">Damaged packet</li>
+                        <li class="next-sequence-timer">Time for trying to send next packet</li>
+                        <li class="window">Window</li>
+                        <li class="timeout">Timeout</li>
                     </ul>
                 </legend>
             </div>
