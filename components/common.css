@@ -1,0 +1,51 @@
+.card{
+    width: var(--card-width);
+    margin: var(--card-margin);
+    background-color: var(--card-color);
+    overflow: hidden;
+    position: relative;
+    border-radius: 5px;
+    border: 1px solid var(--card-border-color);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+
+.card-header{
+    padding: 1rem;
+    padding-left: clamp(5px, 5%, 1.8rem);
+    display: flex;
+    border-bottom: 1px solid var(--card-border-color);
+    box-sizing: border-box;
+}
+
+button{
+    outline: none;
+    cursor: pointer;
+}
+
+.btn{
+    background-color: var(--primary-button-color);
+    color: var(--primary-button-text-color);
+    font-size: 1rem;
+    padding: 0.5em 1em;
+    border-radius: 0.3em;
+    transition: box-shadow .15s,
+        background-color .2s;
+}
+
+.btn i{
+    margin-right: 0.5em;
+    font-size: .8em;
+}  
+
+.btn:focus{
+    box-shadow: 0 0 0 .25em var(--primary-button-border-color);
+}
+
+.btn:hover{
+    background-color: var(--primary-button-hover-color);
+}
+
+.btn:disabled{
+    background-color: var(--primary-button-disabled-color);
+    cursor: default;
+}

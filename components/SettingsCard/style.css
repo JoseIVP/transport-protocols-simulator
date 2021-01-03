@@ -1,4 +1,5 @@
 @import "./input-range.css";
+@import "../common.css";
 
 *{
     margin: 0;
@@ -27,24 +28,10 @@ h2 i{
     margin-left: .6rem;
 }
 
-details{
-    width: var(--card-width);
-    margin: var(--card-margin);
-    background-color: var(--card-color);
-    overflow: hidden;
-    position: relative;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--card-border-color);
-}
-
-summary{
+summary.card-header{
+    border-bottom: none;
     list-style: none;
     outline: none;
-    padding: 1rem;
-    padding-left: clamp(5px, 5vw, 1.8rem);
-    box-sizing: border-box;
-    display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: .6rem;
@@ -53,11 +40,6 @@ summary{
 /* Hide marker in Chrome */
 summary::-webkit-details-marker{
     display: none;
-}
-
-button{
-    outline: none;
-    cursor: pointer;
 }
 
 .toggle{
@@ -95,34 +77,6 @@ button{
 details.open .toggle{
     transform: rotate(180deg);
     bottom: 1rem;
-}
-
-.btn{
-    background-color: var(--primary-button-color);
-    color: var(--primary-button-text-color);
-    font-size: 1rem;
-    padding: 0.5em 1em;
-    border-radius: 0.3em;
-    transition: box-shadow .15s,
-        background-color .2s;
-}
-
-.btn i{
-    margin-right: 0.5em;
-    font-size: .8em;
-}  
-
-.btn:focus{
-    box-shadow: 0 0 0 .25em var(--primary-button-border-color);
-}
-
-.btn:hover{
-    background-color: var(--primary-button-hover-color);
-}
-
-.btn:disabled{
-    background-color: var(--primary-button-disabled-color);
-    cursor: default;
 }
 
 #toggle-run span,
