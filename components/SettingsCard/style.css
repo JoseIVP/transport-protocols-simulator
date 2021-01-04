@@ -80,25 +80,33 @@ details.open .toggle{
 }
 
 #toggle-run span,
-#toggle-pause span{
+#toggle-pause span,
+#toggle-grid span{
     display: none;
     align-items: center;
 }
 
-#toggle-run:not(.running) .start{
+#toggle-run:not(.running) .start,
+#toggle-run.running .stop,
+#toggle-pause:not(.paused) .pause,
+#toggle-pause.paused .resume,
+#toggle-grid:not(.active) .show-grid,
+#toggle-grid.active .hide-grid{
     display: inline-flex;
 }
 
-#toggle-run.running .stop{
-    display: inline-flex;
+#toggle-grid i{
+    font-size: 1em;
 }
 
-#toggle-pause:not(.paused) .pause{
-    display: inline-flex;
+#toggle-grid .hide-grid i{
+    transform: rotate(-90deg);
 }
 
-#toggle-pause.paused .resume{
-    display: inline-flex;
+@media(max-width: 1249px){
+    #toggle-grid{
+        display: none;
+    }
 }
 
 .top-menu{
