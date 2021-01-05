@@ -1,7 +1,7 @@
-import SettingsCard from "./components/SettingsCard/SettingsCard.js";
-import PacketVisualization from "./components/PacketVisualization/PacketVisualization.js";
-import PacketTrack from "./components/PacketTrack/PacketTrack.js";
-import StatisticsCard from "./components/StatisticsCard/StatisticsCard.js";
+import SettingsCard from "./components/SettingsCard/component.js";
+import PacketVisualization from "./components/PacketVisualization/component.js";
+import PacketTrack from "./components/PacketTrack/component.js";
+import StatisticsCard from "./components/StatisticsCard/component.js";
 import {SWReceiver, SWSender} from "./lib/src/stopAndWait.js";
 import {GBNReceiver, GBNSender} from "./lib/src/goBackN.js";
 import {SRReceiver, SRSender} from "./lib/src/selectiveRepeat.js";

@@ -19,10 +19,10 @@
     <statistics-card></statistics-card>
 
     <template id="settings-card">
-        <link rel="stylesheet" href="./components/SettingsCard/SettingsCard.css">
+        <link rel="stylesheet" href="./components/SettingsCard/style.css">
         <link rel="stylesheet" href="./fontawesome/css/all.css">
-        <details open class="open">
-            <summary>
+        <details open class="open card">
+            <summary class="card-header">
                 <h2>
                     <span id="settings-title">Settings</span>
                     <i class="fa fa-info-circle" style="display: none;"></i>
@@ -31,6 +31,16 @@
                     <button type="button" class="btn" style="display: none;">
                         <i class="fas fa-file-download"></i>
                         Download logs
+                    </button>
+                    <button id="toggle-grid" type="button" class="btn">
+                        <span class="show-grid">
+                            <i class="fas fa-columns"></i>
+                            View columns
+                        </span>
+                        <span class="hide-grid">
+                            <i class="fas fa-columns"></i>
+                            View list
+                        </span>
                     </button>
                     <button id="toggle-run" type="button" class="btn">
                         <span class="start">
@@ -141,13 +151,13 @@
     </template>
 
     <template id="packet-visualization">
-        <link rel="stylesheet" href="./components/PacketVisualization/PacketVisualization.css">
+        <link rel="stylesheet" href="./components/PacketVisualization/style.css">
         <link rel="stylesheet" href="./fontawesome/css/all.css">
         <section class="card">
-            <div class="card-header">
+            <header class="card-header">
             <h2>Visualization</h2>
                 <menu class="top-menu">
-                    <button id="expand-tracks-btn" type="button" class="btn">
+                    <button id="toggle-expand-btn" type="button" class="btn">
                         <span class="show-more">
                             <i class="fas fa-plus-square"></i>
                             Show more tracks
@@ -158,33 +168,39 @@
                         </span>
                     </button>
                 </menu>
-            </div>
+            </header>
             
             <div id="visualization-content">
-                <svg id="root-svg" viewBox="0 0 1600 900">
-                    <rect class="background" width="100%" height="100%"/>
-                    <text y="250" id="sender-tag" class="node-tag">SENDER</text>
-                    <text y="735" id="receiver-tag" class="node-tag">RECEIVER</text>
-                    <foreignObject id="sliding-view" width="100%" height="100%" x="0" y="0" >
-                        <svg id="sliding-view-content" viewBox="0 0 1600 900">
-                            <rect id="sender-window" x="100" y="14" width="400" height="124"/>
-                            <rect id="receiver-window" x="100" y="762" width="400" height="124"/>
-                            <g id="tracks"></g>
-                        </svg>
-                    </foreignObject>
-                </svg>
+                <figure id="visualization-figure">
+                   <svg id="root-svg" viewBox="0 0 1600 900">
+                        <rect id="background-svg" width="100%" height="100%"/>
+                        <text y="250" id="sender-tag" class="node-tag">SENDER</text>
+                        <text y="735" id="receiver-tag" class="node-tag">RECEIVER</text>
+                        <foreignObject id="sliding-view" width="100%" height="100%" x="0" y="0" >
+                            <svg id="sliding-view-content" viewBox="0 0 1600 900">
+                                <rect id="sender-window" x="100" y="14" width="400" height="124"/>
+                                <rect id="receiver-window" x="100" y="762" width="400" height="124"/>
+                                <g id="tracks"></g>
+                            </svg>
+                        </foreignObject>
+                    </svg>
+                    <p id="visualization-bindings">
+                        <kbd>Click</kbd> = lose packet,
+                        <kbd>Ctrl</kbd> + <kbd>Click</kbd> = damage packet
+                    </p>
+                </figure>
                 <legend>
                     <h3>Legend</h3>
                     <ul>
-                        <li class="legend-not-received">No data received yet</li>
-                        <li class="legend-buffered">Data buffered / packets to send</li>
-                        <li class="legend-confirmed">Transmission confirmed</li>
-                        <li class="legend-acknowledgment-or-received">Acknowledgment / correctly received</li>
-                        <li class="legend-cumulative-acknowledgment">Cumulative acknowledgment</li>
-                        <li class="legend-damaged-packet">Damaged packet</li>
-                        <li class="legend-next-sequence-timer">Time for trying to send next packet</li>
-                        <li class="legend-window">Window</li>
-                        <li class="legend-timeout">Timeout</li>
+                        <li class="not-received">No data received yet</li>
+                        <li class="buffered">Data buffered / packets to send</li>
+                        <li class="confirmed">Transmission confirmed</li>
+                        <li class="ack-or-received">Acknowledgment / correctly received</li>
+                        <li class="cumulative-ack">Cumulative acknowledgment</li>
+                        <li class="damaged">Damaged packet</li>
+                        <li class="next-sequence-timer">Time for trying to send next packet</li>
+                        <li class="window">Window</li>
+                        <li class="timeout">Timeout</li>
                     </ul>
                 </legend>
             </div>
@@ -192,7 +208,7 @@
     </template>
 
     <template id="packet-track">
-        <link rel="stylesheet" href="./components/PacketTrack/PacketTrack.css">
+        <link rel="stylesheet" href="./components/PacketTrack/style.css">
         <svg id="root" viewBox="0 0 100 900">
             <rect id="sender" class="pkt buffered" y="26" x="16" width="68" height="100"/>
             <g id="timer">
@@ -205,9 +221,18 @@
     </template>
 
     <template id="statistics-card">
-        <link rel="stylesheet" href="./components/StatisticsCard/StatisticsCard.css">
+        <link rel="stylesheet" href="./components/StatisticsCard/style.css">
+        <link rel="stylesheet" href="./fontawesome/css/all.css">
         <section class="card">
-            <h2>Live statistics</h2>
+            <header class="card-header">
+                <h2>Live statistics</h2>
+                    <menu class="top-menu">
+                        <button id="change-order-btn" type="button" class="btn">
+                            <i class="fas fa-exchange-alt"></i>
+                            Change order
+                        </button>
+                    </menu>
+            </header>
             <div id="stats-content">
                 <figure id="table-figure">
                     <table>

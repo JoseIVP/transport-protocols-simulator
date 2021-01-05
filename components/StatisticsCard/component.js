@@ -73,6 +73,10 @@ export default class StatisticsCard extends HTMLElement {
             this._chart.destroy();
             this._renderChart();
         });
+        // Set the bahavior to change the order of the figures
+        this.shadowRoot.querySelector("#change-order-btn").onclick = () => {
+            this.shadowRoot.querySelector("#stats-content").classList.toggle("reverse");
+        };
     }
 
     /**

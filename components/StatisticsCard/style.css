@@ -1,3 +1,5 @@
+@import "../common.css";
+
 *{
     margin: 0;
     padding: 0;
@@ -5,17 +7,10 @@
     font-family: var(--font-family);
 }
 
-.card{
-    --card-width: min(96vw, 1200px);
-    --card-margin: 1rem auto 4rem auto;
-    width: var(--card-width);
-    margin: var(--card-margin);
-    background-color: var(--card-color);
-    overflow: hidden;
-    position: relative;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--card-border-color);
+.card-header{
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .6rem;
 }
 
 h2{
@@ -23,19 +18,34 @@ h2{
     color: var(--text-color);
     display: flex;
     align-items: center;
-    padding: 1rem;
-    padding-left: 1.8rem;
-    border-bottom: 1px solid var(--card-border-color);
+}
+
+.card-header menu{
+    display: flex;
+}
+
+#change-order-btn{
+    display: flex;
+    align-items: center;
+}
+
+#change-order-btn i{
+    font-size: 1em;
 }
 
 #stats-content{
-    padding: clamp(1rem, 2vw, 2rem);
+    padding: clamp(1rem, 3%, 2rem);
     padding-bottom: 2rem;
     display: flex;
     box-sizing: border-box;
     justify-content: space-around;
     gap: 2rem;
     flex-wrap: wrap;
+}
+
+#stats-content.reverse{
+    flex-direction: row-reverse;
+    flex-wrap: wrap-reverse;
 }
 
 #table-figure{
@@ -105,6 +115,10 @@ tbody tr:last-child td:last-child{
     border-radius: 8px;
     padding: 1rem;
     box-sizing: border-box;
+}
+
+#stats-content.reverse #chart-figure{
+    align-self: flex-end;
 }
 
 #chart-figure figcaption{

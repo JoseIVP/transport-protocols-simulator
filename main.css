@@ -64,7 +64,60 @@ h1{
     font-weight: bold;
 }
 
-settings-card{
+settings-card,
+packet-visualization,
+statistics-card{
     --card-width: min(96vw, 1200px);
     --card-margin: 1rem auto 2.5rem auto;
+}
+
+statistics-card{
+    --card-margin: 1rem auto 4rem auto;
+}
+
+@media(min-width: 1250px){
+    body.grid{
+        display: grid;
+        grid-template-columns: 55fr 45fr;
+        grid-auto-rows: auto;
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1900px;
+        margin: 0px auto;
+    }
+
+    body.grid h1{
+        width: auto;
+        margin: 0;
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+    }
+
+    body.grid #warning{
+        width: auto;
+        margin: 0;
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+    }
+
+    body.grid settings-card{
+        --card-width: auto;
+        --card-margin: 0;
+        grid-column: 1 / 2;
+        grid-row: 3 / 4;
+    }
+    
+    body.grid packet-visualization{
+        --card-width: auto;
+        --card-margin: 0;
+        grid-column: 1 / 2;
+        grid-row: 4 / 5;
+    }
+    
+    body.grid statistics-card{
+        --card-width: auto;
+        --card-margin: 0;
+        grid-column: 2 / 3;
+        grid-row: 2 / 6;
+    }
 }

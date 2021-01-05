@@ -157,7 +157,7 @@ export default class PacketVisualization extends HTMLElement {
         this._senderTag = this.shadowRoot.querySelector("#sender-tag");
         this._receiverTag = this.shadowRoot.querySelector("#receiver-tag");
         this._rootSvg.onload = () => this._centerTags();
-        this._expandTracksBtn = this.shadowRoot.querySelector("#expand-tracks-btn");
+        this._expandTracksBtn = this.shadowRoot.querySelector("#toggle-expand-btn");
         this._expandTracksBtn.onclick = () => this._toggleExpandTracks();
     }
     
@@ -429,7 +429,8 @@ export default class PacketVisualization extends HTMLElement {
         if(this._isExpanded){
             const viewBox = `0 0 ${VISIBLE_TRACKS * 100} 900`;
             _rootSvg.setAttribute("viewBox", viewBox);
-            _rootSvg.classList.remove("expanded");
+            this.shadowRoot.querySelector("#visualization-figure")
+                .classList.remove("expanded");
             _slidingViewContent.setAttribute("viewBox", viewBox);
             _expandTracksBtn.classList.remove("expanded");
             this._visualizationWidth = VISIBLE_TRACKS * 100;
@@ -439,7 +440,8 @@ export default class PacketVisualization extends HTMLElement {
         }else{
             const viewBox = `0 0 ${EXPANDED_VISIBLE_TRACKS* 100} 900`;
             _rootSvg.setAttribute("viewBox", viewBox);
-            _rootSvg.classList.add("expanded");
+            this.shadowRoot.querySelector("#visualization-figure")
+                .classList.add("expanded");
             _slidingViewContent.setAttribute("viewBox", viewBox);
             _expandTracksBtn.classList.add("expanded");
             this._visualizationWidth = EXPANDED_VISIBLE_TRACKS * 100;

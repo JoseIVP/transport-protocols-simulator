@@ -67,6 +67,13 @@ export default class SettingsCard extends HTMLElement {
             this.selectTab(tab);
         });
 
+        // Set grid behaviour
+        const toggleGridBtn = this.shadowRoot.querySelector("#toggle-grid");
+        toggleGridBtn.addEventListener("click", () => {
+            document.body.classList.toggle("grid");
+            toggleGridBtn.classList.toggle("active");
+        });
+
         // Set form elements behaviour
         this._initFormElements();
 

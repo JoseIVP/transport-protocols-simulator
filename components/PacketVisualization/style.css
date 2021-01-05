@@ -1,3 +1,5 @@
+@import "../common.css";
+
 *{
     margin: 0;
     padding: 0;
@@ -5,28 +7,10 @@
     font-family: var(--font-family);
 }
 
-.card{
-    --card-width: min(96vw, 1200px);
-    --card-margin: 1rem auto 2.5rem auto;
-    width: var(--card-width);
-    margin: var(--card-margin);
-    background-color: var(--card-color);
-    overflow: hidden;
-    position: relative;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--card-border-color);
-}
-
 .card-header{
-    padding: 1rem;
-    padding-left: clamp(5px, 5vw, 1.8rem);
-    box-sizing: border-box;
-    display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: .6rem;
-    border-bottom: 1px solid var(--card-border-color);
 }
 
 h2{
@@ -40,49 +24,20 @@ h2{
     display: flex;
 }
 
-button{
-    outline: none;
-    cursor: pointer;
-}
-
-.btn{
-    background-color: var(--primary-button-color);
-    color: var(--primary-button-text-color);
-    font-size: 1rem;
-    padding: 0.5em 1em;
-    border-radius: 0.3em;
-    transition: box-shadow .15s,
-        background-color .2s;
-}
-
 .btn i{
-    margin-right: 0.5em;
     font-size: 1em;
-}  
-
-.btn:focus{
-    box-shadow: 0 0 0 .25em var(--primary-button-border-color);
 }
 
-.btn:hover{
-    background-color: var(--primary-button-hover-color);
-}
-
-.btn:disabled{
-    background-color: var(--primary-button-disabled-color);
-    cursor: default;
-}
-
-#expand-tracks-btn span{
+#toggle-expand-btn span{
     display: none;
     align-items: center;
 }
 
-#expand-tracks-btn:not(.expanded) .show-more{
+#toggle-expand-btn:not(.expanded) .show-more{
     display: inline-flex;
 }
 
-#expand-tracks-btn.expanded .show-less{
+#toggle-expand-btn.expanded .show-less{
     display: inline-flex;
 }
 
@@ -91,32 +46,53 @@ button{
     flex-wrap: wrap;
 }
 
-#root-svg{
+#visualization-figure{
     align-self: flex-start;
+    padding: clamp(.5rem, 2%, 1.5rem);
     flex: 6 2 725px;
-    display: block;
-    padding: clamp(.5rem, 2vw, 1.5rem);
     box-sizing: border-box;
 }
 
-#root-svg.expanded{
+#visualization-figure.expanded{
     flex-basis: 100%;
     padding-bottom: 0px;
 }
 
-#root-svg .background{
+#visualization-bindings{
+    padding: 1rem;
+    padding-bottom: 0px;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: var(--secondary-text-color);
+    font-style: italic;
+    text-align: center;
+}
+
+kbd{
+    font-weight: bold;
+    padding: .25em;
+    border-radius: .25em;
+    background-color: #f2f2f2;
+    font-style: normal;
+}
+
+#root-svg{
+    display: block;
+}
+
+#background-svg{
     fill: #f2f2f2;
     rx: 20px;
     ry: 20px;
 }
 
 @media(max-width: 600px){
-    #root-svg{
+    #visualization-figure{
         padding: 0;
         margin-bottom: .8rem;
     }
 
-    #root-svg .background{
+    #background-svg{
         fill: #f2f2f2;
         rx: 0px;
         ry: 0px;
@@ -125,7 +101,7 @@ button{
 
 #sliding-view, #sliding-view-content{
     overflow: visible;
-    x: 0 px;
+    x: 0px;
 }
 
 #sender-window, #receiver-window{
@@ -147,8 +123,8 @@ legend{
     flex: 2 2 375px;
     display: block;
     color: var(--text-color);
-    padding: 2rem clamp(5px, 5vw, 2rem);
-    padding-top: min(2.5vw, 2rem);
+    padding: 2rem clamp(5px, 5%, 2rem);
+    padding-top: min(2.5%, 2rem);
 }
 
 legend h3{
@@ -176,47 +152,47 @@ legend li::before{
 }
 
 /* Legend colors **/
-legend li.legend-not-received::before{
+legend .not-received::before{
     background-color: #D7D9DB;
     border-color: #B0B3B7;
 }
 
-legend li.legend-buffered::before{
+legend .buffered::before{
     background-color: #B2D0F9;
     border-color: #65A2F4;
 }
 
-legend li.legend-confirmed::before{
+legend .confirmed::before{
     background-color: #F8F380;
     border-color: #F1E800;
 }
 
-legend li.legend-acknowledgment-or-received::before{
+legend .ack-or-received::before{
     background-color: #9CD8A2;
     border-color: #3AB146;
 }
 
-legend li.legend-next-sequence-timer::before{
+legend .next-sequence-timer::before{
     background-color: #FDCB80;
     border-color: #FC9700;
 }
 
-legend li.legend-window::before{
+legend .window::before{
     background-color: #FCB0B0;
     border-color: #F96060;
 }
 
-legend li.legend-timeout::before{
+legend .timeout::before{
     background-color: #E78CF6;
     border-color: #CF1AED;
 }
 
-legend li.legend-damaged-packet::before{
+legend .damaged::before{
     background-color: #AE9F9B;
     border-color: #5D4037;
 }
 
-legend li.legend-cumulative-acknowledgment::before{
+legend .cumulative-ack::before{
     background-color: #80DFD2;
     border-color: #00BFA5;
 }
