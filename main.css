@@ -78,7 +78,7 @@ statistics-card{
 @media(min-width: 1250px){
     body.grid{
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 55fr 45fr;
         grid-auto-rows: auto;
         gap: 2rem;
         padding: 2rem;
@@ -118,6 +118,6 @@ statistics-card{
         --card-width: auto;
         --card-margin: 0;
         grid-column: 2 / 3;
-        grid-row: 1 / 6;
+        grid-row: 2 / 6;
     }
 }

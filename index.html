@@ -216,8 +216,17 @@
 
     <template id="statistics-card">
         <link rel="stylesheet" href="./components/StatisticsCard/style.css">
+        <link rel="stylesheet" href="./fontawesome/css/all.css">
         <section class="card">
-            <h2 class="card-header">Live statistics</h2>
+            <header class="card-header">
+                <h2>Live statistics</h2>
+                    <menu class="top-menu">
+                        <button id="change-order-btn" type="button" class="btn">
+                            <i class="fas fa-exchange-alt"></i>
+                            Change order
+                        </button>
+                    </menu>
+            </header>
             <div id="stats-content">
                 <figure id="table-figure">
                     <table>
