@@ -46,17 +46,38 @@ h2{
     flex-wrap: wrap;
 }
 
-#root-svg{
+#visualization-figure{
     align-self: flex-start;
-    flex: 6 2 725px;
-    display: block;
     padding: clamp(.5rem, 2%, 1.5rem);
+    flex: 6 2 725px;
     box-sizing: border-box;
 }
 
-#root-svg.expanded{
+#visualization-figure.expanded{
     flex-basis: 100%;
     padding-bottom: 0px;
+}
+
+#visualization-bindings{
+    padding: 1rem;
+    padding-bottom: 0px;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: var(--secondary-text-color);
+    font-style: italic;
+    text-align: center;
+}
+
+kbd{
+    font-weight: bold;
+    padding: .25em;
+    border-radius: .25em;
+    background-color: #f2f2f2;
+    font-style: normal;
+}
+
+#root-svg{
+    display: block;
 }
 
 #background-svg{
@@ -66,7 +87,7 @@ h2{
 }
 
 @media(max-width: 600px){
-    #root-svg{
+    #visualization-figure{
         padding: 0;
         margin-bottom: .8rem;
     }

@@ -171,18 +171,24 @@
             </header>
             
             <div id="visualization-content">
-                <svg id="root-svg" viewBox="0 0 1600 900">
-                    <rect id="background-svg" width="100%" height="100%"/>
-                    <text y="250" id="sender-tag" class="node-tag">SENDER</text>
-                    <text y="735" id="receiver-tag" class="node-tag">RECEIVER</text>
-                    <foreignObject id="sliding-view" width="100%" height="100%" x="0" y="0" >
-                        <svg id="sliding-view-content" viewBox="0 0 1600 900">
-                            <rect id="sender-window" x="100" y="14" width="400" height="124"/>
-                            <rect id="receiver-window" x="100" y="762" width="400" height="124"/>
-                            <g id="tracks"></g>
-                        </svg>
-                    </foreignObject>
-                </svg>
+                <figure id="visualization-figure">
+                   <svg id="root-svg" viewBox="0 0 1600 900">
+                        <rect id="background-svg" width="100%" height="100%"/>
+                        <text y="250" id="sender-tag" class="node-tag">SENDER</text>
+                        <text y="735" id="receiver-tag" class="node-tag">RECEIVER</text>
+                        <foreignObject id="sliding-view" width="100%" height="100%" x="0" y="0" >
+                            <svg id="sliding-view-content" viewBox="0 0 1600 900">
+                                <rect id="sender-window" x="100" y="14" width="400" height="124"/>
+                                <rect id="receiver-window" x="100" y="762" width="400" height="124"/>
+                                <g id="tracks"></g>
+                            </svg>
+                        </foreignObject>
+                    </svg>
+                    <p id="visualization-bindings">
+                        <kbd>Click</kbd> = lose packet,
+                        <kbd>Ctrl</kbd> + <kbd>Click</kbd> = damage packet
+                    </p>
+                </figure>
                 <legend>
                     <h3>Legend</h3>
                     <ul>
